@@ -479,3 +479,38 @@ a.spine__link:hover { background: color-mix(in srgb, var(--accent) 8%, transpare
   .panel { border-color: #ccc; background: #fff; break-inside: avoid; }
   .content { overflow: visible; padding: 0; }
 }
+
+/* ── Code Lab ──────────────────────────────────────────────────────── */
+.codelab { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.9rem; }
+.codelab__bar { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+.codelab__spacer { flex: 1; }
+.codelab__bar .small { font-size: 0.78rem; font-family: var(--mono); }
+
+.codelab__split { display: grid; grid-template-columns: 1fr 340px; gap: 0.8rem; min-height: 280px; }
+@media (max-width: 1100px) { .codelab__split { grid-template-columns: 1fr; } }
+
+.editor {
+  border: 1px solid var(--line-bright); border-radius: var(--radius);
+  overflow: hidden; min-height: 280px; max-height: 520px;
+}
+.editor .cm-editor { height: 100%; }
+
+.console {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bg-inset); overflow: hidden; min-height: 280px; max-height: 520px;
+}
+.console__head {
+  padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--line);
+  font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-faint); font-weight: 700;
+}
+.console__body {
+  flex: 1; margin: 0; padding: 0.8rem;
+  font-family: var(--mono); font-size: 0.84rem; line-height: 1.55;
+  white-space: pre-wrap; word-break: break-word; overflow: auto; color: var(--fg-dim);
+}
+
+.failures { margin: 0.6rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.9rem; }
+.failures li { display: flex; align-items: center; gap: 0.5rem; }
+strong.ok { display: flex; align-items: center; gap: 0.4rem; color: var(--ok); }
+strong.warn { color: var(--warn); }
