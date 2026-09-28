@@ -24,7 +24,7 @@ export function orchestrate(src: string, options: OrchestrateOptions): Promise<R
     const logs: string[] = [];
     let settled = false;
     let worker: RunnerWorker;
-    let timer: ReturnType<typeof setTimeout>;
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
     const arm = (ms: number) => {
       clearTimeout(timer);
