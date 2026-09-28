@@ -1,0 +1,206 @@
+import type { Day } from '../../types';
+
+/** CODE track, days 24–30. */
+export const codeEnD: Day[] = [
+  {
+    day: 24,
+    title: 'Reading documentation',
+    minutes: 20,
+    lesson: [
+      { k: 'text', md: 'A programmer spends more time reading than typing. Reading documentation is a skill of its own, and it can be learned.' },
+      { k: 'text', md: 'What you look for in a function description is always the same four things:\n\n1. **What does it take?** How many parameters, which types, what is required?\n2. **What does it give back?** A value, or only a side effect?\n3. **When does it fail?** Which exception does it raise, and on what?\n4. **Is there an example?** The example is usually worth more than the prose.' },
+      { k: 'code', lang: 'py', src: 'import math\n\nhelp(math.hypot)      # the built-in documentation\nprint(math.hypot.__doc__)\n\ndir(math)             # what is in the module?', explain: '`help` and `dir` are available straight from the code. No internet needed — which suits offline learning nicely.' },
+      { k: 'code', lang: 'py', src: 'def distance(x, y):\n    """Return the distance from the origin.\n\n    x, y: coordinates in centimetres.\n    Returns: float, always non-negative.\n    """\n    return (x * x + y * y) ** 0.5\n\nprint(distance.__doc__)', explain: 'The triple-quoted text at the top of a function is its **docstring**. That is what `help()` shows. Write one for every function that is not obvious.' },
+      { k: 'callout', tone: 'tip', md: 'If a description makes no sense, do not read it a tenth time. Write a three-line program that tries it. The experiment teaches faster than rereading.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Write an `area(a, b)` function with a docstring describing its parameters and return value. Print the docstring.',
+      starter: 'def area(a, b):\n    pass\n\n',
+      checks: [{ k: 'output', contains: 'area', label: 'The docstring appears' }],
+      hints: ['The docstring is the first line after `def`, in triple quotes.', 'Print it: `print(area.__doc__)`.'],
+    },
+    quiz: [
+      { k: 'single', q: 'What is a docstring?', opts: ['A comment at the end of the code', 'Descriptive text at the top of a function, in triple quotes', 'A variable'], answer: 1, why: 'The docstring is the first statement after `def`. `help()` and `__doc__` return it — it is part of the code, not just a note.' },
+      { k: 'single', q: 'What does `dir(math)` give?', opts: ['The module name', 'The list of names available in the module', 'The module size'], answer: 1, why: 'It lists everything the module holds. A good starting point when you do not know what to look for.' },
+      { k: 'multi', q: 'Which two things do you look for in a function description?', opts: ['What it takes', 'Who wrote it', 'What it returns', 'How many lines it is'], answers: [0, 2], why: 'Input and output decide whether it fits your task. The author and the length do not.' },
+      { k: 'single', q: 'What should you do when a description is unclear?', opts: ['Read it five times', 'Write a short program that tries it', 'Skip the function'], answer: 1, why: 'The experiment gives a definite answer; rereading usually does not. Three lines of code beat twenty minutes of staring.' },
+    ],
+    note: {
+      summary: ['Reading documentation is a skill of its own, and it is learnable.', 'Four questions: what it takes, what it returns, when it fails, is there an example.', '`help()` and `dir()` work offline, straight from the code.', 'A docstring is the description at the top of a function, shown by `help()`.', 'When the description is unclear, try it in a three-line program.'],
+      terms: [{ term: 'docstring', def: 'Descriptive text at the top of a function, shown by help().' }, { term: 'help()', def: "A built-in that prints an object's documentation." }, { term: 'dir()', def: 'Lists the names available in a module or object.' }],
+    },
+  },
+  {
+    day: 25,
+    title: 'Search: linear and binary',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'Search is the most elementary algorithm there is, and exactly for that reason it shows how the **how** sometimes matters more than the **what**.' },
+      { k: 'code', lang: 'py', src: 'def linear(items, target):\n    for i, x in enumerate(items):\n        if x == target:\n            return i\n    return -1', explain: 'It walks everything. Simple, always works, and on an unsorted list it is the only option.' },
+      { k: 'code', lang: 'py', src: 'def binary(sorted_items, target):\n    low, high = 0, len(sorted_items) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if sorted_items[mid] == target:\n            return mid\n        if sorted_items[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1', explain: 'Each step halves the search space. It is the same halving you learned when debugging.' },
+      { k: 'callout', tone: 'key', md: 'With a million items, a linear search takes a million steps in the worst case. A binary one takes **twenty**. Same task, same machine — just a better method.' },
+      { k: 'callout', tone: 'warn', md: 'Binary search only works on a **sorted** list. On an unsorted one it quietly gives a wrong answer, which is far worse than raising.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Write a `find(items, target)` function returning the index of the item, or -1 when it is absent. Try it with a present and a missing value.',
+      starter: 'def find(items, target):\n    pass\n\nprint(find([4, 9, 2], 9))\nprint(find([4, 9, 2], 7))\n',
+      checks: [{ k: 'output', contains: '1', label: '9 is at index 1' }, { k: 'output', contains: '-1', label: 'A missing item gives -1' }],
+      hints: ['`for i, x in enumerate(items):`', '`if x == target: return i`', 'After the loop: `return -1`.'],
+    },
+    quiz: [
+      { k: 'numeric', q: 'How many steps at worst to binary-search 1000 items? (round up)', answer: 10, tol: 0.5, why: 'Each step halves: 1000 → 500 → 250 → … → 1. That is about ten halvings, because 2¹⁰ = 1024.' },
+      { k: 'single', q: 'What does binary search require?', opts: ['The list must be sorted', 'The list must be short', 'Nothing'], answer: 0, why: 'The method relies on the middle item telling it which half the target could be in. Unsorted, that information is false.' },
+      { k: 'single', q: 'When is linear search still the better choice?', opts: ['Never', 'On an unsorted or very short list', 'Only with numbers'], answer: 1, why: 'On unsorted data there is no alternative, and with a handful of items sorting costs more than walking them.' },
+      { k: 'output', q: 'What does this print?', code: 'def f(l, m):\n    for i, x in enumerate(l):\n        if x == m:\n            return i\n    return -1\n\nprint(f([5, 6, 7], 8))', lang: 'py', opts: ['0', '-1', '3'], answer: 1, why: '8 is not in the list, so the loop completes and the closing `return -1` applies.' },
+    ],
+    note: {
+      summary: ['Linear search walks everything; always works, sorted or not.', 'Binary search halves the search space at every step.', 'With a million items: a million steps linearly, twenty binarily.', 'Binary search only answers correctly on a sorted list.', 'On a short or unsorted list, linear is the better choice.'],
+      terms: [{ term: 'linear search', def: 'A sequential search that checks every item.' }, { term: 'binary search', def: 'A halving search over a sorted list.' }, { term: 'halving', def: 'Cutting the search space in two at every step.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'Sorting and why it matters',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'Sorting is rarely the goal in itself. You sort because everything afterwards gets cheaper: searching, grouping, extremes, comparison.' },
+      { k: 'code', lang: 'py', src: 'a = [4, 1, 9, 2]\n\nprint(sorted(a))            # [1, 2, 4, 9]  — a new list\nprint(a)                    # [4, 1, 9, 2]  — the original stands\n\na.sort()                    # sorts in place\nprint(a)                    # [1, 2, 4, 9]', explain: '`sorted` gives a new list, `.sort()` sorts in place. That is the same distinction as between a function with and without side effects.' },
+      { k: 'code', lang: 'py', src: 'readings = [\n    {"name": "A", "dist": 30},\n    {"name": "B", "dist": 8},\n]\n\nprint(sorted(readings, key=lambda r: r["dist"]))\nprint(sorted(readings, key=lambda r: r["dist"], reverse=True))', explain: '`key` says **what to sort by**. A `lambda` is a short anonymous function: "take this one\'s dist field".' },
+      { k: 'callout', tone: 'tip', md: '`key=` is the most useful thing you learn today. Sort by length (`key=len`), case-insensitively (`key=str.lower`), or by any computed value.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Given `words = ["rover", "ai", "kinematics"]`, sort them by length, shortest first, and print the result.',
+      starter: 'words = ["rover", "ai", "kinematics"]\n',
+      checks: [{ k: 'output', contains: 'ai', label: 'The shortest comes first' }],
+      hints: ['`sorted(words, key=len)`', 'Print it: `print(sorted(words, key=len))`.'],
+    },
+    quiz: [
+      { k: 'single', q: 'What is the difference between `sorted(a)` and `a.sort()`?', opts: ['Nothing', 'sorted gives a new list, sort rearranges in place', 'sort is faster'], answer: 1, why: '`sorted` leaves the original alone; `.sort()` rearranges it. The latter is a side effect — a surprise if something else uses that list.' },
+      { k: 'output', q: 'What does this print?', code: 'a = [3, 1]\nb = sorted(a)\nprint(a, b)', lang: 'py', opts: ['[1, 3] [1, 3]', '[3, 1] [1, 3]', '[3, 1] [3, 1]'], answer: 1, why: '`sorted` builds a new list, so `a` is untouched.' },
+      { k: 'single', q: 'What is the `key=` parameter for?', opts: ['It says what to sort by', 'It gives the key in a dictionary', 'It encrypts'], answer: 0, why: '`key` is a function applied to every item; sorting happens by its result. That lets you sort by length, a field, or anything computed.' },
+      { k: 'single', q: 'Why sort before searching?', opts: ['It looks tidier', 'Because binary search is then much faster', 'Less memory'], answer: 1, why: 'Sorting is a one-off cost; every search afterwards can halve. With many searches that pays back handsomely.' },
+    ],
+    note: {
+      summary: ['`sorted(list)` gives a new list; `list.sort()` sorts in place.', 'The `key=` function says what to sort by.', '`lambda x: x["field"]` is a short anonymous function for the key.', '`reverse=True` gives descending order.', 'After sorting, search can become binary — a one-off cost for a lasting gain.'],
+      terms: [{ term: 'sorted', def: 'Returns a new sorted list, leaving the original alone.' }, { term: 'key function', def: 'A function applied to every item, whose result drives the ordering.' }, { term: 'lambda', def: 'A short anonymous function of a single expression.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Complexity in plain words',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: '**Complexity** answers one question: if I give it ten times the data, how many times longer does it run? We measure growth, not seconds.' },
+      { k: 'text', md: '- **O(1)** — the size makes no difference. `list[5]`, `dict["key"]`\n- **O(log n)** — ten times the data, barely more work. Binary search.\n- **O(n)** — ten times the data, ten times the work. A walk, `sum`, `min`.\n- **O(n log n)** — the good sorts. Ten times the data, about thirteen times the work.\n- **O(n²)** — ten times the data, **a hundred** times the work. A nested loop.' },
+      { k: 'code', lang: 'py', src: '# O(n) — walks once\nfor x in items:\n    print(x)\n\n# O(n²) — walks everything for every item\nfor x in items:\n    for y in items:\n        if x == y:\n            pass', explain: 'A nested loop is the most common hidden slowdown. At a thousand items that is already a million steps.' },
+      { k: 'callout', tone: 'key', md: 'You do not have to optimise everything. But when a program is slow, the question is almost always: is there an `n²` in here that could be an `n`? Usually yes — and a dictionary or a set is all it takes.' },
+      { k: 'code', lang: 'py', src: '# O(n) — a list\'s "in" walks it\nif x in big_list:\n    pass\n\n# O(1) — a set\'s "in" is immediate\nlookup = set(big_list)\nif x in lookup:\n    pass', explain: 'Same question, same answer, a thousand times faster. Lookups in a `set` or `dict` take constant time.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Given two lists, print how many items they have in common — using sets, not a nested loop.',
+      starter: 'a = [1, 2, 3, 4, 5]\nb = [4, 5, 6, 7]\n',
+      checks: [{ k: 'output', contains: '2', label: 'Two items in common: 4 and 5' }],
+      hints: ['Turn into a set: `set(a)`.', 'Intersection: `set(a) & set(b)`.', 'Count: `len(set(a) & set(b))`.'],
+    },
+    quiz: [
+      { k: 'single', q: 'What does O(n²) mean?', opts: ['Ten times the data, ten times the time', 'Ten times the data, a hundred times the time', 'Always the same time'], answer: 1, why: 'With quadratic growth, ten times the data multiplies the time by a hundred. That is why a program suddenly becomes unusable.' },
+      { k: 'single', q: 'What is the complexity of `list[5]`?', opts: ['O(1)', 'O(n)', 'O(n²)'], answer: 0, why: 'Indexing is direct: the size of the list makes no difference. That is constant time.' },
+      { k: 'single', q: 'Why is `x in a_set` faster than `x in a_list`?', opts: ['The set is sorted', 'The set does not walk everything; it finds it directly', 'No difference'], answer: 1, why: 'A set looks up by hash, which is constant time. A list checks every item, which is linear.' },
+      { k: 'single', q: 'What is the most common hidden slowdown?', opts: ['Too many variables', 'A nested loop', 'Long function names'], answer: 1, why: 'Two nested loops make n². At a thousand items that is a million steps — and it is usually avoidable.' },
+    ],
+    note: {
+      summary: ['Complexity measures growth, not seconds.', 'O(1) constant, O(log n) halving, O(n) a walk, O(n log n) sorting, O(n²) a nested loop.', 'At O(n²), ten times the data means a hundred times the time.', 'The most common hidden slowdown is a nested loop.', 'Lookups in `set` and `dict` are constant time — often that is the whole fix.'],
+      terms: [{ term: 'complexity', def: 'How resource use grows with the size of the data.' }, { term: 'O(n²)', def: 'Quadratic growth: ten times the data, a hundred times the work.' }, { term: 'set', def: 'A collection without duplicates, with constant-time lookup.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Robot controller: the sensor loop',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: 'This is where it all comes together. Your robot controller is a single loop: **sense — decide — act**, over and over. Today you write the first two.' },
+      { k: 'code', lang: 'js', src: '// The Robot Lab API\n// rover.distance()  → cm of free space ahead\n// rover.forward(cm) → drive\n// rover.turn(deg)   → turn\n// rover.position()  → { x, z, heading }\n\nfor (let i = 0; i < 20; i++) {\n  const d = rover.distance();\n  print("ahead:", d);\n  if (d > 20) {\n    rover.forward(10);\n  } else {\n    rover.turn(45);\n  }\n}', explain: 'That is the whole loop. Twenty rounds of: look at what is ahead, and decide. Nothing more.' },
+      { k: 'robot', scene: 'obstacle' },
+      { k: 'callout', tone: 'key', md: 'Notice that the decision always rests on **fresh data**. `rover.distance()` is **inside** the loop. Put it outside and the robot would drive the whole way on one stale reading — the most common beginner mistake in robotics.' },
+      { k: 'callout', tone: 'warn', md: 'Give the loop an upper bound (`i < 20`), not `while (true)`. The simulator stops it after four seconds, but on a real robot an endless loop means a flat battery.' },
+    ],
+    lab: {
+      lab: 'robot', scene: 'obstacle',
+      brief: 'In the Robot Lab, write a loop that drives forward over twenty rounds when there is more than 20 cm of clear space, and turns 45 degrees otherwise. Watch how it navigates between the obstacles.',
+      checks: [{ k: 'mission', mission: 'reach-goal', label: 'The rover reaches the green goal' }],
+      hints: ['Take the reading inside the loop: `const d = rover.distance();`', 'Branch: `if (d > 20) rover.forward(10); else rover.turn(45);`', 'If it circles, try a larger turn or a shorter step.'],
+    },
+    quiz: [
+      { k: 'order', q: 'In what order does a control loop come together?', items: ['Act', 'Sense', 'Decide'], correct: [1, 2, 0], why: 'You have to measure first, the decision comes out of it, and only then does the robot move. Then it starts again.' },
+      { k: 'single', q: 'Why must the reading be inside the loop?', opts: ['It looks better', 'Otherwise every round decides on stale data', 'It is faster'], answer: 1, why: 'A reading outside the loop runs once. From then on the robot references an outdated value while the world changes around it.' },
+      { k: 'single', q: 'Why avoid `while (true)` in a robot controller?', opts: ['It is unsupported', 'It never stops: a flat battery or a killed worker', 'It is slower'], answer: 1, why: 'Without an exit condition the loop runs forever. The simulator kills it; a real robot keeps going until the battery dies.' },
+      { k: 'single', q: 'What does `rover.distance()` return?', opts: ['The distance travelled', 'The free space ahead of the robot', 'The battery level'], answer: 1, why: 'The sensor measures how far the nearest obstacle or wall is in the direction of travel.' },
+    ],
+    note: {
+      summary: ['A robot controller is a single loop: sense → decide → act.', 'Always take the reading **inside** the loop, so decisions rest on fresh data.', 'A reading outside the loop is the most common beginner mistake in robotics.', 'Always have an exit condition — `while (true)` on a real robot means a flat battery.', '`rover.distance()` gives the free space ahead in centimetres.'],
+      terms: [{ term: 'control loop', def: 'The sense-decide-act cycle a robot repeats continuously.' }, { term: 'fresh data', def: 'A value measured in the current round, not an earlier one.' }, { term: 'exit condition', def: 'The rule that eventually ends the control loop.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'Robot controller: decision logic',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: "Yesterday's loop works but it is dim: it always turns the same amount and remembers nothing. Today we give it **state**." },
+      { k: 'code', lang: 'js', src: 'let mode = "drive";\nlet turned = 0;\n\nfor (let i = 0; i < 40; i++) {\n  const d = rover.distance();\n\n  if (mode === "drive") {\n    if (d > 15) {\n      rover.forward(8);\n    } else {\n      mode = "avoid";\n      turned = 0;\n    }\n  } else if (mode === "avoid") {\n    rover.turn(20);\n    turned += 20;\n    if (rover.distance() > 30 || turned >= 360) {\n      mode = "drive";\n    }\n  }\n}', explain: 'This is a **state machine**: the robot has a mode, and the mode decides what it does. `turned` keeps it from spinning on the spot forever.' },
+      { k: 'robot', scene: 'obstacle' },
+      { k: 'callout', tone: 'key', md: 'The state machine is the most important idea in robotics at this level. Write the modes on paper along with what moves you from one to another — the code after that is just typing.' },
+      { k: 'callout', tone: 'warn', md: 'Every state needs a way out. `turned >= 360` is the safety net: if the robot has turned all the way round and still found nothing, it leaves anyway. A state with no exit is a stuck robot.' },
+    ],
+    lab: {
+      lab: 'robot', scene: 'obstacle',
+      brief: 'Write a state-machine controller: in "drive" mode go forward when there is room; in "avoid" mode turn until the way is clear. Add a safety net against spinning forever, and reach the goal.',
+      checks: [{ k: 'mission', mission: 'avoid', label: 'Reaches the goal keeping 3 cm clearance throughout' }],
+      hints: ['Start with `let mode = "drive";`.', 'Count the turns: `turned += 20`, and leave above 360.', 'If it collides, shorten the step or raise the turn threshold.'],
+    },
+    quiz: [
+      { k: 'single', q: 'What is a state machine?', opts: ['A special kind of loop', 'Control where the robot\'s mode decides its behaviour', 'A sensor'], answer: 1, why: 'The robot has a current mode, and every round that mode decides what it does and when it switches.' },
+      { k: 'single', q: 'Why does the "avoid" state need a safety net?', opts: ['It looks better', 'Otherwise it can spin on the spot forever', 'It is faster'], answer: 1, why: 'With obstacles in every direction the exit condition never comes true. A counter guarantees it leaves eventually.' },
+      { k: 'single', q: "What is the difference from yesterday's controller?", opts: ['Today\'s is faster', 'Today\'s remembers what mode it is in', 'Today\'s uses fewer sensors'], answer: 1, why: 'Yesterday every round decided from scratch. Today there is state, so earlier rounds influence what it does now.' },
+      { k: 'multi', q: 'Which two things are worth writing down before coding a state machine?', opts: ['The modes', 'The length of variable names', 'The transitions between modes', 'The loop runtime'], answers: [0, 2], why: 'Modes and transitions are the whole structure. With those two on paper, the code is just typing.' },
+    ],
+    note: {
+      summary: ['A state machine: the robot has a mode, and the mode decides its behaviour.', 'Every state needs a way out, or the robot gets stuck.', 'A counter safety net (total degrees turned) prevents endless spinning.', 'A stateful controller remembers earlier rounds instead of deciding from scratch.', 'Write the modes and transitions on paper before you code.'],
+      terms: [{ term: 'state machine', def: 'Control in which a current mode determines behaviour.' }, { term: 'transition', def: 'The condition that moves you from one mode to another.' }, { term: 'safety net', def: 'A counter or bound that prevents endless repetition.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'Robot controller: a full mission',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'After thirty days, the last task: write a controller that **heads for a goal**. Not wandering at random — it knows where it is going.' },
+      { k: 'code', lang: 'js', src: '// Which way is the goal? Work out the angle difference.\nfunction angleToGoal(gx, gz) {\n  const p = rover.position();\n  const dx = gx - p.x;\n  const dz = gz - p.z;\n  const want = Math.atan2(dz, dx) * 180 / Math.PI;\n  let diff = want - p.heading;\n  while (diff > 180) diff -= 360;\n  while (diff < -180) diff += 360;\n  return diff;\n}', explain: '`atan2` gives the direction of the goal. The normalising is what makes it always turn the short way — -10 degrees instead of 350.' },
+      { k: 'code', lang: 'js', src: 'const GX = 70, GZ = 60;\n\nfor (let i = 0; i < 60; i++) {\n  const p = rover.position();\n  const dist = Math.hypot(GX - p.x, GZ - p.z);\n  if (dist < 10) { print("Arrived"); break; }\n\n  const diff = angleToGoal(GX, GZ);\n\n  if (rover.distance() < 15) {\n    rover.turn(30);                  // obstacle: go around\n  } else if (Math.abs(diff) > 10) {\n    rover.turn(diff > 0 ? 15 : -15); // line up with the goal\n  } else {\n    rover.forward(10);               // clear ahead\n  }\n}', explain: 'Three rules in order of importance: (1) do not crash, (2) turn towards the goal, (3) go. That is the whole mission.' },
+      { k: 'robot', scene: 'obstacle' },
+      { k: 'callout', tone: 'key', md: 'The **order** of the rules is the point. Collision avoidance comes first because it matters most. If heading for the goal came first, the robot would drive into the wall just to face the right way.' },
+      { k: 'callout', tone: 'tip', md: 'This pattern — prioritised rules in a loop — carries serious robots too. What you would learn next (PID, A*, behaviour trees) refines this rather than replacing it.' },
+      { k: 'text', md: 'Thirty days ago you started by assigning a variable. Now you are navigating a robot with code, between obstacles, towards a goal. You have finished this track.' },
+    ],
+    lab: {
+      lab: 'robot', scene: 'obstacle',
+      brief: 'Write a full mission controller: head for the green goal, avoid the obstacles, and stop when you arrive. This is the final exam of the CODE track.',
+      checks: [{ k: 'mission', mission: 'reach-goal', label: 'The rover arrives at the goal' }],
+      hints: ['On the obstacle arena the goal is at (70, 60).', 'The angle difference comes from `Math.atan2(dz, dx)` converted to degrees.', 'Rule order: collision avoidance, then heading, then driving.'],
+    },
+    quiz: [
+      { k: 'single', q: 'Why normalise the angle difference into -180..+180?', opts: ['It looks better', 'So it always turns the short way', 'Because turn() accepts nothing else'], answer: 1, why: 'Without normalising, the robot would turn 350 degrees instead of -10. Same place, far slower.' },
+      { k: 'single', q: 'Why is collision avoidance first in the rule order?', opts: ['Shorter code', 'It matters most: heading for the goal is no use if you hit the wall', 'No reason'], answer: 1, why: 'Prioritised rules always test the first one first. Safety outranks the goal.' },
+      { k: 'single', q: 'What does `Math.hypot(GX - p.x, GZ - p.z)` compute?', opts: ['The angle', 'The distance to the goal', 'The speed'], answer: 1, why: 'Pythagoras on the two coordinate differences: the straight-line distance to the goal.' },
+      { k: 'order', q: 'In what order should the rules be tested?', items: ['Turn towards the goal', 'Avoid the obstacle', 'Drive forward'], correct: [1, 0, 2], why: 'Safety first, then direction, then motion. Swap them and the robot drives into the wall while facing the goal.' },
+    ],
+    note: {
+      summary: ['To head for a goal, compute its direction with `atan2`.', 'Normalise the angle difference into -180..+180 so it turns the short way.', '`Math.hypot` gives the distance.', 'Prioritised rules: (1) do not crash, (2) turn to the goal, (3) drive.', 'The order of the rules decides the behaviour — safety always first.', 'This pattern carries serious robots; PID and A* refine it.'],
+      terms: [{ term: 'goal seeking', def: "Control that aligns the robot's heading with the direction of a goal." }, { term: 'angle normalisation', def: 'Bringing an angle difference into -180..+180 for the shorter turn.' }, { term: 'prioritised rules', def: 'Conditions ordered by importance, the first matching one winning.' }],
+    },
+  },
+];

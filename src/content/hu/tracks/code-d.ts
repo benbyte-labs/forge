@@ -1,0 +1,206 @@
+import type { Day } from '../../types';
+
+/** KÓD trek, 24–30. nap. */
+export const codeHuD: Day[] = [
+  {
+    day: 24,
+    title: 'Dokumentáció olvasása',
+    minutes: 20,
+    lesson: [
+      { k: 'text', md: 'Egy programozó idejének nagy részét nem gépeléssel, hanem olvasással tölti. A dokumentáció olvasása önálló készség, és tanulható.' },
+      { k: 'text', md: 'Amit egy függvény leírásában keresel, mindig ugyanaz a négy dolog:\n\n1. **Mit vár be?** Hány paraméter, milyen típus, mi kötelező?\n2. **Mit ad vissza?** Értéket vagy csak mellékhatást?\n3. **Mikor hibázik?** Milyen kivételt dob, és mire?\n4. **Van példa?** A példa általában többet ér, mint a leírás.' },
+      { k: 'code', lang: 'py', src: 'import math\n\nhelp(math.hypot)      # a beépített dokumentáció\nprint(math.hypot.__doc__)\n\ndir(math)             # mi minden van a modulban?', explain: 'A `help` és a `dir` közvetlenül a kódban elérhető. Nem kell hozzá internet — ez pont illik egy offline tanuláshoz.' },
+      { k: 'code', lang: 'py', src: 'def tavolsag(x, y):\n    """Visszaadja az origótól mért távolságot.\n\n    x, y: koordináták centiméterben.\n    Visszatérés: float, mindig nemnegatív.\n    """\n    return (x * x + y * y) ** 0.5\n\nprint(tavolsag.__doc__)', explain: 'A háromidézőjeles szöveg a függvény elején a **docstring**. A `help()` ezt mutatja meg. Írj ilyet minden nem nyilvánvaló függvényedhez.' },
+      { k: 'callout', tone: 'tip', md: 'Ha egy leírást nem értesz, ne olvasd tizedszer. Írj egy háromsoros programot, ami kipróbálja. A kísérlet gyorsabban tanít, mint az újraolvasás.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Írj egy `terulet(a, b)` függvényt docstringgel, ami leírja a paramétereket és a visszatérési értéket. Írasd ki a docstringet.',
+      starter: 'def terulet(a, b):\n    pass\n\n',
+      checks: [{ k: 'output', contains: 'terület', label: 'A docstring megjelenik' }],
+      hints: ['A docstring a `def` utáni első sor, három idézőjel közt.', 'Kiírás: `print(terulet.__doc__)`.'],
+    },
+    quiz: [
+      { k: 'single', q: 'Mi a docstring?', opts: ['Egy komment a kód végén', 'A függvény elején álló leíró szöveg három idézőjel közt', 'Egy változó'], answer: 1, why: 'A docstring a `def` utáni első utasítás. A `help()` és a `__doc__` ezt adja vissza — része a kódnak, nem csak megjegyzés.' },
+      { k: 'single', q: 'Mit ad a `dir(math)`?', opts: ['A modul nevét', 'A modulban elérhető nevek listáját', 'A modul méretét'], answer: 1, why: 'Felsorolja, mi minden van a modulban. Jó kiindulás, ha nem tudod, mit keresel.' },
+      { k: 'multi', q: 'Melyik két dolgot keresed egy függvény leírásában?', opts: ['Mit vár be', 'Ki írta', 'Mit ad vissza', 'Hány sor hosszú'], answers: [0, 2], why: 'A bemenet és a kimenet dönti el, hogy használható-e a feladatodhoz. A szerző és a hossz nem.' },
+      { k: 'single', q: 'Mit tegyél, ha egy leírás nem világos?', opts: ['Olvasd el ötször', 'Írj egy rövid programot, ami kipróbálja', 'Hagyd ki a függvényt'], answer: 1, why: 'A kísérlet egyértelmű választ ad, az újraolvasás általában nem. Három sor kód gyorsabb, mint húsz perc töprengés.' },
+    ],
+    note: {
+      summary: ['A dokumentáció olvasása önálló, tanulható készség.', 'Négy kérdés: mit vár be, mit ad vissza, mikor hibázik, van-e példa.', 'A `help()` és a `dir()` offline, közvetlenül a kódból elérhető.', 'A docstring a függvény elején álló leírás, amit a `help()` mutat.', 'Ha nem érted a leírást, próbáld ki egy háromsoros programmal.'],
+      terms: [{ term: 'docstring', def: 'A függvény elején álló leíró szöveg, amit a help() megmutat.' }, { term: 'help()', def: 'Beépített függvény, ami kiírja egy objektum dokumentációját.' }, { term: 'dir()', def: 'Felsorolja egy modul vagy objektum elérhető neveit.' }],
+    },
+  },
+  {
+    day: 25,
+    title: 'Keresés: lineáris és bináris',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A keresés a legelemibb algoritmus, és pont ezért jó példa arra, hogy a **hogyan** néha fontosabb, mint a **mit**.' },
+      { k: 'code', lang: 'py', src: 'def linearis(lista, mit):\n    for i, x in enumerate(lista):\n        if x == mit:\n            return i\n    return -1', explain: 'Végigmegy mindenen. Egyszerű, mindig működik, és rendezetlen listán ez az egyetlen lehetőség.' },
+      { k: 'code', lang: 'py', src: 'def binaris(rendezett, mit):\n    bal, jobb = 0, len(rendezett) - 1\n    while bal <= jobb:\n        kozep = (bal + jobb) // 2\n        if rendezett[kozep] == mit:\n            return kozep\n        if rendezett[kozep] < mit:\n            bal = kozep + 1\n        else:\n            jobb = kozep - 1\n    return -1', explain: 'Minden lépésben felezi a keresési teret. Ez ugyanaz a felezés, amit a hibakeresésnél tanultál.' },
+      { k: 'callout', tone: 'key', md: 'Egymillió elemnél a lineáris keresés a legrosszabb esetben egymillió lépés. A bináris **húsz**. Ugyanaz a feladat, ugyanaz a gép — csak jobb módszer.' },
+      { k: 'callout', tone: 'warn', md: 'A bináris keresés **csak rendezett** listán működik. Rendezetlenen csendben rossz választ ad, ami sokkal rosszabb, mint ha hibát dobna.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Írj egy `kereses(lista, mit)` függvényt, ami visszaadja az elem indexét, vagy -1-et, ha nincs benne. Próbáld ki meglévő és nem létező elemmel is.',
+      starter: 'def kereses(lista, mit):\n    pass\n\nprint(kereses([4, 9, 2], 9))\nprint(kereses([4, 9, 2], 7))\n',
+      checks: [{ k: 'output', contains: '1', label: 'A 9 az 1-es indexen van' }, { k: 'output', contains: '-1', label: 'A hiányzó elemre -1 jön' }],
+      hints: ['`for i, x in enumerate(lista):`', '`if x == mit: return i`', 'A ciklus után: `return -1`.'],
+    },
+    quiz: [
+      { k: 'numeric', q: 'Hány lépés kell legrosszabb esetben 1000 elem közt bináris kereséssel? (kerekíts felfelé)', answer: 10, tol: 0.5, why: 'Minden lépés felez: 1000 → 500 → 250 → … → 1. Ez körülbelül tíz felezés, mert 2¹⁰ = 1024.' },
+      { k: 'single', q: 'Mi a bináris keresés feltétele?', opts: ['A listának rendezettnek kell lennie', 'A listának rövidnek kell lennie', 'Nincs feltétele'], answer: 0, why: 'A módszer arra épül, hogy a középső elemből meg tudja mondani, melyik felében lehet a keresett. Rendezetlenül ez az információ hamis.' },
+      { k: 'single', q: 'Mikor jobb mégis a lineáris keresés?', opts: ['Sosem', 'Rendezetlen vagy nagyon rövid listánál', 'Csak számoknál'], answer: 1, why: 'Rendezetlen listánál nincs más lehetőség, és néhány elemnél a rendezés többe kerül, mint a végigjárás.' },
+      { k: 'output', q: 'Mit ír ki?', code: 'def f(l, m):\n    for i, x in enumerate(l):\n        if x == m:\n            return i\n    return -1\n\nprint(f([5, 6, 7], 8))', lang: 'py', opts: ['0', '-1', '3'], answer: 1, why: 'A 8 nincs a listában, ezért a ciklus lefut, és a záró `return -1` érvényesül.' },
+    ],
+    note: {
+      summary: ['Lineáris keresés: végigmegy mindenen; mindig működik, rendezetlenen is.', 'Bináris keresés: minden lépésben felezi a keresési teret.', 'Egymillió elemnél lineárisan egymillió, binárisan húsz lépés.', 'A bináris keresés csak rendezett listán ad helyes választ.', 'Rövid vagy rendezetlen listánál a lineáris a jobb választás.'],
+      terms: [{ term: 'lineáris keresés', def: 'Sorban végigjáró keresés, ami minden elemet megnéz.' }, { term: 'bináris keresés', def: 'Rendezett listán felezéssel dolgozó keresés.' }, { term: 'felezés', def: 'A keresési tér megfelezése minden lépésben.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'Rendezés és miért számít',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A rendezés önmagában ritkán a cél. Azért rendezel, mert utána minden más olcsóbb lesz: keresés, csoportosítás, szélsőértékek, összehasonlítás.' },
+      { k: 'code', lang: 'py', src: 'a = [4, 1, 9, 2]\n\nprint(sorted(a))            # [1, 2, 4, 9]  — új listát ad\nprint(a)                    # [4, 1, 9, 2]  — az eredeti maradt\n\na.sort()                    # helyben rendez\nprint(a)                    # [1, 2, 4, 9]', explain: 'A `sorted` új listát ad, a `.sort()` helyben rendez. Ez ugyanaz a különbség, mint a mellékhatás nélküli és a mellékhatásos függvény közt.' },
+      { k: 'code', lang: 'py', src: 'meresek = [\n    {"nev": "A", "tav": 30},\n    {"nev": "B", "tav": 8},\n]\n\nprint(sorted(meresek, key=lambda m: m["tav"]))\nprint(sorted(meresek, key=lambda m: m["tav"], reverse=True))', explain: 'A `key` megmondja, **mi szerint** rendezzen. A `lambda` egy rövid, névtelen függvény: „vedd ennek a tav mezőjét".' },
+      { k: 'callout', tone: 'tip', md: 'A `key=` a leghasznosabb dolog, amit ma megtanulsz. Rendezhetsz hossz szerint (`key=len`), kisbetűsítve (`key=str.lower`), vagy bármilyen számított érték szerint.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Adott `szavak = ["rover", "ai", "kinematika"]`. Rendezd hossz szerint növekvő sorrendbe, és írasd ki.',
+      starter: 'szavak = ["rover", "ai", "kinematika"]\n',
+      checks: [{ k: 'output', contains: 'ai', label: 'A legrövidebb az első' }],
+      hints: ['`sorted(szavak, key=len)`', 'Kiírás: `print(sorted(szavak, key=len))`.'],
+    },
+    quiz: [
+      { k: 'single', q: 'Mi a különbség a `sorted(a)` és az `a.sort()` közt?', opts: ['Semmi', 'A sorted új listát ad, a sort helyben rendez', 'A sort gyorsabb'], answer: 1, why: 'A `sorted` nem bántja az eredetit, a `.sort()` átrendezi. Az utóbbi mellékhatás — ha mást is használ azt a listát, meglepetés lehet.' },
+      { k: 'output', q: 'Mit ír ki?', code: 'a = [3, 1]\nb = sorted(a)\nprint(a, b)', lang: 'py', opts: ['[1, 3] [1, 3]', '[3, 1] [1, 3]', '[3, 1] [3, 1]'], answer: 1, why: 'A `sorted` új listát készít, az `a` érintetlen marad.' },
+      { k: 'single', q: 'Mire való a `key=` paraméter?', opts: ['Megmondja, mi szerint rendezzen', 'Megadja a kulcsot egy szótárban', 'Titkosít'], answer: 0, why: 'A `key` egy függvény, amit minden elemre alkalmaz, és az eredmény szerint rendez. Így rendezhetsz hossz, mező vagy bármilyen számított érték szerint.' },
+      { k: 'single', q: 'Miért rendezünk gyakran keresés előtt?', opts: ['Szebb', 'Mert utána bináris kereséssel sokkal gyorsabb', 'Kevesebb memória'], answer: 1, why: 'A rendezés egyszeri költség, utána minden keresés felezéssel megy. Sok keresésnél ez bőven megtérül.' },
+    ],
+    note: {
+      summary: ['`sorted(lista)` új listát ad; `lista.sort()` helyben rendez.', 'A `key=` függvény mondja meg, mi szerint rendezzen.', 'A `lambda x: x["mezo"]` rövid, névtelen függvény a kulcshoz.', 'A `reverse=True` csökkenő sorrendet ad.', 'Rendezés után a keresés binárissá válhat — egyszeri költség, tartós nyereség.'],
+      terms: [{ term: 'sorted', def: 'Új, rendezett listát ad vissza, az eredetit nem bántja.' }, { term: 'key függvény', def: 'Minden elemre alkalmazott függvény, aminek az eredménye szerint történik a rendezés.' }, { term: 'lambda', def: 'Rövid, névtelen függvény egyetlen kifejezéssel.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Bonyolultság emberi nyelven',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A **bonyolultság** arra a kérdésre válaszol: ha tízszer annyi adatot adok neki, hányszor annyi ideig fut? Nem másodpercben mérjük, hanem növekedésben.' },
+      { k: 'text', md: '- **O(1)** — mindegy, mekkora az adat, ugyanannyi. `lista[5]`, `szotar["kulcs"]`\n- **O(log n)** — tízszeres adat, alig több munka. Bináris keresés.\n- **O(n)** — tízszeres adat, tízszeres munka. Végigjárás, `sum`, `min`.\n- **O(n log n)** — a jó rendezések. Tízszeres adat, kb. tizenháromszoros munka.\n- **O(n²)** — tízszeres adat, **százszoros** munka. Egymásba ágyazott ciklus.' },
+      { k: 'code', lang: 'py', src: '# O(n) — egyszer megy végig\nfor x in lista:\n    print(x)\n\n# O(n²) — minden elemre végigmegy mindenen\nfor x in lista:\n    for y in lista:\n        if x == y:\n            pass', explain: 'Az egymásba ágyazott ciklus a leggyakoribb rejtett lassulás. Ezer elemnél már egymillió lépés.' },
+      { k: 'callout', tone: 'key', md: 'Nem kell mindent optimalizálnod. De ha egy program lassú, a kérdés majdnem mindig ez: van benne egy `n²`, ami lehetne `n`? Általában igen — egy szótár vagy egy halmaz elég hozzá.' },
+      { k: 'code', lang: 'py', src: '# O(n²) — a lista in-je végigjár\nif x in nagy_lista:\n    pass\n\n# O(1) — a halmaz in-je azonnali\nhalmaz = set(nagy_lista)\nif x in halmaz:\n    pass', explain: 'Ugyanaz a kérdés, ugyanaz az eredmény, ezerszer gyorsabb. A `set` és a `dict` keresése konstans idejű.' },
+    ],
+    lab: {
+      lab: 'code', lang: 'py',
+      brief: 'Adott két lista. Írd ki, hány közös elemük van — halmaz használatával, ne egymásba ágyazott ciklussal.',
+      starter: 'a = [1, 2, 3, 4, 5]\nb = [4, 5, 6, 7]\n',
+      checks: [{ k: 'output', contains: '2', label: 'Két közös elem van: 4 és 5' }],
+      hints: ['Halmazzá alakítás: `set(a)`.', 'Metszet: `set(a) & set(b)`.', 'Darabszám: `len(set(a) & set(b))`.'],
+    },
+    quiz: [
+      { k: 'single', q: 'Mit jelent az O(n²)?', opts: ['Tízszeres adatnál tízszeres idő', 'Tízszeres adatnál százszoros idő', 'Mindig ugyanannyi idő'], answer: 1, why: 'A négyzetes növekedésnél az adat tízszerezése az időt százszorozza. Ezért válik hirtelen használhatatlanná egy program.' },
+      { k: 'single', q: 'Milyen bonyolultságú a `lista[5]`?', opts: ['O(1)', 'O(n)', 'O(n²)'], answer: 0, why: 'Az indexelés közvetlen: mindegy, mekkora a lista, ugyanannyi idő. Ez a konstans idő.' },
+      { k: 'single', q: 'Miért gyorsabb az `x in halmaz`, mint az `x in lista`?', opts: ['A halmaz rendezett', 'A halmaz nem jár végig mindenen, hanem közvetlenül megtalálja', 'Nincs különbség'], answer: 1, why: 'A halmaz hash alapján keres, ami konstans idejű. A lista minden elemet megnéz, ami lineáris.' },
+      { k: 'single', q: 'Mi a leggyakoribb rejtett lassulás?', opts: ['Túl sok változó', 'Egymásba ágyazott ciklus', 'Hosszú függvénynevek'], answer: 1, why: 'Két egymásba ágyazott ciklus n²-et csinál. Ezer elemnél már egymillió lépés — és általában elkerülhető.' },
+    ],
+    note: {
+      summary: ['A bonyolultság a növekedést méri, nem a másodpercet.', 'O(1) konstans, O(log n) felezéses, O(n) végigjárás, O(n log n) rendezés, O(n²) egymásba ágyazott ciklus.', 'A tízszeres adat O(n²)-nél százszoros időt jelent.', 'A leggyakoribb rejtett lassulás az egymásba ágyazott ciklus.', 'A `set` és a `dict` keresése konstans idejű — gyakran ez az egész megoldás.'],
+      terms: [{ term: 'bonyolultság', def: 'Az erőforrásigény növekedése az adat méretének függvényében.' }, { term: 'O(n²)', def: 'Négyzetes növekedés: tízszeres adat, százszoros munka.' }, { term: 'halmaz (set)', def: 'Ismétlés nélküli gyűjtemény, konstans idejű kereséssel.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Robotvezérlő: a szenzorhurok',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: 'Itt fut össze minden. A robotod vezérlője egyetlen ciklus: **érzékel — dönt — cselekszik**, újra és újra. Ma az első kettőt írod meg.' },
+      { k: 'code', lang: 'js', src: '// A Robot Labor API-ja\n// rover.distance()  → cm-ben, mi van előtte\n// rover.forward(cm) → előre\n// rover.turn(fok)   → fordulás\n// rover.position()  → { x, z, heading }\n\nfor (let i = 0; i < 20; i++) {\n  const d = rover.distance();\n  print("elöl:", d);\n  if (d > 20) {\n    rover.forward(10);\n  } else {\n    rover.turn(45);\n  }\n}', explain: 'Ez a teljes hurok. Húsz körön át: megnézi, mi van előtte, és dönt. Semmi több.' },
+      { k: 'robot', scene: 'obstacle' },
+      { k: 'callout', tone: 'key', md: 'Figyeld meg, hogy a döntés **mindig friss adaton** alapul. A `rover.distance()` a cikluson **belül** van. Ha kívülre tennéd, a robot egyetlen régi mérés alapján vezetne végig — ez a leggyakoribb kezdő hiba a robotikában.' },
+      { k: 'callout', tone: 'warn', md: 'A ciklusnak legyen felső határa (`i < 20`), ne `while (true)`. A szimulátor négy másodperc után leállít, de egy igazi robotnál a végtelen hurok lemerült akkut jelent.' },
+    ],
+    lab: {
+      lab: 'robot', scene: 'obstacle',
+      brief: 'Írj a Robot Laborban egy hurkot, ami húsz körön át előre halad, ha több mint 20 cm szabad út van, egyébként fordul 45 fokot. Nézd meg, hogyan navigál az akadályok közt.',
+      checks: [{ k: 'mission', mission: 'reach-goal', label: 'A rover eléri a zöld célt' }],
+      hints: ['A mérés a cikluson belül legyen: `const d = rover.distance();`', 'Elágazás: `if (d > 20) rover.forward(10); else rover.turn(45);`', 'Ha körbejár, próbálj nagyobb fordulási szöget vagy rövidebb lépést.'],
+    },
+    quiz: [
+      { k: 'order', q: 'Milyen sorrendben épül fel egy vezérlési ciklus?', items: ['Cselekvés', 'Mérés', 'Döntés'], correct: [1, 2, 0], why: 'Előbb mérni kell, abból születik a döntés, és csak utána mozdul a robot. Utána kezdődik elölről.' },
+      { k: 'single', q: 'Miért kell a mérés a cikluson belülre?', opts: ['Szebb', 'Mert különben régi adat alapján döntene minden körben', 'Mert gyorsabb'], answer: 1, why: 'A cikluson kívüli mérés egyszer fut le. A robot onnantól egy elavult értékre hivatkozna, miközben a világ változik körülötte.' },
+      { k: 'single', q: 'Miért ne írj `while (true)`-t a robotvezérlőbe?', opts: ['Nem támogatott', 'Mert soha nem áll le: lemerült akku vagy leállított worker', 'Mert lassabb'], answer: 1, why: 'Kilépési feltétel nélkül a hurok örökké fut. A szimulátor leállítja, egy valódi robot viszont addig megy, amíg le nem merül.' },
+      { k: 'single', q: 'Mit ad vissza a `rover.distance()`?', opts: ['A megtett utat', 'A robot előtti szabad távolságot', 'Az akkumulátor töltöttségét'], answer: 1, why: 'Az érzékelő azt méri, milyen messze van a legközelebbi akadály vagy fal a haladási irányban.' },
+    ],
+    note: {
+      summary: ['A robotvezérlő egyetlen ciklus: érzékel → dönt → cselekszik.', 'A mérés mindig a cikluson **belül** legyen, hogy friss adaton döntsön.', 'A cikluson kívüli mérés a robotika leggyakoribb kezdő hibája.', 'Mindig legyen kilépési feltétel — a `while (true)` valódi robotnál lemerült akku.', 'A `rover.distance()` az előtte lévő szabad utat adja cm-ben.'],
+      terms: [{ term: 'vezérlési ciklus', def: 'Az érzékelés-döntés-cselekvés hurok, amit a robot folyamatosan ismétel.' }, { term: 'friss adat', def: 'A ciklus aktuális körében mért érték, nem egy korábbi.' }, { term: 'kilépési feltétel', def: 'A szabály, ami miatt a vezérlő ciklus egyszer véget ér.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'Robotvezérlő: döntési logika',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: 'A tegnapi hurok működik, de buta: mindig ugyanannyit fordul, és nem emlékszik semmire. Ma **állapotot** adunk neki.' },
+      { k: 'code', lang: 'js', src: 'let allapot = "halad";\nlet fordultam = 0;\n\nfor (let i = 0; i < 40; i++) {\n  const d = rover.distance();\n\n  if (allapot === "halad") {\n    if (d > 15) {\n      rover.forward(8);\n    } else {\n      allapot = "kerul";\n      fordultam = 0;\n    }\n  } else if (allapot === "kerul") {\n    rover.turn(20);\n    fordultam += 20;\n    if (rover.distance() > 30 || fordultam >= 360) {\n      allapot = "halad";\n    }\n  }\n}', explain: 'Ez egy **állapotgép**: a robotnak van egy üzemmódja, és az dönti el, mit csinál. A `fordultam` megvédi attól, hogy örökké pörögjön a helyén.' },
+      { k: 'robot', scene: 'obstacle' },
+      { k: 'callout', tone: 'key', md: 'Az állapotgép a robotika legfontosabb gondolata ezen a szinten. Írd fel papírra az üzemmódokat és azt, mi visz egyikből a másikba — a kód utána már csak gépelés.' },
+      { k: 'callout', tone: 'warn', md: 'Minden állapotnak legyen kiútja. A `fordultam >= 360` biztosíték: ha a robot körbefordult és még mindig nem talált utat, akkor is kilép. Kiút nélküli állapot = beragadt robot.' },
+    ],
+    lab: {
+      lab: 'robot', scene: 'obstacle',
+      brief: 'Írj állapotgépes vezérlőt: „halad" módban menjen előre, ha van hely; „kerül" módban forduljon, amíg szabad utat nem talál. Építs be biztosítékot a végtelen pörgés ellen, és érd el a célt.',
+      checks: [{ k: 'mission', mission: 'avoid', label: 'Eléri a célt, végig 3 cm-es távolságot tartva' }],
+      hints: ['Kezdd egy `let allapot = "halad";` változóval.', 'A fordulásokat számold: `fordultam += 20`, és lépj ki 360 fölött.', 'Ha ütközik, csökkentsd a lépéshosszt, vagy növeld a fordulási küszöböt.'],
+    },
+    quiz: [
+      { k: 'single', q: 'Mi az állapotgép?', opts: ['Egy különleges ciklus', 'Olyan vezérlés, ahol a robot üzemmódja dönti el a viselkedést', 'Egy szenzor'], answer: 1, why: 'A robotnak van egy aktuális üzemmódja, és minden körben az dönti el, mit tegyen és mikor váltson másikra.' },
+      { k: 'single', q: 'Miért kell biztosíték a „kerül" állapotba?', opts: ['Hogy szebb legyen', 'Mert különben örökké pöröghet a helyén', 'Hogy gyorsabb legyen'], answer: 1, why: 'Ha minden irányban akadály van, a kilépési feltétel soha nem teljesül. A számláló garantálja, hogy egyszer mégis kilép.' },
+      { k: 'single', q: 'Mi a különbség a tegnapi és a mai vezérlő közt?', opts: ['A mai gyorsabb', 'A mai emlékszik arra, milyen üzemmódban van', 'A mai kevesebb szenzort használ'], answer: 1, why: 'A tegnapi minden körben nulláról döntött. A mainak állapota van, így a korábbi körök is befolyásolják, mit tesz.' },
+      { k: 'multi', q: 'Melyik két dolgot érdemes felírni, mielőtt állapotgépet kódolsz?', opts: ['Az üzemmódokat', 'A változónevek hosszát', 'Az átmeneteket az üzemmódok közt', 'A ciklus futásidejét'], answers: [0, 2], why: 'Az üzemmódok és az átmenetek adják az egész szerkezetet. Ha ez a kettő megvan papíron, a kód már csak gépelés.' },
+    ],
+    note: {
+      summary: ['Az állapotgép: a robotnak üzemmódja van, és az dönti el a viselkedését.', 'Minden állapotnak legyen kiútja, különben a robot beragad.', 'Számláló-biztosíték (pl. összesen mennyit fordult) véd a végtelen pörgéstől.', 'Az állapotos vezérlő a korábbi körökre is emlékszik, nem nulláról dönt.', 'Írd fel papírra az üzemmódokat és az átmeneteket, mielőtt kódolsz.'],
+      terms: [{ term: 'állapotgép', def: 'Vezérlés, amiben egy aktuális üzemmód határozza meg a viselkedést.' }, { term: 'átmenet', def: 'A feltétel, ami az egyik üzemmódból a másikba visz.' }, { term: 'biztosíték', def: 'Számláló vagy határ, ami megakadályozza a végtelen ismétlést.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'Robotvezérlő: teljes küldetés',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'Harminc nap után itt az utolsó feladat: írj egy vezérlőt, ami **célra tart**. Nem véletlenszerűen bolyong, hanem tudja, hová megy.' },
+      { k: 'code', lang: 'js', src: '// Merre van a cél? Szögkülönbség kiszámítása.\nfunction szogCelfele(cx, cz) {\n  const p = rover.position();\n  const dx = cx - p.x;\n  const dz = cz - p.z;\n  const cel = Math.atan2(dz, dx) * 180 / Math.PI;\n  let kul = cel - p.heading;\n  while (kul > 180) kul -= 360;\n  while (kul < -180) kul += 360;\n  return kul;\n}', explain: 'Az `atan2` megadja, milyen irányban van a cél. A normalizálás azért kell, hogy mindig a rövidebb irányba forduljon — 350 fok helyett -10-et.' },
+      { k: 'code', lang: 'js', src: 'const CX = 70, CZ = 60;\n\nfor (let i = 0; i < 60; i++) {\n  const p = rover.position();\n  const tav = Math.hypot(CX - p.x, CZ - p.z);\n  if (tav < 10) { print("Megérkeztem"); break; }\n\n  const szog = szogCelfele(CX, CZ);\n\n  if (rover.distance() < 15) {\n    rover.turn(30);                 // akadály: kerülj\n  } else if (Math.abs(szog) > 10) {\n    rover.turn(szog > 0 ? 15 : -15); // igazodj a célhoz\n  } else {\n    rover.forward(10);              // szabad az út\n  }\n}', explain: 'Három szabály, fontossági sorrendben: (1) ne ütközz, (2) fordulj a cél felé, (3) menj. Ez az egész küldetés.' },
+      { k: 'robot', scene: 'obstacle' },
+      { k: 'callout', tone: 'key', md: 'A szabályok **sorrendje** a lényeg. Az ütközéselkerülés van elöl, mert az a legfontosabb. Ha a célra tartás lenne az első, a robot nekimenne a falnak, csak hogy jó irányba nézzen.' },
+      { k: 'callout', tone: 'tip', md: 'Ez a minta — prioritásos szabályok egy hurokban — komoly robotokat is elvisz. Amit ezután tanulnál (PID, A*, viselkedésfák), az mind ennek a finomítása, nem a lecserélése.' },
+      { k: 'text', md: 'Harminc nappal ezelőtt egy változó értékadásával kezdted. Most egy robotot navigálsz kóddal, akadályok közt, cél felé. Ezt a trekket teljesítetted.' },
+    ],
+    lab: {
+      lab: 'robot', scene: 'obstacle',
+      brief: 'Írj teljes küldetésvezérlőt: tarts a zöld cél felé, kerüld ki az akadályokat, és állj meg, ha megérkeztél. Ez a KÓD trek záróvizsgája.',
+      checks: [{ k: 'mission', mission: 'reach-goal', label: 'A rover megérkezik a célba' }],
+      hints: ['A cél az obstacle pályán a (70, 60) pont.', 'A szögkülönbséget `Math.atan2(dz, dx)` adja fokká alakítva.', 'A szabályok sorrendje: előbb ütközéselkerülés, aztán célra tartás, végül haladás.'],
+    },
+    quiz: [
+      { k: 'single', q: 'Miért kell a szögkülönbséget -180 és +180 közé normalizálni?', opts: ['Hogy szebb legyen', 'Hogy mindig a rövidebb irányba forduljon', 'Mert a turn() csak ezt fogadja el'], answer: 1, why: 'Normalizálás nélkül a robot 350 fokot fordulna ahelyett, hogy -10-et. Ugyanoda ér, csak sokkal lassabban.' },
+      { k: 'single', q: 'Miért van az ütközéselkerülés a szabálysor elején?', opts: ['Mert rövidebb kód', 'Mert az a legfontosabb: célra tartani hiába tudsz, ha nekimész a falnak', 'Véletlen'], answer: 1, why: 'A prioritásos szabályok közül az elsőt mindig előbb vizsgálja. A biztonság előbbre való, mint a cél.' },
+      { k: 'single', q: 'Mit számol a `Math.hypot(CX - p.x, CZ - p.z)`?', opts: ['A szöget', 'A céltól mért távolságot', 'A sebességet'], answer: 1, why: 'Pitagorasz-tétel a két koordinátakülönbségre: ez a légvonalbeli távolság a céltól.' },
+      { k: 'order', q: 'Milyen sorrendben vizsgáld a szabályokat?', items: ['Fordulj a cél felé', 'Kerüld el az akadályt', 'Haladj előre'], correct: [1, 0, 2], why: 'Előbb a biztonság, aztán az irány, végül a haladás. Ha felcseréled, a robot a cél felé nézve megy neki a falnak.' },
+    ],
+    note: {
+      summary: ['A célra tartáshoz a cél irányát az `atan2`-vel számolod ki.', 'A szögkülönbséget -180 és +180 közé kell normalizálni, hogy a rövidebb irányba forduljon.', 'A távolságot a `Math.hypot` adja.', 'Prioritásos szabályok: (1) ne ütközz, (2) fordulj a cél felé, (3) haladj.', 'A szabályok sorrendje dönti el a viselkedést — a biztonság mindig elöl.', 'Ez a minta komoly robotokat is elvisz; a PID és az A* ennek a finomítása.'],
+      terms: [{ term: 'célra tartás', def: 'Vezérlés, ami a cél irányához igazítja a robot haladási irányát.' }, { term: 'szögnormalizálás', def: 'A szögkülönbség -180 és +180 közé hozása a rövidebb fordulásért.' }, { term: 'prioritásos szabályok', def: 'Fontossági sorrendbe rendezett feltételek, amik közül az első érvényesül.' }],
+    },
+  },
+];

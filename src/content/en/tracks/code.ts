@@ -1,4 +1,7 @@
 import type { Track } from '../../types';
+import { codeEnB } from './code-b';
+import { codeEnC } from './code-c';
+import { codeEnD } from './code-d';
 
 export const codeEn: Track = {
   id: 'code',
@@ -392,5 +395,96 @@ export const codeEn: Track = {
         ],
       },
     },
+
+    {
+      day: 4,
+      title: 'Lists',
+      minutes: 22,
+      lesson: [
+        { k: 'text', md: 'So far one variable held one value. A **list** holds many values under one name, in order. It is your first data structure.' },
+        { k: 'code', lang: 'py', src: 'distances = [12, 8, 30, 5]\n\nprint(distances[0])      # 12  — the first item\nprint(distances[-1])     # 5   — the last one\nprint(len(distances))    # 4   — how many there are', explain: 'Numbering starts at **zero**. A negative index counts from the end.' },
+        { k: 'callout', tone: 'warn', md: 'In a four-item list the last index is **3**, not 4. `distances[4]` raises `IndexError`.' },
+        { k: 'code', lang: 'py', src: 'distances.append(21)     # add to the end\ndistances[0] = 99        # overwrite\ndistances.remove(8)      # drop the first 8\n\nprint(distances)         # [99, 30, 5, 21]\nprint(min(distances), max(distances), sum(distances))' },
+        { k: 'text', md: 'Walking a list with `for` is the natural way:\n\n- `for d in distances:` — gives you the **values**\n- `for i, d in enumerate(distances):` — the index **and** the value' },
+        { k: 'callout', tone: 'key', md: "Your robot's sensors hand you lists: the last ten readings, the waypoints of a route, the queue of commands. Handle lists and you can program a robot." },
+      ],
+      lab: {
+        lab: 'code', lang: 'py',
+        brief: 'Given `readings = [12, 8, 30, 5, 21]`, print the smallest and largest value, then the average to one decimal place.',
+        starter: 'readings = [12, 8, 30, 5, 21]\n',
+        checks: [{ k: 'output', contains: '30', label: 'The largest value appears' }, { k: 'output', contains: '5', label: 'The smallest value appears' }],
+        hints: ['`min(list)` and `max(list)` are built in.', 'Average: `sum(readings) / len(readings)`.', 'Rounding: `round(avg, 1)`.'],
+      },
+      quiz: [
+        { k: 'numeric', q: 'What is the value of `[10, 20, 30][1]`?', answer: 20, tol: 0.01, why: 'Numbering starts at zero, so index 1 is the **second** item: 20.' },
+        { k: 'single', q: 'What does `lst.append(5)` do?', opts: ['Puts 5 at the front', 'Puts 5 at the end', 'Replaces every item with 5'], answer: 1, why: '`append` always adds at the end. To put something at the front, use `insert(0, 5)`.' },
+        { k: 'output', q: 'What does this print?', code: 'x = [1, 2, 3]\nprint(len(x), x[-1])', lang: 'py', opts: ['3 3', '3 1', '2 3'], answer: 0, why: '`len` is the count (3) and index `-1` is the last item (also 3). The two happen to match here.' },
+        { k: 'single', q: 'What happens when you evaluate `[1,2,3][3]`?', opts: ['It gives 3', 'It raises IndexError', 'It gives None'], answer: 1, why: 'With three items the valid indexes are 0, 1 and 2. Index 3 is past the end, so `IndexError`.' },
+      ],
+      note: {
+        summary: ['A list holds many values under one name, in order.', 'Numbering starts at zero; `-1` is the last item.', '`append` adds, `remove` deletes, `len` counts.', '`min`, `max` and `sum` process the whole list in one step.', '`for x in list` walks the values; `enumerate` also gives the index.'],
+        terms: [{ term: 'list', def: 'An ordered collection whose items you reach by index.' }, { term: 'index', def: "An item's position in a list, counting from zero." }, { term: 'IndexError', def: 'The error raised when you reference an index that does not exist.' }],
+      },
+    },
+    {
+      day: 5,
+      title: 'Dictionaries',
+      minutes: 22,
+      lesson: [
+        { k: 'text', md: 'In a list you look things up by number. In a **dictionary** you look them up by name. When you ask "what is the battery level?", you do not care which position it is in — you care what it is called.' },
+        { k: 'code', lang: 'py', src: "robot = {\n    'name': 'Rover',\n    'battery': 78,\n    'speed': 12.5,\n}\n\nprint(robot['name'])        # Rover\nrobot['battery'] = 61       # overwrite\nrobot['fault'] = None       # new key", explain: 'The **key** is usually text; the **value** can be anything — a number, text, a list, even another dictionary.' },
+        { k: 'callout', tone: 'warn', md: "A missing key makes `robot['nope']` raise. `robot.get('nope')` gives `None` instead, and `robot.get('nope', 0)` gives zero. With sensor data that is what saves you." },
+        { k: 'code', lang: 'py', src: "for key, value in robot.items():\n    print(key, '=', value)\n\nprint('battery' in robot)     # True" },
+        { k: 'callout', tone: 'key', md: "A robot's state is naturally a dictionary: position, heading, battery, sensor readings. When you later save it as JSON, this is exactly the shape that goes to the file." },
+      ],
+      lab: {
+        lab: 'code', lang: 'py',
+        brief: 'Build a dictionary describing your robot: `name`, `battery` (a number) and `active` (True/False). Print all three keys with their values, one per line.',
+        starter: '',
+        checks: [{ k: 'output', contains: 'battery', label: 'The battery key appears' }],
+        hints: ["A dictionary: `robot = {'name': 'Rover', 'battery': 80, 'active': True}`.", 'Walk it with `for k, v in robot.items():`', 'Print with `print(k, v)`.'],
+      },
+      quiz: [
+        { k: 'single', q: 'How does a dictionary differ from a list?', opts: ['You reach items by key, not by position', 'It can only hold numbers', 'It cannot be changed'], answer: 0, why: 'A list identifies by position, a dictionary by name. That is what makes it readable when the data means something.' },
+        { k: 'single', q: "What does `d.get('nope', 0)` give when the key is missing?", opts: ['It raises an error', 'It gives 0', 'It gives None'], answer: 1, why: "`get`'s second argument is the fallback returned for a missing key. That is exactly why it does not raise." },
+        { k: 'output', q: 'What does this print?', code: "d = {'a': 1}\nd['a'] = 2\nprint(len(d))", lang: 'py', opts: ['1', '2', 'It raises'], answer: 0, why: 'We wrote to the same key again rather than adding a new one. A key can appear only once in a dictionary.' },
+        { k: 'multi', q: 'Which two statements about dictionaries are true?', opts: ['Keys are unique', 'Every key must be a number', 'A value can be a list', 'You cannot loop over it'], answers: [0, 2], why: 'Keys are unique and values can be any type. Keys need not be numbers, and a dictionary can be walked with `for`.' },
+      ],
+      note: {
+        summary: ['A dictionary stores key-value pairs; you look items up by key.', 'Build it with braces, reach into it with square brackets.', '`get(key, fallback)` does not raise on a missing key.', '`.items()` gives you key and value together in one loop.', 'A key appears only once: writing to it again replaces rather than adds.'],
+        terms: [{ term: 'dictionary', def: 'A data structure of key-value pairs.' }, { term: 'key', def: 'The name you use to reach a value in a dictionary.' }, { term: 'get', def: 'A safe lookup that returns a fallback for a missing key.' }],
+      },
+    },
+    {
+      day: 6,
+      title: 'Loop patterns over lists',
+      minutes: 24,
+      lesson: [
+        { k: 'text', md: 'Four patterns that will solve ninety per cent of your list problems. Learn to recognise them, because they come back again and again.' },
+        { k: 'code', lang: 'py', src: '# 1. Summing\ntotal = 0\nfor d in distances:\n    total = total + d\n\n# 2. Filtering\nnear = []\nfor d in distances:\n    if d < 15:\n        near.append(d)', explain: 'Summing starts with an accumulator. Filtering starts with an empty list you only add the matches to.' },
+        { k: 'code', lang: 'py', src: '# 3. Searching (is there one?)\ndanger = False\nfor d in distances:\n    if d < 5:\n        danger = True\n        break\n\n# 4. Extreme value\nsmallest = distances[0]\nfor d in distances:\n    if d < smallest:\n        smallest = d', explain: 'The `break` matters when searching: once you have found it, there is no point looking further.' },
+        { k: 'callout', tone: 'tip', md: 'Python has shorter forms for all of these (`sum`, `min`, `[d for d in distances if d < 15]`), but write the loop first. Once you understand what it does, use the short form.' },
+      ],
+      lab: {
+        lab: 'code', lang: 'py',
+        brief: 'Given `readings = [22, 4, 17, 3, 30, 9]`, collect the values below 10 into their own list and print how many there are.',
+        starter: 'readings = [22, 4, 17, 3, 30, 9]\nsmall = []\n',
+        checks: [{ k: 'output', contains: '3', label: 'There are three small values' }],
+        hints: ['Walk the list with `for r in readings:`.', 'Inside the loop: `if r < 10: small.append(r)`.', 'At the end: `print(len(small))`.'],
+      },
+      quiz: [
+        { k: 'single', q: 'Why does filtering start with an empty list?', opts: ['Because otherwise it is slow', 'Because that is where you collect the matches', 'It does not, that is unnecessary'], answer: 1, why: 'The empty list is the collecting place. Without creating it first, `append` has nothing to add to.' },
+        { k: 'single', q: 'What does `break` buy you in a search?', opts: ['A more accurate answer', 'It stops looking once there is nothing left to learn', 'More memory'], answer: 1, why: 'The answer would be the same without it; it would just walk the rest for nothing. On a large list that is real time.' },
+        { k: 'output', q: 'What does this print?', code: 's = 0\nfor x in [1, 2, 3]:\n    s = s + x\nprint(s)', lang: 'py', opts: ['3', '6', '123'], answer: 1, why: 'This is the summing pattern: 0+1=1, 1+2=3, 3+3=6.' },
+        { k: 'order', q: 'In what order does a filter loop come together?', items: ['Test the condition', 'Create the empty list', 'Append the match'], correct: [1, 0, 2], why: 'The collecting place has to exist first, then the test runs, and the append happens inside the true branch of that test.' },
+      ],
+      note: {
+        summary: ['Summing: an accumulator from zero, adding every item.', 'Filtering: an empty list, appending only what matches.', 'Searching: a flag plus `break` once found.', 'Extreme value: start from the first item and only swap when you find better.', 'These patterns look the same in every language — they are not Python-specific.'],
+        terms: [{ term: 'accumulator', def: 'A variable created before the loop that collects the running result.' }, { term: 'filtering', def: 'Selecting the items of a list that meet a condition.' }, { term: 'extreme-value search', def: 'Finding the smallest or largest item by walking the whole list.' }],
+      },
+    },
+    ...codeEnB,
+    ...codeEnC,
+    ...codeEnD,
   ],
 };

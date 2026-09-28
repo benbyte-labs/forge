@@ -1,4 +1,7 @@
 import type { Track } from '../../types';
+import { codeHuB } from './code-b';
+import { codeHuC } from './code-c';
+import { codeHuD } from './code-d';
 
 export const codeHu: Track = {
   id: 'code',
@@ -402,5 +405,96 @@ export const codeHu: Track = {
         ],
       },
     },
+
+    {
+      day: 4,
+      title: 'Listák',
+      minutes: 22,
+      lesson: [
+        { k: 'text', md: 'Eddig egy változó egy értéket tárolt. A **lista** sok értéket tárol egy néven, sorrendben. Ez az első adatszerkezeted.' },
+        { k: 'code', lang: 'py', src: 'tavok = [12, 8, 30, 5]\n\nprint(tavok[0])      # 12  — az első elem\nprint(tavok[-1])     # 5   — az utolsó\nprint(len(tavok))    # 4   — hány elem van', explain: 'A számozás **nullától** indul. A negatív index hátulról számol.' },
+        { k: 'callout', tone: 'warn', md: 'Négy elemű listánál az utolsó index a **3**, nem a 4. A `tavok[4]` hibát dob: `IndexError`.' },
+        { k: 'code', lang: 'py', src: 'tavok.append(21)     # a végére tesz\ntavok[0] = 99        # felülír\ntavok.remove(8)      # törli az első 8-ast\n\nprint(tavok)         # [99, 30, 5, 21]\nprint(min(tavok), max(tavok), sum(tavok))' },
+        { k: 'text', md: 'Végigmenni rajta a `for`-ral a legtermészetesebb:\n\n- `for t in tavok:` — az **értékeket** adja\n- `for i, t in enumerate(tavok):` — az indexet **és** az értéket' },
+        { k: 'callout', tone: 'key', md: 'A robotod szenzorai listát adnak: az utolsó tíz mérés, a pálya pontjai, a végrehajtandó parancsok. Aki listát tud kezelni, robotot tud programozni.' },
+      ],
+      lab: {
+        lab: 'code', lang: 'py',
+        brief: 'Adott a `meresek = [12, 8, 30, 5, 21]` lista. Írasd ki a legkisebb és a legnagyobb értéket, majd az átlagot egy tizedesre.',
+        starter: 'meresek = [12, 8, 30, 5, 21]\n',
+        checks: [{ k: 'output', contains: '30', label: 'A legnagyobb érték megjelenik' }, { k: 'output', contains: '5', label: 'A legkisebb érték megjelenik' }],
+        hints: ['A `min(lista)` és a `max(lista)` beépített függvény.', 'Átlag: `sum(meresek) / len(meresek)`.', 'Kerekítés: `round(atlag, 1)`.'],
+      },
+      quiz: [
+        { k: 'numeric', q: 'Mi a `[10, 20, 30][1]` értéke?', answer: 20, tol: 0.01, why: 'A számozás nullától indul, tehát az 1-es index a **második** elem: 20.' },
+        { k: 'single', q: 'Mit csinál a `lista.append(5)`?', opts: ['A lista elejére teszi az 5-öt', 'A lista végére teszi az 5-öt', 'Kicseréli az elemeket 5-re'], answer: 1, why: 'Az `append` mindig a végére fűz. Az elejére az `insert(0, 5)` tesz.' },
+        { k: 'output', q: 'Mit ír ki?', code: 'x = [1, 2, 3]\nprint(len(x), x[-1])', lang: 'py', opts: ['3 3', '3 1', '2 3'], answer: 0, why: 'A `len` a darabszám (3), a `-1` index az utolsó elem (szintén 3). A kettő véletlenül egyezik.' },
+        { k: 'single', q: 'Mi történik a `[1,2,3][3]` kiértékelésekor?', opts: ['A 3-at adja', 'IndexError hibát dob', 'None-t ad'], answer: 1, why: 'Három elemnél az érvényes indexek: 0, 1, 2. A 3 túlmutat a listán, ezért `IndexError`.' },
+      ],
+      note: {
+        summary: ['A lista sok értéket tárol egy néven, sorrendben.', 'A számozás nullától indul; a `-1` az utolsó elem.', '`append` hozzáfűz, `remove` töröl, `len` megszámol.', '`min`, `max`, `sum` egy lépésben dolgozza fel az egészet.', 'A `for x in lista` az értékeken megy végig, az `enumerate` az indexet is adja.'],
+        terms: [{ term: 'lista', def: 'Sorrendezett gyűjtemény, amiben index alapján érsz el elemeket.' }, { term: 'index', def: 'Az elem sorszáma a listában, nullától indulva.' }, { term: 'IndexError', def: 'Hiba, ami nem létező indexre hivatkozáskor keletkezik.' }],
+      },
+    },
+    {
+      day: 5,
+      title: 'Szótárak',
+      minutes: 22,
+      lesson: [
+        { k: 'text', md: 'A listában szám szerint keresel. A **szótárban** név szerint. Ha azt kérdezed, „mennyi az akku?", nem az érdekel, hogy hányadik elem — hanem hogy hívják.' },
+        { k: 'code', lang: 'py', src: "robot = {\n    'nev': 'Rover',\n    'akku': 78,\n    'sebesseg': 12.5,\n}\n\nprint(robot['nev'])        # Rover\nrobot['akku'] = 61         # felülír\nrobot['hiba'] = None       # új kulcs", explain: 'A **kulcs** általában szöveg, az **érték** bármi lehet — szám, szöveg, lista, akár másik szótár.' },
+        { k: 'callout', tone: 'warn', md: "Nem létező kulcsra a `robot['nincs']` hibát dob. A `robot.get('nincs')` ilyenkor `None`-t ad, a `robot.get('nincs', 0)` pedig nullát. Mérési adatoknál ez ment meg." },
+        { k: 'code', lang: 'py', src: "for kulcs, ertek in robot.items():\n    print(kulcs, '=', ertek)\n\nprint('akku' in robot)     # True" },
+        { k: 'callout', tone: 'key', md: 'Egy robot állapota természetes módon szótár: pozíció, irány, akku, szenzorértékek. Amikor később JSON-ba mented, pontosan ez a szerkezet megy fájlba.' },
+      ],
+      lab: {
+        lab: 'code', lang: 'py',
+        brief: "Készíts egy szótárat a robotodról: `nev`, `akku` (szám), `aktiv` (True/False). Írasd ki mindhárom kulcsot és értéket egy-egy sorba.",
+        starter: '',
+        checks: [{ k: 'output', contains: 'akku', label: 'Az akku kulcs megjelenik' }],
+        hints: ["Szótár: `robot = {'nev': 'Rover', 'akku': 80, 'aktiv': True}`.", 'Végigmenni: `for k, v in robot.items():`', "Kiírás: `print(k, v)`."],
+      },
+      quiz: [
+        { k: 'single', q: 'Miben más a szótár, mint a lista?', opts: ['Kulcs szerint érsz el elemet, nem sorszám szerint', 'Csak számokat tárolhat', 'Nem lehet módosítani'], answer: 0, why: 'A lista pozíció szerint, a szótár név (kulcs) szerint azonosít. Ezért olvashatóbb, amikor az adatnak jelentése van.' },
+        { k: 'single', q: "Mit ad a `d.get('nincs', 0)`, ha nincs ilyen kulcs?", opts: ['Hibát dob', '0-t ad', 'None-t ad'], answer: 1, why: 'A `get` második paramétere az alapérték, amit hiányzó kulcs esetén visszaad. Épp ezért nem dob hibát.' },
+        { k: 'output', q: 'Mit ír ki?', code: "d = {'a': 1}\nd['a'] = 2\nprint(len(d))", lang: 'py', opts: ['1', '2', 'Hibát dob'], answer: 0, why: 'Ugyanarra a kulcsra írtunk újra, nem új elemet vettünk fel. A szótárban egy kulcs csak egyszer szerepelhet.' },
+        { k: 'multi', q: 'Melyik két állítás igaz a szótárra?', opts: ['A kulcsok egyediek', 'Minden kulcsnak számnak kell lennie', 'Az érték lehet lista is', 'Nem lehet bejárni ciklussal'], answers: [0, 2], why: 'A kulcsok egyediek, és az érték bármilyen típus lehet. A kulcs nem csak szám lehet, és a szótár `for`-ral bejárható.' },
+      ],
+      note: {
+        summary: ['A szótár kulcs-érték párokat tárol; kulcs szerint keresel benne.', 'Létrehozás kapcsos zárójellel, elérés szögletessel.', 'A `get(kulcs, alapertek)` nem dob hibát hiányzó kulcsra.', 'A `.items()` a kulcsot és az értéket együtt adja egy ciklusban.', 'Egy kulcs csak egyszer szerepelhet: újraírás nem bővít.'],
+        terms: [{ term: 'szótár', def: 'Kulcs-érték párokat tároló adatszerkezet.' }, { term: 'kulcs', def: 'Az a név, amivel egy értékre hivatkozol a szótárban.' }, { term: 'get', def: 'Biztonságos lekérdezés, ami hiányzó kulcsra alapértéket ad.' }],
+      },
+    },
+    {
+      day: 6,
+      title: 'Ciklusminták listákon',
+      minutes: 24,
+      lesson: [
+        { k: 'text', md: 'Négy minta, amivel a listás feladatok kilencven százalékát meg fogod oldani. Érdemes felismerni őket, mert újra és újra elő fognak jönni.' },
+        { k: 'code', lang: 'py', src: '# 1. Összegzés\nosszeg = 0\nfor t in tavok:\n    osszeg = osszeg + t\n\n# 2. Szűrés\nkozeliek = []\nfor t in tavok:\n    if t < 15:\n        kozeliek.append(t)', explain: 'Az összegzés egy „gyűjtőváltozóval" indul. A szűrés egy üres listával, amibe csak a megfelelőket teszed.' },
+        { k: 'code', lang: 'py', src: '# 3. Keresés (megvan-e?)\nvan_veszely = False\nfor t in tavok:\n    if t < 5:\n        van_veszely = True\n        break\n\n# 4. Szélsőérték\nlegkisebb = tavok[0]\nfor t in tavok:\n    if t < legkisebb:\n        legkisebb = t', explain: 'A keresésnél a `break` fontos: ha megtaláltad, nincs értelme tovább nézni.' },
+        { k: 'callout', tone: 'tip', md: 'A Pythonban ezekre van rövidebb forma is (`sum`, `min`, `[t for t in tavok if t < 15]`), de előbb írd meg ciklussal. Ha érted, mit csinál, utána használd a rövidet.' },
+      ],
+      lab: {
+        lab: 'code', lang: 'py',
+        brief: 'Adott `meresek = [22, 4, 17, 3, 30, 9]`. Gyűjtsd külön listába a 10-nél kisebbeket, és írasd ki, hány ilyen van.',
+        starter: 'meresek = [22, 4, 17, 3, 30, 9]\nkicsik = []\n',
+        checks: [{ k: 'output', contains: '3', label: 'Három kicsi érték van' }],
+        hints: ['Menj végig a listán `for m in meresek:`.', 'A cikluson belül: `if m < 10: kicsik.append(m)`.', 'A végén: `print(len(kicsik))`.'],
+      },
+      quiz: [
+        { k: 'single', q: 'Miért kell a szűrésnél egy üres listával indulni?', opts: ['Mert különben lassú', 'Mert oda gyűjtöd a megfelelő elemeket', 'Nem kell, felesleges'], answer: 1, why: 'Az üres lista a gyűjtőhely. Ha nem hozod létre előre, az `append` hívásnál nem lesz mihez hozzáfűzni.' },
+        { k: 'single', q: 'Mit nyersz a `break`-kel a keresésben?', opts: ['Pontosabb eredményt', 'Nem néz végig feleslegesen mindent', 'Több memóriát'], answer: 1, why: 'Az eredmény ugyanaz lenne nélküle is, csak feleslegesen végigmenne a maradékon. Nagy listánál ez sok idő.' },
+        { k: 'output', q: 'Mit ír ki?', code: 's = 0\nfor x in [1, 2, 3]:\n    s = s + x\nprint(s)', lang: 'py', opts: ['3', '6', '123'], answer: 1, why: 'Ez az összegzés mintája: 0+1=1, 1+2=3, 3+3=6.' },
+        { k: 'order', q: 'Milyen sorrendben épül fel egy szűrő ciklus?', items: ['Feltétel vizsgálata', 'Üres lista létrehozása', 'Hozzáfűzés a találathoz'], correct: [1, 0, 2], why: 'Előbb kell a gyűjtőhely, csak azután jöhet a vizsgálat, és a hozzáfűzés a vizsgálat igaz ágában történik.' },
+      ],
+      note: {
+        summary: ['Összegzés: gyűjtőváltozó nullától, minden elemet hozzáadsz.', 'Szűrés: üres lista, és csak a feltételnek megfelelőt fűzöd hozzá.', 'Keresés: logikai jelző plusz `break`, ha megtaláltad.', 'Szélsőérték: az első elemből indulsz, és csak jobbra cseréled.', 'Ezek a minták minden nyelvben ugyanígy néznek ki — nem Python-specifikusak.'],
+        terms: [{ term: 'gyűjtőváltozó', def: 'Ciklus előtt létrehozott változó, amibe a részeredményt halmozod.' }, { term: 'szűrés', def: 'Egy listából a feltételnek megfelelő elemek kiválogatása.' }, { term: 'szélsőérték-keresés', def: 'A legkisebb vagy legnagyobb elem megtalálása végigjárással.' }],
+      },
+    },
+    ...codeHuB,
+    ...codeHuC,
+    ...codeHuD,
   ],
 };
