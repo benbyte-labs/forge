@@ -1,8 +1,9 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import type { Locale } from '../engine/types';
 import { en } from './ui/en';
 import { hu, type UiKey } from './ui/hu';
 
-export type Locale = 'hu' | 'en';
+export type { Locale };
 export const LOCALES: Locale[] = ['hu', 'en'];
 export const LOCALE_NAMES: Record<Locale, string> = { hu: 'Magyar', en: 'English' };
 
