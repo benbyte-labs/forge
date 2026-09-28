@@ -1,5 +1,6 @@
+import { orchestrate } from './orchestrate';
 import { SANDBOX_SOURCE, WEB_PRELUDE } from './sandbox-source';
-import { DEFAULT_TIMEOUT_MS, type RunOptions, type RunResult, type RunnerWorker } from './types';
+import type { RunOptions, RunResult, RunnerWorker } from './types';
 
 /** A fresh Web Worker built from the sandbox source. No separate asset to ship. */
 function webWorkerFactory(): RunnerWorker {
@@ -25,42 +26,8 @@ function webWorkerFactory(): RunnerWorker {
  * killed worker cannot poison the next run.
  */
 export function runJs(src: string, options: RunOptions = {}): Promise<RunResult> {
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
-  const create = options.createWorker ?? webWorkerFactory;
-
-  return new Promise<RunResult>((resolve) => {
-    const logs: string[] = [];
-    let settled = false;
-    let worker: RunnerWorker;
-
-    const finish = (result: RunResult) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      try {
-        worker.terminate();
-      } catch {
-        /* already gone */
-      }
-      resolve(result);
-    };
-
-    const timer = setTimeout(() => finish({ logs, error: null, timedOut: true }), timeoutMs);
-
-    try {
-      worker = create();
-    } catch (e) {
-      clearTimeout(timer);
-      resolve({ logs, error: String(e), timedOut: false });
-      return;
-    }
-
-    worker.onMessage((raw) => {
-      const m = raw as { t?: string; v?: string; error?: string | null };
-      if (m?.t === 'log') logs.push(m.v ?? '');
-      else if (m?.t === 'done') finish({ logs, error: m.error ?? null, timedOut: false });
-    });
-
-    worker.post({ src });
+  return orchestrate(src, {
+    createWorker: options.createWorker ?? webWorkerFactory,
+    timeoutMs: options.timeoutMs,
   });
 }

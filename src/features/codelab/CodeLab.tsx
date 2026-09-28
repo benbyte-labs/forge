@@ -6,6 +6,7 @@ import { Badge, Button, Icon, Panel } from '../../ui';
 import { Editor } from './Editor';
 import { runChecks, type CheckOutcome } from './checks';
 import { runCode } from './runners';
+import { pythonRunner } from './runners/python';
 import type { RunResult } from './runners/types';
 
 interface CodeLabProps {
@@ -83,7 +84,9 @@ export function CodeLab({ draftKey, lang: initialLang, starter = '', checks, onS
         <div className="console" aria-live="polite">
           <div className="console__head">{t('lab.output')}</div>
           <pre className="console__body">
-            {result === null
+            {running && lang === 'py' && !pythonRunner().isBooted
+              ? t('lab.pythonBooting')
+              : result === null
               ? ''
               : result.timedOut
                 ? t('lab.timedOut')
