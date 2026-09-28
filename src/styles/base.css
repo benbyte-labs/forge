@@ -1,0 +1,4 @@
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { background: #05070d; color: #e8f4ff; font: 16px/1.6 system-ui, sans-serif; }
+.boot { display: grid; place-items: center; height: 100%; letter-spacing: 0.4em; }
