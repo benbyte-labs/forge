@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { physicsHuB } from './physics-b';
 
 export const physicsHu: Track = {
   id: 'physics',
@@ -127,5 +128,6 @@ export const physicsHu: Track = {
         formulas: [{ tex: 'v = s / t', meaning: 'Átlagsebesség: a megtett út osztva az eltelt idővel.' }],
       },
     },
+    ...physicsHuB,
   ],
 };

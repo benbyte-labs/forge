@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { cadHuB } from './cad-b';
 
 export const cadHu: Track = {
   id: 'cad',
@@ -127,5 +128,6 @@ export const cadHu: Track = {
         ],
       },
     },
+    ...cadHuB,
   ],
 };

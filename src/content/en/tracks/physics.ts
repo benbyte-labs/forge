@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { physicsEnB } from './physics-b';
 
 export const physicsEn: Track = {
   id: 'physics',
@@ -127,5 +128,6 @@ export const physicsEn: Track = {
         formulas: [{ tex: 'v = s / t', meaning: 'Average speed: distance covered divided by time taken.' }],
       },
     },
+    ...physicsEnB,
   ],
 };

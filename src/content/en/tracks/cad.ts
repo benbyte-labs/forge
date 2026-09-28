@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { cadEnB } from './cad-b';
 
 export const cadEn: Track = {
   id: 'cad',
@@ -123,5 +124,6 @@ export const cadEn: Track = {
         ],
       },
     },
+    ...cadEnB,
   ],
 };
