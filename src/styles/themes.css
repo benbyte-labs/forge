@@ -1,0 +1,50 @@
+/* Amber Core — 3-day streak reward */
+:root[data-theme='amber'] {
+  --bg: #0a0704;
+  --bg-2: #120d06;
+  --bg-panel: rgba(28, 19, 8, 0.72);
+  --bg-inset: rgba(12, 8, 3, 0.66);
+  --fg: #fff1dc;
+  --fg-dim: #c2a37c;
+  --fg-faint: #8a7050;
+  --accent: #ffa128;
+  --accent-2: #ff5f3e;
+  --line: #3a2a14;
+  --line-bright: #5c4320;
+}
+
+/* Void — 30-day track completion reward */
+:root[data-theme='void'] {
+  --bg: #07040c;
+  --bg-2: #0d0717;
+  --bg-panel: rgba(23, 13, 40, 0.72);
+  --bg-inset: rgba(8, 4, 15, 0.66);
+  --fg: #f0e9ff;
+  --fg-dim: #a893c9;
+  --fg-faint: #6f5b90;
+  --accent: #b47cff;
+  --accent-2: #38f0d0;
+  --line: #2c1d47;
+  --line-bright: #452e6d;
+}
+
+/* Daylight — always available */
+:root[data-theme='light'] {
+  --bg: #f2f5f9;
+  --bg-2: #e8edf4;
+  --bg-panel: rgba(255, 255, 255, 0.88);
+  --bg-inset: rgba(232, 237, 244, 0.9);
+  --fg: #111a26;
+  --fg-dim: #4a5b70;
+  --fg-faint: #6d7f95;
+  --accent: #0a7ea4;
+  --accent-2: #b8246b;
+  --ok: #1a7f4f;
+  --warn: #8a5300;
+  --danger: #b3222f;
+  --line: #ccd6e2;
+  --line-bright: #a8b8cc;
+  --glow: none;
+  --glow-soft: none;
+  --grid: rgba(10, 126, 164, 0.07);
+}
