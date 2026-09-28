@@ -1,13 +1,14 @@
 import { useT } from '../../i18n';
 import { Panel } from '../../ui';
+import { RobotLab } from './RobotLab';
 
 export function RobotLabPage() {
   const t = useT();
   return (
-    <div className="page">
+    <div className="page wide">
       <h1>{t('robot.title')}</h1>
       <Panel>
-        <p className="dim">{t('common.loading')}</p>
+        <RobotLab scene="obstacle" />
       </Panel>
     </div>
   );

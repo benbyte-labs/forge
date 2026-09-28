@@ -514,3 +514,46 @@ a.spine__link:hover { background: color-mix(in srgb, var(--accent) 8%, transpare
 .failures li { display: flex; align-items: center; gap: 0.5rem; }
 strong.ok { display: flex; align-items: center; gap: 0.4rem; color: var(--ok); }
 strong.warn { color: var(--warn); }
+
+/* ── Robot Lab ─────────────────────────────────────────────────────── */
+.page.wide { max-width: 1240px; }
+.robotlab { display: grid; grid-template-columns: 1fr 330px; gap: 1rem; }
+.robotlab[data-compact='true'] { grid-template-columns: 1fr 280px; }
+@media (max-width: 1100px) { .robotlab { grid-template-columns: 1fr; } }
+
+.robotlab__stage {
+  position: relative;
+  border: 1px solid var(--line-bright); border-radius: var(--radius);
+  overflow: hidden; background: #04070e; min-height: 380px;
+}
+.robotlab[data-compact='true'] .robotlab__stage { min-height: 300px; }
+.robotcanvas { display: block; width: 100%; height: 100%; min-height: 380px; cursor: grab; touch-action: none; }
+.robotlab[data-compact='true'] .robotcanvas { min-height: 300px; }
+.robotcanvas:active { cursor: grabbing; }
+
+.robotlab__hud {
+  position: absolute; left: 0.8rem; bottom: 0.8rem;
+  display: flex; gap: 0.9rem; flex-wrap: wrap;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--line); border-radius: 99px;
+  background: rgba(4, 7, 14, 0.75); backdrop-filter: blur(6px);
+  font-size: 0.78rem; color: var(--fg-faint); font-family: var(--mono);
+}
+.robotlab__hud strong { color: var(--accent); }
+
+.robotlab__side { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+.robotlab__editor { height: 240px; }
+.robotlab__editor .editor { min-height: 240px; height: 240px; }
+.row.wrap { flex-wrap: wrap; }
+
+.field { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; font-size: 0.86rem; color: var(--fg-dim); }
+.field select {
+  font: inherit; color: var(--fg); background: var(--bg-inset);
+  border: 1px solid var(--line-bright); border-radius: var(--radius-sm); padding: 0.35rem 0.6rem;
+}
+
+.sliders { display: flex; flex-direction: column; gap: 0.6rem; }
+.slider { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.82rem; color: var(--fg-dim); }
+.slider span { display: flex; justify-content: space-between; }
+.slider em { font-style: normal; font-family: var(--mono); color: var(--accent); }
+.slider input[type='range'] { accent-color: var(--accent); width: 100%; }
