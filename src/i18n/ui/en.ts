@@ -237,6 +237,24 @@ export const en: Record<UiKey, string> = {
   'settings.about': 'About FORGE',
   'settings.storedAt': 'Your data lives at {path}',
 
+  // ── Robot missions ───────────────────────────────────────────────
+  'mission.none': 'Free play',
+  'mission.park.title': 'Park it',
+  'mission.park.brief': 'Drive the rover into the green circle. The arena is empty — only the distance matters.',
+  'mission.reach-goal.title': 'Reach the goal',
+  'mission.reach-goal.brief': 'Get the rover into the green circle. There are obstacles on the way — hit one and it stops.',
+  'mission.avoid.title': 'Avoid the obstacles',
+  'mission.avoid.brief': 'Reach the goal while keeping at least 3 cm from every obstacle. Use rover.distance().',
+  'mission.follow-line.title': 'Follow the line',
+  'mission.follow-line.brief': 'Stay within 18 cm of the orange line the whole way, and finish inside the goal.',
+  'mission.warehouse-tour.title': 'Warehouse tour',
+  'mission.warehouse-tour.brief': 'Visit all four corners without going near any of the shelves.',
+  'mission.warehouse-stack.title': 'Move the load',
+  'mission.warehouse-stack.brief': 'Close the gripper and carry the load to the goal without hitting anything.',
+  'mission.pick': 'Mission',
+  'mission.passed': 'Mission complete!',
+  'mission.failed': 'Not yet. Look at the trail to see where it went wrong.',
+
   // ── Common ───────────────────────────────────────────────────────
   'common.next': 'Next',
   'common.back': 'Back',

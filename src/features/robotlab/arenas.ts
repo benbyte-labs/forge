@@ -6,7 +6,7 @@ export const ARENAS: Record<SceneId, World> = {
   flat: {
     bounds: { x: 100, z: 100 },
     obstacles: [],
-    goal: null,
+    goal: { x: 60, z: 0, r: 8 },
     line: null,
   },
 

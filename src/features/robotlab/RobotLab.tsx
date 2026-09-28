@@ -7,6 +7,7 @@ import { Badge, Button, Icon, Panel } from '../../ui';
 import { ARENAS, ARENA_REQUIREMENTS, isArmScene } from './arenas';
 import { JOINT_LIMITS, restPose } from './arm';
 import { Editor } from '../codelab/Editor';
+import { missionsForScene, type Mission } from './missions';
 import { initialRover, stepRover, type RoverState } from './rover';
 import { RobotScene, type SkinId } from './scene';
 
@@ -45,11 +46,16 @@ export function RobotLab({ scene: initialScene, fixedScene = false, compact = fa
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
+  const [missionId, setMissionId] = useState<string>('');
+  const [missionPassed, setMissionPassed] = useState<boolean | null>(null);
 
   const world = ARENAS[sceneId];
   const machine = isArmScene(sceneId) ? 'arm' : 'rover';
 
   const skin: SkinId = hasReward(state, 'skin-mk2') && state.robotSkin === 'mk2' ? 'mk2' : 'default';
+
+  const missions = useMemo(() => missionsForScene(state, sceneId), [state, sceneId]);
+  const mission: Mission | undefined = missions.find((m) => m.id === missionId);
 
   const arenaOptions = useMemo(
     () =>
@@ -138,6 +144,9 @@ export function RobotLab({ scene: initialScene, fixedScene = false, compact = fa
       setLogs(result.logs);
       if (result.error) setMessage(result.error);
 
+      // The mission is judged on what the rover actually did, not on the code.
+      if (mission) setMissionPassed(mission.check(result.trace, world));
+
       // Replay the trace so the learner watches the robot do what they wrote,
       // rather than seeing it snap to the final position.
       sceneRef.current?.setTrail(result.trace.map((p) => ({ x: p.x, z: p.z })));
@@ -150,13 +159,14 @@ export function RobotLab({ scene: initialScene, fixedScene = false, compact = fa
     } finally {
       setRunning(false);
     }
-  }, [code, world, machine, t]);
+  }, [code, world, machine, t, mission]);
 
   const reset = () => {
     setRover(initialRover());
     setJoints(restPose());
     setMessage(null);
     setLogs([]);
+    setMissionPassed(null);
     sceneRef.current?.setTrail([]);
   };
 
@@ -212,6 +222,38 @@ export function RobotLab({ scene: initialScene, fixedScene = false, compact = fa
               ))}
             </select>
           </label>
+        )}
+
+        {missions.length > 0 && (
+          <label className="field">
+            <span>{t('mission.pick')}</span>
+            <select
+              value={missionId}
+              onChange={(e) => {
+                setMissionId(e.target.value);
+                setMissionPassed(null);
+              }}
+            >
+              <option value="">{t('mission.none')}</option>
+              {missions.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {t(m.titleKey)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {mission && (
+          <Panel tone={missionPassed === true ? 'accent' : missionPassed === false ? 'warn' : 'default'}>
+            <p>{t(mission.briefKey)}</p>
+            {missionPassed === true && (
+              <strong className="ok">
+                <Icon name="check" size={16} /> {t('mission.passed')}
+              </strong>
+            )}
+            {missionPassed === false && <strong className="warn">{t('mission.failed')}</strong>}
+          </Panel>
         )}
 
         {hasReward(state, 'skin-mk2') && (

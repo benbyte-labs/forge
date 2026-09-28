@@ -235,6 +235,24 @@ export const hu = {
   'settings.about': 'A FORGE-ról',
   'settings.storedAt': 'A mentés helye: {path}',
 
+  // ── Robot missions ───────────────────────────────────────────────
+  'mission.none': 'Szabad játék',
+  'mission.park.title': 'Parkolj be',
+  'mission.park.brief': 'Vezesd a rovert a zöld körbe. Üres a pálya, csak a távolságra kell figyelned.',
+  'mission.reach-goal.title': 'Érd el a célt',
+  'mission.reach-goal.brief': 'Juttasd a rovert a zöld körbe. Akadályok vannak az úton — ha nekimész, megáll.',
+  'mission.avoid.title': 'Kerüld ki az akadályokat',
+  'mission.avoid.brief': 'Érd el a célt úgy, hogy közben legalább 3 cm-t hagysz minden akadálytól. Használd a rover.distance() értékét.',
+  'mission.follow-line.title': 'Kövesd a vonalat',
+  'mission.follow-line.brief': 'Maradj végig a narancssárga vonal 18 cm-es körzetében, és fejezd be a célban.',
+  'mission.warehouse-tour.title': 'Raktárkörút',
+  'mission.warehouse-tour.brief': 'Járd be mind a négy sarkot úgy, hogy egyik polcnak sem mész közel.',
+  'mission.warehouse-stack.title': 'Pakolás',
+  'mission.warehouse-stack.brief': 'Zárd a megfogót, és vidd a rakományt a célba, ütközés nélkül.',
+  'mission.pick': 'Küldetés',
+  'mission.passed': 'Küldetés teljesítve!',
+  'mission.failed': 'Még nem sikerült. Nézd meg a nyomvonalat, hol tért le.',
+
   // ── Common ───────────────────────────────────────────────────────
   'common.next': 'Tovább',
   'common.back': 'Vissza',
