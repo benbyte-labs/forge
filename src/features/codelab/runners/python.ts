@@ -1,18 +1,22 @@
-import { PY_SANDBOX_SOURCE, PY_WEB_PRELUDE } from './python-sandbox-source';
+import { PY_SANDBOX_SOURCE, pyWebPrelude } from './python-sandbox-source';
 import { DEFAULT_TIMEOUT_MS, type RunOptions, type RunResult, type RunnerWorker, type WorkerFactory } from './types';
 
 /** Pyodide needs room to start; after that the normal budget applies. */
 export const PY_BOOT_TIMEOUT_MS = 90_000;
 
 function pyWebWorkerFactory(): RunnerWorker {
-  const blob = new Blob([PY_WEB_PRELUDE + PY_SANDBOX_SOURCE], { type: 'text/javascript' });
+  const base = new URL('pyodide/', globalThis.location.href).href;
+  const blob = new Blob([pyWebPrelude(base) + PY_SANDBOX_SOURCE], { type: 'text/javascript' });
   const url = URL.createObjectURL(blob);
-  const worker = new Worker(url);
+  const worker = new Worker(url, { type: 'module' });
   URL.revokeObjectURL(url);
   return {
     post: (msg) => worker.postMessage(msg),
     onMessage: (cb) => {
       worker.onmessage = (e) => cb(e.data);
+    },
+    onError: (cb) => {
+      worker.onerror = (e) => cb(e.message || 'worker failed');
     },
     terminate: () => worker.terminate(),
   };
@@ -71,6 +75,9 @@ export class PyRunner {
       if (m?.t === 'ready') run.onReady();
       else if (m?.t === 'log') run.logs.push(m.v ?? '');
       else if (m?.t === 'done') run.settle({ logs: run.logs, error: m.error ?? null, timedOut: false }, false);
+    });
+    this.worker.onError?.((message) => {
+      this.active?.settle({ logs: this.active.logs, error: `Python: ${message}`, timedOut: false }, true);
     });
     return this.worker;
   }

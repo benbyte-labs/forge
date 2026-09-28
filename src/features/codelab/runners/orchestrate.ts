@@ -53,6 +53,8 @@ export function orchestrate(src: string, options: OrchestrateOptions): Promise<R
       return;
     }
 
+    worker.onError?.((message) => finish({ logs, error: message, timedOut: false }));
+
     worker.onMessage((raw) => {
       const m = raw as { t?: string; v?: string; error?: string | null };
       if (m?.t === 'ready') arm(execTimeout);

@@ -14,6 +14,12 @@ export interface RunResult {
 export interface RunnerWorker {
   post(msg: unknown): void;
   onMessage(cb: (m: unknown) => void): void;
+  /**
+   * A worker that fails to start never sends a message, so without this the
+   * run would simply hang until its timeout. Reporting the failure lets the
+   * learner see what went wrong instead of watching a spinner.
+   */
+  onError?(cb: (message: string) => void): void;
   terminate(): void;
 }
 

@@ -37,13 +37,25 @@ ONMESSAGE(async function (data) {
 });
 `;
 
-/** Loads Pyodide from the files bundled with the app — never from a CDN. */
-export const PY_WEB_PRELUDE = `
-importScripts('/pyodide/pyodide.js');
+/**
+ * Loads Pyodide from the files bundled with the app — never from a CDN.
+ *
+ * Pyodide refuses to run in a classic worker, so this is a module worker and
+ * pulls in the ESM build. The base URL is baked in as an absolute address
+ * because the worker is created from a blob: URL, and a root-relative path
+ * would resolve against that blob rather than against the page.
+ */
+export function pyWebPrelude(baseUrl: string): string {
+  const base = JSON.stringify(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
+  return `
 const POST = function (m) { self.postMessage(m); };
 const ONMESSAGE = function (f) { self.onmessage = function (e) { f(e.data); }; };
-const LOADPY = function () { return loadPyodide({ indexURL: '/pyodide/' }); };
+const LOADPY = async function () {
+  const mod = await import(${base} + 'pyodide.mjs');
+  return mod.loadPyodide({ indexURL: ${base} });
+};
 `;
+}
 
 /** The same sandbox on a Node worker thread, for the tests. */
 export const PY_NODE_PRELUDE = `

@@ -13,6 +13,9 @@ function webWorkerFactory(): RunnerWorker {
     onMessage: (cb) => {
       worker.onmessage = (e) => cb(e.data);
     },
+    onError: (cb) => {
+      worker.onerror = (e) => cb(e.message || 'worker failed');
+    },
     terminate: () => worker.terminate(),
   };
 }
