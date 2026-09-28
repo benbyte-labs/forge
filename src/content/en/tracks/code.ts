@@ -1,0 +1,396 @@
+import type { Track } from '../../types';
+
+export const codeEn: Track = {
+  id: 'code',
+  title: 'Coding',
+  blurb: 'From zero to driving a robot with your own code.',
+  plannedTitles: [
+    'Variables and types',
+    'Branching: if, elif, else',
+    'Loops: while and for',
+    'Lists',
+    'Dictionaries',
+    'Loop patterns over lists',
+    'Functions',
+    'Parameters and return values',
+    'Scope and side effects',
+    'Working with text',
+    'Formatting and input',
+    'Text processing in practice',
+    'Reading and writing files',
+    'JSON and structured data',
+    'Saving and reloading data',
+    'Classes and objects',
+    'State and methods',
+    'Inheritance, when it earns its place',
+    'Errors and exceptions',
+    'Debugging methodically',
+    'Fixing a broken program',
+    'Modules and imports',
+    'Using libraries',
+    'Reading documentation',
+    'Search: linear and binary',
+    'Sorting and why it matters',
+    'Complexity in plain words',
+    'Robot controller: the sensor loop',
+    'Robot controller: decision logic',
+    'Robot controller: a full mission',
+  ],
+  days: [
+    // ── Day 1 ───────────────────────────────────────────────────────
+    {
+      day: 1,
+      title: 'Variables and types',
+      minutes: 20,
+      lesson: [
+        {
+          k: 'text',
+          md: 'A program works with data. A **variable** is a name you use to refer to a piece of data. That is all it is — not a box, not magic. A label you hang on a value so you can address it later.',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'distance = 15\nname = "Rover"\nrunning = True\n\nprint(name, distance)',
+          explain: 'Three variables, three different kinds of data. The `=` here does not mean equality. It means: "from now on I call this value by this name."',
+        },
+        {
+          k: 'text',
+          md: 'Every value has a **type**, and the type decides what you can do with it. You can add two numbers. You can join two pieces of text. You cannot add a number to a piece of text — Python raises an error, and that is good news: better it complains than quietly does something silly.',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'print(2 + 3)        # 5        — number + number\nprint("2" + "3")    # 23       — text + text\nprint(type(2))      # <class \'int\'>\nprint(type("2"))    # <class \'str\'>',
+          explain: '`type()` tells you what you are holding. When you cannot work out what is happening, this is the first question to ask.',
+        },
+        {
+          k: 'text',
+          md: 'The four types you will use for the next few weeks:\n\n- `int` — whole number: `15`, `-3`, `0`\n- `float` — decimal number: `3.14`, `0.5`\n- `str` — text: `"Rover"`, `"hello"`\n- `bool` — true or false: `True`, `False`',
+        },
+        {
+          k: 'callout',
+          tone: 'key',
+          md: 'On your robot this is not theory. The distance sensor gives you a `float` (12.7 cm). Whether a motor is on is a `bool`. The robot name is a `str`. Compute with the wrong type and the robot drives into the wall.',
+        },
+        {
+          k: 'callout',
+          tone: 'tip',
+          md: 'Give your variables names that say what is in them. `distance_cm` beats `d`. In six months you are the one who will not understand your own code.',
+        },
+      ],
+      lab: {
+        lab: 'code',
+        lang: 'py',
+        brief: 'Create a variable called `distance` holding 42, and a variable called `name` holding "Rover". Print them on one line, separated by a space.',
+        starter: '# Write your solution here\n',
+        checks: [
+          { k: 'output', contains: 'Rover', label: 'The output contains the name' },
+          { k: 'output', contains: '42', label: 'The output contains the distance' },
+        ],
+        hints: [
+          'Creating a variable looks like `name = "Rover"`.',
+          'You can print several things at once: `print(a, b)`.',
+          'Full solution: `distance = 42`, then `name = "Rover"`, then `print(name, distance)`.',
+        ],
+      },
+      quiz: [
+        {
+          k: 'single',
+          q: 'What does the `=` do in the line `distance = 15`?',
+          opts: [
+            'It checks whether distance equals 15',
+            'It binds the value 15 to the name distance',
+            'It prints 15 to the screen',
+          ],
+          answer: 1,
+          why: 'A single `=` is assignment: it binds the right-hand value to the left-hand name. Testing equality is `==`, which we meet tomorrow.',
+        },
+        {
+          k: 'output',
+          q: 'What does this print?',
+          code: 'print("2" + "3")',
+          lang: 'py',
+          opts: ['5', '23', 'It raises an error'],
+          answer: 1,
+          why: 'Both values are text, and `+` joins text rather than adding it. Converted to numbers (`int("2") + int("3")`) you would get 5.',
+        },
+        {
+          k: 'single',
+          q: 'What type is the value `True`?',
+          opts: ['str', 'int', 'bool'],
+          answer: 2,
+          why: '`bool` is the logical type with exactly two values, `True` and `False`. Every decision your program makes is built out of these.',
+        },
+        {
+          k: 'multi',
+          q: 'Which two variable names tell you what they hold?',
+          opts: ['x', 'battery_percent', 'a1', 'motor_rpm'],
+          answers: [1, 3],
+          why: 'A descriptive name is one you still understand six months later. `x` and `a1` say nothing, and that is exactly what you will be missing when you hunt a bug.',
+        },
+        {
+          k: 'numeric',
+          q: 'What is the result of `3 + 4 * 2`?',
+          answer: 11,
+          tol: 0.01,
+          why: 'Multiplication happens before addition, the same as in maths class: 4*2 = 8, then 3+8 = 11. If you expected 14 you were thinking of `(3+4)*2`.',
+        },
+      ],
+      note: {
+        summary: [
+          'A variable is a name that refers to a value. `=` is assignment, not equality.',
+          'Every value has a type, and the type decides which operations make sense on it.',
+          'Four core types: `int` (whole), `float` (decimal), `str` (text), `bool` (true/false).',
+          '`+` adds numbers and joins text. Mixing a number and text raises an error.',
+          '`type(value)` tells you what you are holding — the first question when something looks wrong.',
+          'A descriptive variable name is not style. It is what saves you time when debugging.',
+        ],
+        terms: [
+          { term: 'variable', def: 'A name that refers to a stored value.' },
+          { term: 'assignment', def: 'The `=` operation, binding the right-hand value to the left-hand name.' },
+          { term: 'type', def: 'The kind of a value, which decides what operations are valid on it.' },
+          { term: 'bool', def: 'The logical type with two values: `True` and `False`.' },
+        ],
+      },
+    },
+
+    // ── Day 2 ───────────────────────────────────────────────────────
+    {
+      day: 2,
+      title: 'Branching: if, elif, else',
+      minutes: 22,
+      lesson: [
+        {
+          k: 'text',
+          md: 'Until now your program ran straight down every line. **Branching** is the first tool that lets it decide: if this is true do that, otherwise do something else.',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'distance = 8\n\nif distance < 10:\n    print("Obstacle! Brake.")\nelse:\n    print("Road is clear.")',
+          explain: 'The **indented** lines after the `:` belong to the `if`. In Python indentation is not decoration — it is what says which lines belong where.',
+        },
+        {
+          k: 'text',
+          md: 'After `if` comes a **condition** that is either true or false. The comparison operators:\n\n- `==` equal (two equals signs!)\n- `!=` not equal\n- `<` `>` less than, greater than\n- `<=` `>=` at most, at least',
+        },
+        {
+          k: 'callout',
+          tone: 'warn',
+          md: '`=` assigns, `==` compares. This is the most common beginner mistake, and thankfully Python raises an error rather than quietly giving a wrong answer.',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'battery = 35\n\nif battery > 70:\n    print("Full speed")\nelif battery > 20:\n    print("Economy mode")\nelse:\n    print("Needs charging")',
+          explain: '`elif` means "otherwise if". It checks top to bottom and stops at the **first** true branch. 35 is not above 70, but it is above 20, so: "Economy mode".',
+        },
+        {
+          k: 'text',
+          md: 'You can combine conditions: `and` (both true), `or` (at least one true), `not` (flips it).',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'if distance > 20 and battery > 30:\n    print("We can go fast")',
+        },
+        {
+          k: 'callout',
+          tone: 'key',
+          md: "Your robot's whole behaviour is made of decisions like these: if the wall is close, turn; if the battery is low, slow down; if you see the goal, stop. From day 28 that is exactly what you will be writing.",
+        },
+      ],
+      lab: {
+        lab: 'code',
+        lang: 'py',
+        brief: 'You are given a `distance` variable. Write a branch: below 10 print "STOP"; between 10 and 30 print "SLOW"; otherwise print "GO". Try it with several values.',
+        starter: 'distance = 15\n\n# Your branch goes here\n',
+        checks: [{ k: 'output', contains: 'SLOW', label: 'At 15 the answer is SLOW' }],
+        hints: [
+          'Start with `if distance < 10:`',
+          'For the middle case `elif distance < 30:` is enough — only values that were not below 10 reach it.',
+          'Finish with an `else:` branch for everything else.',
+        ],
+      },
+      quiz: [
+        {
+          k: 'single',
+          q: 'What is the difference between `=` and `==`?',
+          opts: [
+            'Nothing, both compare',
+            '`=` assigns, `==` compares',
+            '`=` compares, `==` assigns',
+          ],
+          answer: 1,
+          why: '`=` binds a value to a name. `==` asks whether two values are equal and answers `True` or `False`.',
+        },
+        {
+          k: 'output',
+          q: 'What does this print?',
+          code: 'battery = 35\nif battery > 70:\n    print("A")\nelif battery > 20:\n    print("B")\nelse:\n    print("C")',
+          lang: 'py',
+          opts: ['A', 'B', 'C', 'Both B and C'],
+          answer: 1,
+          why: 'In an `elif` chain the first true branch runs and the program then leaves the chain. 35 is not above 70 but is above 20, so "B" — and only that.',
+        },
+        {
+          k: 'single',
+          q: 'When is `a > 5 and b < 3` true?',
+          opts: ['When at least one is true', 'When both are true', 'When neither is true'],
+          answer: 1,
+          why: '`and` needs both sides to be true. If either is false the whole thing is false. "At least one" is `or`.',
+        },
+        {
+          k: 'single',
+          q: 'Why does indentation matter in Python?',
+          opts: [
+            'It is purely cosmetic',
+            'Indentation is what says which lines belong to the if',
+            'Python ignores it',
+          ],
+          answer: 1,
+          why: 'Other languages mark a block with braces; Python uses indentation. A stray space is therefore not a style slip — it changes what your program does.',
+        },
+      ],
+      note: {
+        summary: [
+          '`if` decides on a condition: the true branch runs, the others do not.',
+          'In an `elif` chain the **first** true branch runs, then the program leaves the chain.',
+          'Comparisons: `==`, `!=`, `<`, `>`, `<=`, `>=`. `=` by contrast is assignment.',
+          'Combining conditions: `and` (both), `or` (at least one), `not` (flip).',
+          'Indentation decides which lines belong to a block — it is structure, not decoration.',
+        ],
+        terms: [
+          { term: 'condition', def: 'An expression whose value is true or false.' },
+          { term: 'elif', def: '"Otherwise if" — a further branch, checked only when the earlier ones were false.' },
+          { term: 'block', def: 'A group of lines that belong together, marked in Python by indentation.' },
+          { term: 'logical operator', def: '`and`, `or` and `not`, which combine conditions.' },
+        ],
+      },
+    },
+
+    // ── Day 3 ───────────────────────────────────────────────────────
+    {
+      day: 3,
+      title: 'Loops: while and for',
+      minutes: 24,
+      lesson: [
+        {
+          k: 'text',
+          md: 'A **loop** repeats something. This is what makes a computer useful: it never gets bored, and it does not slip on the ten-thousandth round.',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'for i in range(5):\n    print("step", i)',
+          explain: '`for` walks every item of a sequence. `range(5)` gives 0, 1, 2, 3, 4 — **five** of them, but starting from zero.',
+        },
+        {
+          k: 'callout',
+          tone: 'warn',
+          md: '`range(5)` does not include 5. That looks odd until you get used to it, and then it is obvious: `range(n)` always gives exactly `n` numbers.',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'distance = 100\n\nwhile distance > 0:\n    print(distance, "cm to go")\n    distance = distance - 20',
+          explain: '`while` repeats as long as the condition holds. Look at that last line: leave it out and the condition would stay true forever.',
+        },
+        {
+          k: 'callout',
+          tone: 'key',
+          md: 'For every `while` loop, ask: **what is it that eventually ends this?** If you cannot answer, you have written an infinite loop. The FORGE Code Lab stops your code after three seconds, but on a real robot this is a flat battery.',
+        },
+        {
+          k: 'text',
+          md: 'Two extra keywords:\n\n- `break` — leave the loop immediately\n- `continue` — skip the rest of this round and start the next one',
+        },
+        {
+          k: 'code',
+          lang: 'py',
+          src: 'for i in range(10):\n    if i == 3:\n        continue     # skip the 3\n    if i == 6:\n        break        # stop at 6\n    print(i)',
+          explain: 'The output is 0 1 2 4 5. The 3 is skipped and at 6 the loop ends.',
+        },
+      ],
+      lab: {
+        lab: 'code',
+        lang: 'py',
+        brief: 'Use a loop to print every even number between 2 and 20, one per line. (Hint: a number is even when `n % 2 == 0`.)',
+        starter: '# % gives the remainder: 7 % 2 == 1, 8 % 2 == 0\n',
+        checks: [
+          { k: 'output', contains: '2', label: '2 is included' },
+          { k: 'output', contains: '20', label: '20 is included' },
+        ],
+        hints: [
+          'Walk the numbers: `for n in range(2, 21):`',
+          '`range(2, 21)` runs from 2 to 20 — the upper bound is not included.',
+          'Inside the loop: `if n % 2 == 0: print(n)`. Or more neatly, `range(2, 21, 2)` steps by two.',
+        ],
+      },
+      quiz: [
+        {
+          k: 'numeric',
+          q: 'How many numbers does `range(5)` produce?',
+          answer: 5,
+          tol: 0.01,
+          why: '`range(n)` always produces exactly n numbers, from 0 to n-1. So 0, 1, 2, 3, 4 — five of them, and 5 is not among them.',
+        },
+        {
+          k: 'output',
+          q: 'What does this print?',
+          code: 'for i in range(4):\n    if i == 2:\n        break\n    print(i)',
+          lang: 'py',
+          opts: ['0 1 2 3', '0 1', '0 1 2', 'nothing'],
+          answer: 1,
+          why: '`break` leaves immediately, before the `print` runs. 0 and 1 are printed, then at i=2 the loop ends.',
+        },
+        {
+          k: 'single',
+          q: 'What makes a `while` loop infinite?',
+          opts: [
+            'Using `while` instead of `for`',
+            'Nothing in it ever makes the condition false',
+            'Running more than 1000 times',
+          ],
+          answer: 1,
+          why: '`while` repeats as long as the condition is true. If nothing inside moves the condition towards false, it never ends. Always find the line that moves you towards the exit.',
+        },
+        {
+          k: 'single',
+          q: 'What is the difference between `break` and `continue`?',
+          opts: [
+            'break skips a round, continue exits',
+            'break exits the loop, continue jumps to the next round',
+            'They are the same',
+          ],
+          answer: 1,
+          why: '`break` ends the whole loop. `continue` only skips the rest of this round and moves on to the next iteration.',
+        },
+        {
+          k: 'order',
+          q: 'In what order do things happen in a `while` loop?',
+          items: ['The body runs', 'The condition is evaluated', 'Control returns to the condition'],
+          correct: [1, 0, 2],
+          why: '`while` always checks the condition first — which is why the body may never run at all. Then the body, then back to the condition.',
+        },
+      ],
+      note: {
+        summary: [
+          '`for` walks the items of a sequence; `range(n)` gives n numbers from 0 to n-1.',
+          '`range(a, b)` runs from a to b-1, and `range(a, b, step)` steps by step.',
+          '`while` repeats while its condition holds — always include something that moves towards the exit.',
+          'An infinite loop is one whose condition never becomes false. The Code Lab stops it after 3 seconds.',
+          '`break` leaves the loop, `continue` jumps to the next round.',
+          '`%` gives the remainder; `n % 2 == 0` is the standard even-number test.',
+        ],
+        terms: [
+          { term: 'loop', def: 'A structure that runs a piece of code more than once.' },
+          { term: 'range', def: 'A function producing a sequence of numbers; the upper bound is excluded.' },
+          { term: 'infinite loop', def: 'A loop whose condition never becomes false.' },
+          { term: 'break', def: 'Leaves the loop immediately.' },
+          { term: 'continue', def: 'Skips the rest of the current round.' },
+        ],
+      },
+    },
+  ],
+};
