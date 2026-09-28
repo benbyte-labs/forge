@@ -557,3 +557,60 @@ strong.warn { color: var(--warn); }
 .slider span { display: flex; justify-content: space-between; }
 .slider em { font-style: normal; font-family: var(--mono); color: var(--accent); }
 .slider input[type='range'] { accent-color: var(--accent); width: 100%; }
+
+/* ── Dashboard ─────────────────────────────────────────────────────── */
+.missionhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.missionhead h2 { margin: 0 0 0.2rem; font-size: 1.15rem; }
+.steps { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.steps li {
+  display: flex; align-items: center; gap: 0.45rem;
+  padding: 0.35rem 0.8rem; font-size: 0.86rem;
+  border: 1px solid var(--line-bright); border-radius: 99px; color: var(--fg-dim);
+}
+.steps li[data-done='true'] { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); }
+
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.calendar__cell {
+  aspect-ratio: 1; border-radius: 4px;
+  background: var(--bg-inset); border: 1px solid var(--line);
+}
+.calendar__cell[data-on='true'] {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  border-color: var(--accent); box-shadow: var(--glow-soft);
+}
+
+.statgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.8rem; }
+.statgrid > div { display: flex; flex-direction: column; }
+.statgrid span { font-size: 0.76rem; }
+.statgrid strong { font-family: var(--mono); font-size: 1.35rem; color: var(--accent); }
+
+.rewardhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; color: var(--accent); }
+.panel.locked { opacity: 0.6; }
+
+/* ── Physics + CAD lab ─────────────────────────────────────────────── */
+.simlab, .cadlab { display: grid; grid-template-columns: 1fr 300px; gap: 1rem; }
+@media (max-width: 1000px) { .simlab, .cadlab { grid-template-columns: 1fr; } }
+.simlab__stage, .cadlab__stage {
+  position: relative;
+  border: 1px solid var(--line-bright); border-radius: var(--radius);
+  background: #04070e; overflow: hidden; min-height: 340px;
+}
+.simlab[data-compact='true'] .simlab__stage { min-height: 260px; }
+.simcanvas, .cadcanvas { display: block; width: 100%; height: 100%; min-height: 340px; touch-action: none; }
+.simlab[data-compact='true'] .simcanvas { min-height: 260px; }
+.cadcanvas { cursor: grab; }
+.cadcanvas:active { cursor: grabbing; }
+.cadlab__hint {
+  position: absolute; inset: 0; margin: 0;
+  display: grid; place-items: center; pointer-events: none;
+  color: var(--fg-faint); font-size: 0.9rem;
+}
+.simlab__side, .cadlab__side { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+.slider small { color: var(--fg-faint); }
+
+.readout { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.readout li { display: flex; align-items: baseline; justify-content: space-between; gap: 0.8rem; }
+.readout span { font-size: 0.82rem; color: var(--fg-dim); font-family: var(--mono); }
+.readout strong { font-family: var(--mono); color: var(--accent); }
+
+label.btn { cursor: pointer; }
