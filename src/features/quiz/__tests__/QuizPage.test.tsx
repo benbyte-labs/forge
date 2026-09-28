@@ -51,7 +51,7 @@ describe('quiz flow', () => {
   });
 
   it('tells the learner a day that is not written yet has no quiz', () => {
-    renderRoute('/track/code/9/quiz');
+    renderRoute('/track/code/31/quiz');
     expect(screen.getByText(/még nincs megírva/i)).toBeInTheDocument();
   });
 });
