@@ -1,6 +1,7 @@
 import type { Track } from '../../types';
 import { roboticsEnB } from './robotics-b';
 import { roboticsEnC } from './robotics-c';
+import { roboticsEnD } from './robotics-d';
 
 export const roboticsEn: Track = {
   id: 'robotics',
@@ -124,5 +125,6 @@ export const roboticsEn: Track = {
     },
     ...roboticsEnB,
     ...roboticsEnC,
+    ...roboticsEnD,
   ],
 };
