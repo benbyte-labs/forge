@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { blenderHuB } from './blender-b';
 
 export const blenderHu: Track = {
   id: 'blender',
@@ -103,5 +104,6 @@ export const blenderHu: Track = {
         terms: [{ term: 'origó', def: 'Az objektum narancssárga középpontja, ami körül forog és méreteződik.' }, { term: 'transzformáció', def: 'Az objektum helye, forgatása és léptéke, az adattól külön tárolva.' }, { term: 'Apply Transform', def: 'A transzformáció belesütése az adatba, a lépték visszaállításával.' }],
       },
     },
+    ...blenderHuB,
   ],
 };

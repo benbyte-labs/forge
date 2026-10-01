@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { blenderEnB } from './blender-b';
 
 export const blenderEn: Track = {
   id: 'blender',
@@ -103,5 +104,6 @@ export const blenderEn: Track = {
         terms: [{ term: 'origin', def: "An object's orange centre point, around which it rotates and scales." }, { term: 'transform', def: "An object's location, rotation and scale, stored apart from its data." }, { term: 'Apply Transform', def: 'Baking the transform into the data and resetting the scale.' }],
       },
     },
+    ...blenderEnB,
   ],
 };
