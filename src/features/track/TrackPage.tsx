@@ -3,9 +3,12 @@ import { useStore } from '../../app/store';
 import { ALL_DOMAINS, TRACK_LENGTH, getTrack, type Domain } from '../../content';
 import { dayKey, isDayComplete } from '../../engine/progress';
 import { useT } from '../../i18n';
-import { Badge, Icon, Meter, Panel } from '../../ui';
+import { Icon, Meter, Panel } from '../../ui';
 
-type NodeState = 'done' | 'available' | 'locked' | 'soon';
+type NodeState = 'done' | 'current' | 'available' | 'locked' | 'soon';
+
+/** Days per section, so the path breaks into digestible chunks. */
+const UNIT = 5;
 
 export function TrackPage() {
   const t = useT();
@@ -33,9 +36,18 @@ export function TrackPage() {
   const written = track.days.length;
   const p = progress(domain);
 
+  /** The first unfinished written day — the one the path points at. */
+  const currentDay = (() => {
+    for (const d of track.days) {
+      if (!isDayComplete(days[dayKey(domain, d.day)])) return d.day;
+    }
+    return null;
+  })();
+
   const stateOf = (day: number): NodeState => {
     if (day > written) return 'soon';
     if (isDayComplete(days[dayKey(domain, day)])) return 'done';
+    if (day === currentDay) return 'current';
     if (day === 1 || isDayComplete(days[dayKey(domain, day - 1)])) return 'available';
     return 'locked';
   };
@@ -43,70 +55,71 @@ export function TrackPage() {
   const titleOf = (day: number) =>
     track.days.find((d) => d.day === day)?.title ?? track.plannedTitles[day - 1] ?? '';
 
+  const allDays = Array.from({ length: TRACK_LENGTH }, (_, i) => i + 1);
+
   return (
     <div className="page">
-      <header className="trackhead">
+      <header className="coursehead">
         <div>
           <h1>{t(`domain.${domain}`)}</h1>
-          <p className="dim">{t(`domain.${domain}.blurb`)}</p>
+          <p>{t('track.progress', { done: p.done, total: p.total })}</p>
         </div>
         <div className="trackhead__meter">
           <Meter value={p.done} max={p.total} label={t(`domain.${domain}`)} showText />
-          <span className="dim">{t('track.progress', { done: p.done, total: p.total })}</span>
         </div>
       </header>
 
-      <ol className="spine">
-        {Array.from({ length: TRACK_LENGTH }, (_, i) => i + 1).map((day) => {
+      <div className="pathwrap">
+        {allDays.map((day) => {
           const st = stateOf(day);
-          const title = titleOf(day);
-          const minutes = track.days.find((d) => d.day === day)?.minutes;
+          const open = st === 'done' || st === 'available' || st === 'current';
+          const unitStart = (day - 1) % UNIT === 0;
+          const unitIndex = Math.floor((day - 1) / UNIT) + 1;
 
-          const body = (
+          const inner = (
             <>
-              <span className="spine__dot" data-state={st}>
-                {st === 'done' ? (
-                  <Icon name="check" size={16} />
-                ) : st === 'locked' || st === 'soon' ? (
-                  <Icon name="lock" size={14} />
-                ) : (
-                  day
-                )}
-              </span>
-              <span className="spine__text">
-                <strong>
-                  {t('track.day', { n: day })} — {title}
-                </strong>
-                <span className="dim">
-                  {st === 'soon'
-                    ? t('track.soon')
-                    : st === 'locked'
-                      ? t('track.locked')
-                      : minutes
-                        ? t('track.minutes', { n: minutes })
-                        : ''}
-                </span>
-              </span>
-              {st === 'done' && <Badge tone="ok">{t('track.done')}</Badge>}
-              {st === 'available' && <Badge tone="accent">{t('track.available')}</Badge>}
+              {st === 'current' && <span className="node__ring" aria-hidden="true" />}
+              {st === 'done' ? (
+                <Icon name="check" size={26} />
+              ) : st === 'locked' || st === 'soon' ? (
+                <Icon name="lock" size={20} />
+              ) : (
+                day
+              )}
+              <span className="node__label">{t('track.day', { n: day })}</span>
             </>
           );
 
+          const label = `${t('track.day', { n: day })} — ${titleOf(day)}`;
+
           return (
-            <li key={day} className="spine__row" data-state={st}>
-              {st === 'done' || st === 'available' ? (
-                <Link className="spine__link" to={`/track/${domain}/${day}`}>
-                  {body}
-                </Link>
-              ) : (
-                <div className="spine__link" aria-disabled="true">
-                  {body}
+            <div key={day}>
+              {unitStart && (
+                <div className="unitbar">
+                  <strong>{t('path.unit', { n: unitIndex })}</strong>
+                  <span>{titleOf(day)}</span>
                 </div>
               )}
-            </li>
+
+              <div className="pathrow" data-off={(day - 1) % 8}>
+                {open ? (
+                  <Link className="node" data-state={st} to={`/track/${domain}/${day}`} aria-label={label} title={label}>
+                    {inner}
+                  </Link>
+                ) : (
+                  <span className="node" data-state={st} aria-disabled="true" aria-label={label} title={label}>
+                    {inner}
+                  </span>
+                )}
+              </div>
+            </div>
           );
         })}
-      </ol>
+
+        <p className="pathtitle">
+          {written < TRACK_LENGTH ? t('track.soon') : t('path.crown')}
+        </p>
+      </div>
     </div>
   );
 }

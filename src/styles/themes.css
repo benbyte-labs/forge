@@ -1,50 +1,77 @@
-/* Amber Core — 3-day streak reward */
+/* Night — the original dark, futuristic palette, now an option. */
+:root[data-theme='cyan'] {
+  --bg: #05070d;
+  --bg-2: #080d18;
+  --bg-panel: #0d1424;
+  --bg-inset: #080e1a;
+  --fg: #e8f4ff;
+  --fg-dim: #96acc4;
+  --fg-faint: #64799a;
+  --accent: #22e6ff;
+  --accent-ink: #0f9fb5;
+  --accent-soft: #0d2a35;
+  --accent-2: #ff3ea5;
+  --accent-2-ink: #c02c7c;
+  --ok: #3ddc97;
+  --ok-ink: #27a06c;
+  --warn: #ffb454;
+  --warn-ink: #c9832f;
+  --danger: #ff5c6c;
+  --danger-ink: #c43c4a;
+  --line: #1d2b40;
+  --line-bright: #2b4363;
+  --grid: rgba(34, 230, 255, 0.06);
+}
+
+/* Amber Core — 3-day streak reward. */
 :root[data-theme='amber'] {
   --bg: #0a0704;
   --bg-2: #120d06;
-  --bg-panel: rgba(28, 19, 8, 0.72);
-  --bg-inset: rgba(12, 8, 3, 0.66);
+  --bg-panel: #1a1208;
+  --bg-inset: #0f0a04;
   --fg: #fff1dc;
-  --fg-dim: #c2a37c;
-  --fg-faint: #8a7050;
+  --fg-dim: #c9ab85;
+  --fg-faint: #93785a;
   --accent: #ffa128;
+  --accent-ink: #c97a13;
+  --accent-soft: #2e1e08;
   --accent-2: #ff5f3e;
+  --accent-2-ink: #c7442a;
+  --ok: #8fd14f;
+  --ok-ink: #659a33;
+  --warn: #ffc44d;
+  --warn-ink: #c8922b;
+  --danger: #ff5c5c;
+  --danger-ink: #c43c3c;
   --line: #3a2a14;
   --line-bright: #5c4320;
+  --grid: rgba(255, 161, 40, 0.06);
 }
 
-/* Void — 30-day track completion reward */
+/* Void — unlocked by finishing a 30-day track. */
 :root[data-theme='void'] {
   --bg: #07040c;
   --bg-2: #0d0717;
-  --bg-panel: rgba(23, 13, 40, 0.72);
-  --bg-inset: rgba(8, 4, 15, 0.66);
+  --bg-panel: #150c26;
+  --bg-inset: #0a0513;
   --fg: #f0e9ff;
-  --fg-dim: #a893c9;
-  --fg-faint: #6f5b90;
+  --fg-dim: #b19cd2;
+  --fg-faint: #7b6699;
   --accent: #b47cff;
+  --accent-ink: #8750cf;
+  --accent-soft: #22143a;
   --accent-2: #38f0d0;
+  --accent-2-ink: #22b89e;
+  --ok: #38f0d0;
+  --ok-ink: #22b89e;
+  --warn: #ffc44d;
+  --warn-ink: #c8922b;
+  --danger: #ff5c7a;
+  --danger-ink: #c43c5a;
   --line: #2c1d47;
   --line-bright: #452e6d;
+  --grid: rgba(180, 124, 255, 0.06);
 }
 
-/* Daylight — always available */
-:root[data-theme='light'] {
-  --bg: #f2f5f9;
-  --bg-2: #e8edf4;
-  --bg-panel: rgba(255, 255, 255, 0.88);
-  --bg-inset: rgba(232, 237, 244, 0.9);
-  --fg: #111a26;
-  --fg-dim: #4a5b70;
-  --fg-faint: #6d7f95;
-  --accent: #0a7ea4;
-  --accent-2: #b8246b;
-  --ok: #1a7f4f;
-  --warn: #8a5300;
-  --danger: #b3222f;
-  --line: #ccd6e2;
-  --line-bright: #a8b8cc;
-  --glow: none;
-  --glow-soft: none;
-  --grid: rgba(10, 126, 164, 0.07);
-}
+/* `light` is kept as a theme id for saved data; it matches the default. */
+:root[data-theme='light'] { color-scheme: light; }

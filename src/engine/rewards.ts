@@ -76,7 +76,7 @@ export function checkBadges(state: AppState): Reward[] {
 
 /** Theme ids selectable given what has been unlocked. */
 export function availableThemes(state: AppState): string[] {
-  const base = ['cyan', 'light'];
+  const base = ['light', 'cyan'];
   for (const r of REWARDS) {
     if (r.kind === 'theme' && r.grants && hasReward(state, r.id)) base.push(r.grants);
     if (r.id === 'badge-30' && r.grants && hasReward(state, r.id)) base.push(r.grants);

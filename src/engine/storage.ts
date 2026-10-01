@@ -12,7 +12,7 @@ export function defaultState(): AppState {
   return {
     version: SCHEMA_VERSION,
     locale: 'hu',
-    theme: 'cyan',
+    theme: 'light',
     motion: true,
     activeTrack: null,
     days: {},

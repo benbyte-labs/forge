@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { HashRouter, NavLink } from 'react-router-dom';
-import { I18nProvider, LOCALE_NAMES, useT } from '../i18n';
-import { Icon, Meter } from '../ui';
+import { I18nProvider, LOCALES, LOCALE_FLAGS, LOCALE_NAMES, useT } from '../i18n';
+import { Icon, Logo, Meter } from '../ui';
 import { levelProgress } from '../engine/progress';
 import { AppRoutes } from './routes';
 import { NoticeStack } from './NoticeStack';
@@ -30,7 +30,7 @@ function Sidebar() {
   return (
     <nav className="sidebar" aria-label={t('nav.dashboard')}>
       <div className="brand">
-        <span className="brand__mark" aria-hidden="true" />
+        <Logo size={30} />
         <span className="brand__name">FORGE</span>
       </div>
 
@@ -90,15 +90,16 @@ function TopBar() {
       <div className="topbar__spacer" />
 
       <div className="langswitch" role="group" aria-label={t('settings.language')}>
-        {(['hu', 'en'] as const).map((l) => (
+        {LOCALES.map((l) => (
           <button
             key={l}
             type="button"
             className="langswitch__btn"
             aria-pressed={locale === l}
+            title={LOCALE_NAMES[l]}
             onClick={() => setLocale(l)}
           >
-            {LOCALE_NAMES[l]}
+            {LOCALE_FLAGS[l]} {l.toUpperCase()}
           </button>
         ))}
       </div>

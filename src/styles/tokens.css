@@ -1,27 +1,54 @@
+/**
+ * FORGE design tokens.
+ *
+ * The default is a bright, friendly, high-contrast scheme in the spirit of a
+ * language-learning app: large rounded shapes, chunky buttons with a solid
+ * bottom edge, one strong accent per state. The darker, futuristic palettes
+ * remain available as unlockable themes in `themes.css`.
+ */
 :root {
-  --bg: #05070d;
-  --bg-2: #080d18;
-  --bg-panel: rgba(11, 17, 32, 0.72);
-  --bg-inset: rgba(4, 7, 14, 0.66);
-  --fg: #e8f4ff;
-  --fg-dim: #8fa6bf;
-  --fg-faint: #5b7291;
-  --accent: #22e6ff;
-  --accent-2: #ff3ea5;
-  --ok: #3ddc97;
-  --warn: #ffb454;
-  --danger: #ff5c6c;
-  --line: #1d2b40;
-  --line-bright: #2b4363;
-  --glow: 0 0 24px color-mix(in srgb, var(--accent) 35%, transparent);
-  --glow-soft: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --bg: #ffffff;
+  --bg-2: #f7f9fc;
+  --bg-panel: #ffffff;
+  --bg-inset: #f1f4f9;
+
+  --fg: #16202c;
+  --fg-dim: #55637a;
+  --fg-faint: #8794a6;
+
+  /* The "go" colour: progress and primary actions. */
+  --accent: #2cb94e;
+  --accent-ink: #1f8c3a;
+  --accent-soft: #e6f8ec;
+
+  /* Streaks and highlights. */
+  --accent-2: #ff9d1b;
+  --accent-2-ink: #cf7a00;
+
+  --ok: #2cb94e;
+  --ok-ink: #1f8c3a;
+  --warn: #ff9d1b;
+  --warn-ink: #cf7a00;
+  --danger: #e8465c;
+  --danger-ink: #bb2d41;
+
+  --line: #e3e8ef;
+  --line-bright: #c9d2de;
+
+  /* A pressable surface gets a solid bottom edge, not a soft shadow. */
+  --edge: 4px;
+  --glow: none;
+  --glow-soft: none;
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-lg: 28px;
+
+  --font: 'Nunito', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SF Mono', monospace;
-  --dur: 180ms;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --grid: color-mix(in srgb, var(--accent) 7%, transparent);
+  --dur: 160ms;
+  --ease: cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  --grid: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {

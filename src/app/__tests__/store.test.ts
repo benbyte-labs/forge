@@ -113,12 +113,18 @@ describe('store: rewards', () => {
 
   it('refuses a theme that has not been unlocked', () => {
     useStore.getState().setTheme('void');
+    expect(useStore.getState().state.theme).toBe('light');
+  });
+
+  it('accepts a theme that is free from the start', () => {
+    useStore.getState().setTheme('cyan');
     expect(useStore.getState().state.theme).toBe('cyan');
   });
 
-  it('accepts a theme that is unlocked', () => {
-    useStore.getState().setTheme('light');
-    expect(useStore.getState().state.theme).toBe('light');
+  it('accepts a theme once its reward is unlocked', () => {
+    useStore.setState((s) => ({ state: { ...s.state, rewards: ['theme-amber'] } }));
+    useStore.getState().setTheme('amber');
+    expect(useStore.getState().state.theme).toBe('amber');
   });
 });
 
