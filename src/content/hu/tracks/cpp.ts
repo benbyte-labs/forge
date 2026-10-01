@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { cppHuB } from './cpp-b';
 
 export const cppHu: Track = {
   id: 'cpp',
@@ -103,5 +104,6 @@ export const cppHu: Track = {
         terms: [{ term: 'destruktor', def: 'Metódus, ami az objektum megszűnésekor automatikusan lefut.' }, { term: 'RAII', def: 'Erőforráskezelés az objektum élettartamához kötve.' }, { term: 'const metódus', def: 'Metódus, ami a fordító által ellenőrzötten nem módosítja az objektumot.' }],
       },
     },
+    ...cppHuB,
   ],
 };

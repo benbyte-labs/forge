@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { cppEnB } from './cpp-b';
 
 export const cppEn: Track = {
   id: 'cpp',
@@ -103,5 +104,6 @@ export const cppEn: Track = {
         terms: [{ term: 'destructor', def: 'A method that runs automatically when an object is destroyed.' }, { term: 'RAII', def: "Managing a resource by tying it to an object's lifetime." }, { term: 'const method', def: 'A method the compiler guarantees does not modify the object.' }],
       },
     },
+    ...cppEnB,
   ],
 };
