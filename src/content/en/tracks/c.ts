@@ -1,5 +1,6 @@
 import type { Track } from '../../types';
 import { cEnB } from './c-b';
+import { cEnC } from './c-c';
 
 export const cEn: Track = {
   id: 'c',
@@ -105,5 +106,6 @@ export const cEn: Track = {
       },
     },
     ...cEnB,
+    ...cEnC,
   ],
 };
