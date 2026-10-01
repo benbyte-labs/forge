@@ -1,5 +1,6 @@
 import type { Track } from '../../types';
 import { physicsEnB } from './physics-b';
+import { physicsEnC } from './physics-c';
 
 export const physicsEn: Track = {
   id: 'physics',
@@ -129,5 +130,6 @@ export const physicsEn: Track = {
       },
     },
     ...physicsEnB,
+    ...physicsEnC,
   ],
 };
