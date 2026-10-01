@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { javaHuB } from './java-b';
 
 export const javaHu: Track = {
   id: 'java',
@@ -103,5 +104,6 @@ export const javaHu: Track = {
         terms: [{ term: 'konstruktor', def: 'Az osztály nevét viselő metódus, ami a példány létrehozásakor fut.' }, { term: 'kapszulázás', def: 'Az adat elrejtése, hogy csak az osztály metódusain át legyen módosítható.' }, { term: 'this', def: 'Hivatkozás magára a példányra, a mező és a paraméter megkülönböztetésére.' }],
       },
     },
+    ...javaHuB,
   ],
 };

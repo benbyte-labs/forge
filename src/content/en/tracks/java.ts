@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { javaEnB } from './java-b';
 
 export const javaEn: Track = {
   id: 'java',
@@ -103,5 +104,6 @@ export const javaEn: Track = {
         terms: [{ term: 'constructor', def: 'A method named after the class, run when an instance is created.' }, { term: 'encapsulation', def: "Hiding data so it can only be changed through the class's methods." }, { term: 'this', def: 'A reference to the instance itself, distinguishing field from parameter.' }],
       },
     },
+    ...javaEnB,
   ],
 };
