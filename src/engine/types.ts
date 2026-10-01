@@ -1,6 +1,17 @@
 import type { Domain } from '../content/types';
 
-export type Locale = 'hu' | 'en';
+/**
+ * Supported interface languages.
+ *
+ * `hu` and `en` are the primary pair: both carry the full interface and all
+ * authored content. Further languages translate the interface and fall back to
+ * English for any track day not yet translated, so a new language can be added
+ * without first translating two hundred lessons.
+ */
+export type Locale = 'hu' | 'en' | 'de' | 'es';
+
+/** Languages that must be complete: every UI string, every authored day. */
+export const PRIMARY_LOCALES = ['hu', 'en'] as const;
 export type ThemeId = 'cyan' | 'amber' | 'void' | 'light';
 
 /** What the learner has done on one day of one track. */

@@ -5,7 +5,7 @@ import type { AppState, DayProgress, Locale, SrsItem, StoredNote, ThemeId } from
 export const SCHEMA_VERSION = 1;
 const STORAGE_KEY = 'forge.state.v1';
 
-const LOCALES: Locale[] = ['hu', 'en'];
+const LOCALES: Locale[] = ['hu', 'en', 'de', 'es'];
 const THEMES: ThemeId[] = ['cyan', 'amber', 'void', 'light'];
 
 export function defaultState(): AppState {

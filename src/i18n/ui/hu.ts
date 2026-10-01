@@ -12,11 +12,17 @@ export const hu = {
   'nav.cadlab': 'CAD Labor',
 
   // ── Domains ──────────────────────────────────────────────────────
-  'domain.code': 'Kódolás',
+  'domain.code': 'Python',
+  'domain.code.blurb': 'A nulláról odáig, hogy kóddal vezérelsz egy robotot.',
+  'domain.java': 'Java',
+  'domain.java.blurb': 'Osztályok, típusok, JVM — a nagy rendszerek nyelve.',
+  'domain.c': 'C',
+  'domain.c.blurb': 'Memória, mutatók, hardverközeli programozás.',
+  'domain.cpp': 'C++',
+  'domain.cpp.blurb': 'A C ereje osztályokkal, sablonokkal, STL-lel.',
   'domain.robotics': 'Robotika',
   'domain.physics': 'Fizika',
   'domain.cad': 'CAD',
-  'domain.code.blurb': 'A nulláról odáig, hogy kóddal vezérelsz egy robotot.',
   'domain.robotics.blurb': 'Szenzorok, motorok, kinematika, PID, útvonaltervezés.',
   'domain.physics.blurb': 'Mechanika, energia, elektromosság, mágnesesség — robotos szemmel.',
   'domain.cad.blurb': 'Vázlattól a nyomtatható alkatrészig.',
@@ -252,6 +258,27 @@ export const hu = {
   'mission.pick': 'Küldetés',
   'mission.passed': 'Küldetés teljesítve!',
   'mission.failed': 'Még nem sikerült. Nézd meg a nyomvonalat, hol tért le.',
+
+  // ── New tracks and groups ────────────────────────────────────────
+  'domain.blender': 'Blender 3D',
+  'domain.blender.blurb': 'Modellezés, anyagok, világítás és renderelés Blenderben.',
+  'group.coding': 'Programozás',
+  'group.making': 'Tervezés és építés',
+  'group.science': 'Tudomány',
+  'settings.contentEnglish': 'A leckék egyelőre angolul jelennek meg ezen a nyelven.',
+
+  // ── Learning path ────────────────────────────────────────────────
+  'path.unit': '{n}. szakasz',
+  'path.start': 'KEZDJÜK',
+  'path.continue': 'FOLYTATÁS',
+  'path.review': 'ISMÉTLÉS',
+  'path.locked': 'Zárva',
+  'path.done': 'Kész',
+  'path.crown': 'Teljesítve',
+  'path.ofDays': '{done} / {total}',
+  'path.pick': 'Válassz tanfolyamot',
+  'path.keepGoing': 'Csak így tovább!',
+  'path.dailyGoal': 'Napi cél',
 
   // ── Common ───────────────────────────────────────────────────────
   'common.next': 'Tovább',

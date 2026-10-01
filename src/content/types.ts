@@ -6,12 +6,45 @@
  * builds notes out of them, and the content modules produce them.
  */
 
-export type Domain = 'code' | 'robotics' | 'physics' | 'cad';
-export const ALL_DOMAINS: Domain[] = ['code', 'robotics', 'physics', 'cad'];
+/**
+ * Every learning track in the app.
+ *
+ * Adding one is a matter of listing it here and dropping a content module in
+ * `content/<locale>/tracks/` — the validation test then insists on day 1 in the
+ * primary languages, so a half-added track cannot reach a learner.
+ */
+export type Domain =
+  | 'code'
+  | 'java'
+  | 'c'
+  | 'cpp'
+  | 'robotics'
+  | 'physics'
+  | 'cad'
+  | 'blender';
+
+export const ALL_DOMAINS: Domain[] = ['code', 'java', 'c', 'cpp', 'robotics', 'physics', 'cad', 'blender'];
+
+/** How the tracks are grouped on the home screen. */
+export const TRACK_GROUPS: { key: string; tracks: Domain[] }[] = [
+  { key: 'group.coding', tracks: ['code', 'java', 'c', 'cpp'] },
+  { key: 'group.making', tracks: ['robotics', 'cad', 'blender'] },
+  { key: 'group.science', tracks: ['physics'] },
+];
 
 export type SimId = 'projectile' | 'spring' | 'incline' | 'torque' | 'circuit' | 'motor';
 export type SceneId = 'flat' | 'obstacle' | 'line' | 'warehouse' | 'arm-bench';
-export type CodeLang = 'py' | 'js';
+/**
+ * Languages a code sample can be written in.
+ *
+ * Only `py` and `js` run in the Code Lab; the others appear in lessons and in
+ * read-and-predict quiz questions, because compiling Java or C in the browser
+ * would cost more than it teaches.
+ */
+export type CodeLang = 'py' | 'js' | 'java' | 'c' | 'cpp';
+
+/** The languages the Code Lab can actually execute. */
+export const RUNNABLE_LANGS: CodeLang[] = ['py', 'js'];
 
 // ── Lesson blocks ────────────────────────────────────────────────────
 

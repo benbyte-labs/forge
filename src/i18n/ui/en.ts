@@ -14,11 +14,17 @@ export const en: Record<UiKey, string> = {
   'nav.cadlab': 'CAD Lab',
 
   // ── Domains ──────────────────────────────────────────────────────
-  'domain.code': 'Coding',
+  'domain.code': 'Python',
+  'domain.code.blurb': 'From zero to driving a robot with your own code.',
+  'domain.java': 'Java',
+  'domain.java.blurb': 'Classes, types, the JVM — the language of large systems.',
+  'domain.c': 'C',
+  'domain.c.blurb': 'Memory, pointers, programming close to the hardware.',
+  'domain.cpp': 'C++',
+  'domain.cpp.blurb': 'The power of C with classes, templates and the STL.',
   'domain.robotics': 'Robotics',
   'domain.physics': 'Physics',
   'domain.cad': 'CAD',
-  'domain.code.blurb': 'From zero to driving a robot with your own code.',
   'domain.robotics.blurb': 'Sensors, motors, kinematics, PID, path planning.',
   'domain.physics.blurb': 'Mechanics, energy, electricity, magnetism — through a robot lens.',
   'domain.cad.blurb': 'From a sketch to a printable part.',
@@ -254,6 +260,27 @@ export const en: Record<UiKey, string> = {
   'mission.pick': 'Mission',
   'mission.passed': 'Mission complete!',
   'mission.failed': 'Not yet. Look at the trail to see where it went wrong.',
+
+  // ── New tracks and groups ────────────────────────────────────────
+  'domain.blender': 'Blender 3D',
+  'domain.blender.blurb': 'Modelling, materials, lighting and rendering in Blender.',
+  'group.coding': 'Programming',
+  'group.making': 'Design and build',
+  'group.science': 'Science',
+  'settings.contentEnglish': 'Lessons appear in English in this language for now.',
+
+  // ── Learning path ────────────────────────────────────────────────
+  'path.unit': 'Section {n}',
+  'path.start': 'START',
+  'path.continue': 'CONTINUE',
+  'path.review': 'REVIEW',
+  'path.locked': 'Locked',
+  'path.done': 'Done',
+  'path.crown': 'Completed',
+  'path.ofDays': '{done} / {total}',
+  'path.pick': 'Pick a course',
+  'path.keepGoing': 'Keep it up!',
+  'path.dailyGoal': 'Daily goal',
 
   // ── Common ───────────────────────────────────────────────────────
   'common.next': 'Next',
