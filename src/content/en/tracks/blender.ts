@@ -1,5 +1,6 @@
 import type { Track } from '../../types';
 import { blenderEnB } from './blender-b';
+import { blenderEnC } from './blender-c';
 
 export const blenderEn: Track = {
   id: 'blender',
@@ -105,5 +106,6 @@ export const blenderEn: Track = {
       },
     },
     ...blenderEnB,
+    ...blenderEnC,
   ],
 };
