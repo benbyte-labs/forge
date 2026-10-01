@@ -1,5 +1,6 @@
 import type { Track } from '../../types';
 import { cppEnB } from './cpp-b';
+import { cppEnC } from './cpp-c';
 
 export const cppEn: Track = {
   id: 'cpp',
@@ -105,5 +106,6 @@ export const cppEn: Track = {
       },
     },
     ...cppEnB,
+    ...cppEnC,
   ],
 };

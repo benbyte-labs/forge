@@ -1,0 +1,173 @@
+import type { Day } from '../../types';
+
+/** C++ track, days 11-17. */
+export const cppEnC: Day[] = [
+  {
+    day: 11,
+    title: 'Smart pointers',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'One of the most important rules in modern C++: **do not write `new` and `delete`**. Smart pointers do it for you, and they never forget.' },
+      { k: 'code', lang: 'cpp', src: '#include <memory>\n\nauto r = std::make_unique<Rover>("Alpha");   // sole owner\nr->step(10);\n// destroyed automatically at the end of scope -- no delete\n\nauto shared = std::make_shared<Map>();       // shared ownership\nauto other  = shared;                        // count: 2\n// destroyed when both are gone', explain: '`unique_ptr` cannot be copied, only moved: there is exactly one owner. `shared_ptr` counts references and deletes when the last one goes.' },
+      { k: 'callout', tone: 'key', md: 'The default is **`unique_ptr`**. Reach for `shared_ptr` only when several places really do own the same object and you cannot say which outlives the other. `shared_ptr` costs more: it keeps an atomic counter.' },
+      { k: 'text', md: 'The principle behind it is **RAII**: the lifetime of a resource is tied to the lifetime of an object. The constructor acquires, the destructor releases — even on an exception, because stack unwinding always runs.' },
+      { k: 'callout', tone: 'warn', md: 'Two `shared_ptr`s pointing at each other are **never released**: each count stays at 1. That is a reference cycle. The fix is to make one direction a `weak_ptr`, which does not count as ownership.' },
+      { k: 'callout', tone: 'tip', md: 'Always `make_unique` and `make_shared`, never `unique_ptr<T>(new T)`. Shorter, exception safe, and `make_shared` puts the object and the counter in a single allocation.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is the point of `unique_ptr`?', opts: ['Several owners share it', 'Exactly one owner; it cannot be copied, only moved', 'It is never released'], answer: 1, why: 'Sole ownership is the clearest model and has no counting overhead.' },
+      { k: 'single', q: 'What is the RAII principle?', opts: ['Resource lifetime tied to object lifetime', 'All resources are global', 'Manual release'], answer: 0, why: 'The constructor acquires, the destructor releases. It runs on exceptions too, because stack unwinding is guaranteed.' },
+      { k: 'single', q: 'What happens with two `shared_ptr`s pointing at each other?', opts: ['An error', 'Neither is released: each count stays at 1', 'It resolves itself'], answer: 1, why: 'That is a reference cycle. Making one direction a `weak_ptr` breaks it.' },
+      { k: 'single', q: 'Which is the default choice?', opts: ['shared_ptr', 'unique_ptr', 'a raw pointer'], answer: 1, why: 'Sole ownership with no counting cost. `shared_ptr` is justified only by genuine shared ownership.' },
+      { k: 'single', q: 'Why is `make_unique` better than `unique_ptr<T>(new T)`?', opts: ['Faster execution', 'Shorter and exception safe', 'It allocates more memory'], answer: 1, why: 'There is no intermediate state where `new` has run but the pointer has not yet taken ownership.' },
+    ],
+    note: {
+      summary: ['In modern C++ do not write `new` and `delete`.', '`unique_ptr`: sole ownership, move-only — the default.', '`shared_ptr`: counted shared ownership, more expensive.', 'RAII: constructor acquires, destructor releases, exceptions included.', 'A `shared_ptr` cycle never releases; `weak_ptr` breaks it.', 'Always `make_unique` / `make_shared`.'],
+      terms: [{ term: 'RAII', def: 'Tying resource management to object lifetime.' }, { term: 'unique_ptr', def: 'A sole-ownership smart pointer.' }, { term: 'weak_ptr', def: 'A non-owning reference that breaks cycles.' }],
+    },
+  },
+  {
+    day: 12,
+    title: 'Templates',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A template is code that **generalises over types**. You write it once, and the compiler generates a version for every type you use it with.' },
+      { k: 'code', lang: 'cpp', src: 'template <typename T>\nT larger(const T& a, const T& b) {\n    return (a > b) ? a : b;\n}\n\nint main() {\n    larger(3, 7);            // T = int\n    larger(2.5, 1.5);        // T = double\n    larger<std::string>("a", "b");\n}', explain: 'The compiler deduces the type from the arguments. When it is ambiguous, you can state it explicitly in the angle brackets.' },
+      { k: 'callout', tone: 'key', md: 'Templates expand at **compile time**. There is no run-time cost: the generated code is exactly as fast as a hand-written `int` version. That is C++ main advantage over run-time genericity.' },
+      { k: 'code', lang: 'cpp', src: 'template <typename T>\nclass Stack {\n    std::vector<T> items;\npublic:\n    void push(T value) { items.push_back(std::move(value)); }\n    T pop() {\n        T v = std::move(items.back());\n        items.pop_back();\n        return v;\n    }\n    bool empty() const { return items.empty(); }\n};', explain: 'A class template. `Stack<int>` and `Stack<std::string>` become two entirely separate classes in the compiled program.' },
+      { k: 'callout', tone: 'warn', md: 'Template code usually stays **in the header**, not in a `.cpp`: the compiler needs the whole body to expand it. That is why template-heavy code compiles slowly.' },
+      { k: 'callout', tone: 'tip', md: 'Template error messages are famously long. Read them **bottom up**: the real cause is in the last lines, and the dozen lines above are just the instantiation trail.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'When does a template expand?', opts: ['At run time', 'At compile time', 'At link time'], answer: 1, why: 'The compiler generates separate code for every type used. That is why there is no run-time cost.' },
+      { k: 'single', q: 'Why does template code live in the header?', opts: ['Tradition', 'Because the compiler needs the whole body to expand it', 'Because it is shorter'], answer: 1, why: 'Instantiation requires the full definition, which makes it hard to move template code into its own translation unit.' },
+      { k: 'single', q: 'How are `Stack<int>` and `Stack<std::string>` related?', opts: ['The same class', 'Two separate, independent classes in the compiled program', 'They inherit from each other'], answer: 1, why: 'Each instantiation is its own type. That is why many instantiations grow the binary.' },
+      { k: 'single', q: 'How should you read a long template error?', opts: ['Top down', 'Bottom up: the real cause is in the last lines', 'From the middle'], answer: 1, why: 'The upper lines list the instantiation trail. The actual error is at the end of the chain.' },
+      { k: 'single', q: 'What is the main advantage of templates over run-time genericity?', opts: ['Shorter code', 'No run-time cost: generated code is as fast as hand-written', 'Smaller binary'], answer: 1, why: 'No virtual calls or type checks at run time; the compiler resolves everything.' },
+    ],
+    note: {
+      summary: ['Templates generalise over types, expanded at compile time.', 'The compiler deduces the type from the arguments.', 'No run-time cost: as fast as a hand-written version.', 'Each instantiation is a separate type in the compiled program.', 'Template code stays in the header because the body is needed.', 'Read error messages bottom up.'],
+      terms: [{ term: 'template', def: 'Code generalised over types, expanded at compile time.' }, { term: 'instantiation', def: 'The version the compiler generates for a concrete type.' }, { term: 'type deduction', def: 'The compiler inferring the type from the arguments.' }],
+    },
+  },
+  {
+    day: 13,
+    title: 'STL containers',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'The standard library gives you ready-made containers. You do not write linked lists — your job is to **pick the right one**.' },
+      { k: 'text', md: '- **`vector`** — a growable array. The right answer most of the time.\n- **`array`** — fixed size, size in the type\n- **`map`** — ordered key-value, tree based, `O(log n)`\n- **`unordered_map`** — hashed key-value, `O(1)` on average\n- **`set` / `unordered_set`** — a set, no duplicates\n- **`deque`** — fast growth at both ends' },
+      { k: 'code', lang: 'cpp', src: '#include <vector>\n#include <unordered_map>\n\nstd::vector<int> numbers{3, 1, 4, 1, 5};\nnumbers.push_back(9);\nnumbers.reserve(100);           // pre-allocate, avoids reallocation\n\nstd::unordered_map<std::string, int> batteries;\nbatteries["Rover-1"] = 87;\nif (auto it = batteries.find("Rover-2"); it != batteries.end()) {\n    std::cout << it->second;\n}', explain: '`find` compared against `end()` is the safe lookup. `batteries["Rover-2"]` would instead **create** the missing key with a zero — a common source of bugs.' },
+      { k: 'callout', tone: 'key', md: 'Default to **`vector`**. Contiguous memory, excellent cache behaviour. A linked list is faster at insertion in theory, and almost always slower in practice because every element sits somewhere else in memory.' },
+      { k: 'callout', tone: 'warn', md: 'A `vector` **invalidates its iterators** when it grows and relocates. If you insert inside a loop, your iterator can go stale mid-loop. That is what `reserve` is for: knowing the size up front avoids the reallocation.' },
+      { k: 'text', md: 'When `map` and when `unordered_map`? If you need **ordered traversal**, or keys in sorted order, use `map`. If you only need fast lookup, use `unordered_map`. At scale the latter is noticeably faster.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is the default container?', opts: ['list', 'vector', 'deque'], answer: 1, why: 'Contiguous memory and good cache behaviour. A linked list is almost always slower in practice.' },
+      { k: 'single', q: 'What does `map["missing"]` do?', opts: ['Throws', 'Creates the key with a default value', 'Returns nullptr'], answer: 1, why: 'A common source of bugs. For reading use `find` or `at`, not the subscript.' },
+      { k: 'single', q: 'When do `vector` iterators become invalid?', opts: ['Never', 'When the vector grows and relocates', 'On every read'], answer: 1, why: 'Reallocation moves the elements to a new address. `reserve` pre-allocates and avoids it.' },
+      { k: 'single', q: 'When should you pick `map` over `unordered_map`?', opts: ['When you need ordered traversal', 'When you need faster lookup', 'Always'], answer: 0, why: '`map` is tree based and therefore ordered. `unordered_map` hashes: faster on average, arbitrary order.' },
+      { k: 'single', q: 'What is `reserve` for?', opts: ['Clearing the contents', 'Pre-allocating space, avoiding reallocation on growth', 'Sorting'], answer: 1, why: 'With a known expected size, one allocation is enough and the iterators do not go stale meanwhile.' },
+    ],
+    note: {
+      summary: ['`vector` is the default: contiguous memory, good cache behaviour.', '`map` is ordered `O(log n)`, `unordered_map` hashed `O(1)` on average.', '`map[key]` creates a missing key; use `find` or `at` to read.', 'A `vector` invalidates its iterators when it grows.', '`reserve` pre-allocates and avoids reallocation.', 'Ordered traversal: `map`. Fast lookup: `unordered_map`.'],
+      terms: [{ term: 'vector', def: 'A growable array in contiguous memory.' }, { term: 'iterator invalidation', def: 'Container changes can make existing iterators unusable.' }, { term: 'reserve', def: 'Pre-allocating capacity for a vector.' }],
+    },
+  },
+  {
+    day: 14,
+    title: 'Iterators',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'An **iterator** is the common language of containers: a generalised pointer that can step and dereference. That is why the same algorithm works on a `vector` and on a `map`.' },
+      { k: 'code', lang: 'cpp', src: 'std::vector<int> v{3, 1, 4};\n\nfor (auto it = v.begin(); it != v.end(); ++it) {\n    std::cout << *it << " ";\n}\n\nfor (const auto& x : v) {       // same thing, more readable\n    std::cout << x << " ";\n}', explain: '`begin()` points at the first element, `end()` **one past the last** — not at an element. That is why `!=` and not `<` is the right condition: it works for every container.' },
+      { k: 'callout', tone: 'key', md: '`end()` is not an element, it is a **sentinel**. Dereferencing it is undefined behaviour. The half-open range `[begin, end)` is what makes everything uniform: an empty container has `begin() == end()`, and the size is exactly `end() - begin()`.' },
+      { k: 'text', md: 'In practice use the range-based `for`. Explicit iterators are needed when you:\n\n- **erase** while iterating (`it = v.erase(it)`)\n- walk **backwards** (`rbegin()`, `rend()`)\n- step **two ranges** at once\n- pass them to an algorithm' },
+      { k: 'callout', tone: 'warn', md: 'Erasing inside a loop is a trap: `erase` invalidates the iterator. The correct form is `it = v.erase(it);`, because `erase` returns the **next** valid iterator. Skip the increment on that branch.' },
+      { k: 'callout', tone: 'tip', md: '`const auto&` is the right default in a range-based loop: no copy and no accidental modification. Use `auto&` to modify, and bare `auto` only when you really want a copy.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does `end()` point at?', opts: ['The last element', 'One past the last: a sentinel', 'The container size'], answer: 1, why: 'It is a boundary, not an element. Dereferencing it is undefined behaviour.' },
+      { k: 'single', q: 'Why is the loop condition `!=` rather than `<`?', opts: ['Faster', 'Because it works for every iterator type, not just random access', 'Habit'], answer: 1, why: 'A `map` iterator has no `<` operator. `!=` works with every container.' },
+      { k: 'single', q: 'How do you erase correctly inside a loop?', opts: ['`v.erase(it); ++it;`', '`it = v.erase(it);`', '`delete it;`'], answer: 1, why: '`erase` invalidates the old iterator and returns the next valid one.' },
+      { k: 'single', q: 'What is the right default in a range-based loop?', opts: ['`auto`', '`const auto&`', '`auto*`'], answer: 1, why: 'No copy, no modification. Use `auto&` to modify and `auto` to copy.' },
+      { k: 'single', q: 'What does the half-open range `[begin, end)` mean?', opts: ['begin is included, end is not', 'Both are included', 'Neither is included'], answer: 0, why: 'That is what makes `begin() == end()` for an empty container, and the size exactly the difference.' },
+    ],
+    note: {
+      summary: ['An iterator is a generalised pointer: the common language of containers.', '`begin()` is the first element, `end()` is a one-past-the-last sentinel.', 'The half-open range `[begin, end)` gives uniform handling.', 'Use `!=` as the loop condition: it works for every iterator type.', 'Erasing in a loop: `it = v.erase(it);`.', '`const auto&` is the right default in a range-based loop.'],
+      terms: [{ term: 'iterator', def: 'A generalised pointer to container elements.' }, { term: 'half-open range', def: '`[begin, end)`: start included, end excluded.' }, { term: 'range-based for', def: 'The `for (auto& x : v)` form of loop.' }],
+    },
+  },
+  {
+    day: 15,
+    title: 'Algorithms: sort, find, transform',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'The `<algorithm>` header ships over a hundred ready algorithms. The rule is simple: **do not hand-write a loop for something an algorithm already does**. Shorter, fewer mistakes, and often faster.' },
+      { k: 'code', lang: 'cpp', src: '#include <algorithm>\n#include <numeric>\n\nstd::vector<int> v{5, 2, 8, 1};\n\nstd::sort(v.begin(), v.end());                 // 1 2 5 8\n\nauto it = std::find(v.begin(), v.end(), 8);\nif (it != v.end()) { /* found */ }\n\nint total = std::accumulate(v.begin(), v.end(), 0);\n\nstd::vector<int> squares(v.size());\nstd::transform(v.begin(), v.end(), squares.begin(),\n               [](int x) { return x * x; });', explain: 'Every algorithm takes an iterator pair, not a container. That is why they work on sub-ranges too: `std::sort(v.begin(), v.begin() + 3)` sorts only the first three.' },
+      { k: 'callout', tone: 'key', md: 'The ones you will use most: `sort`, `find`, `find_if`, `count`, `any_of`, `all_of`, `transform`, `copy_if`, `accumulate`, `min_element`, `max_element`. That dozen covers most daily work.' },
+      { k: 'code', lang: 'cpp', src: '/* Sorting with a custom rule */\nstd::sort(rovers.begin(), rovers.end(),\n          [](const Rover& a, const Rover& b) {\n              return a.battery() > b.battery();   // descending\n          });\n\n/* Filtering */\nstd::vector<Rover> weak;\nstd::copy_if(rovers.begin(), rovers.end(),\n             std::back_inserter(weak),\n             [](const Rover& r) { return r.battery() < 20; });', explain: '`back_inserter` appends each element with `push_back`, so the destination does not have to be sized in advance.' },
+      { k: 'callout', tone: 'warn', md: 'A comparator must be a **strict weak ordering**: if `a < b` is true then `b < a` must be false, and `a < a` must always be false. Using `<=` here can crash at run time, because the sort runs off the end of the array.' },
+      { k: 'callout', tone: 'tip', md: 'Since C++20 there is a ranges version: `std::ranges::sort(v)` — no iterator pair needed. If your compiler supports it, use it; it reads far better.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What do STL algorithms take as parameters?', opts: ['A container', 'An iterator pair', 'A pointer'], answer: 1, why: 'That is why they work on sub-ranges and stay independent of the container type.' },
+      { k: 'single', q: 'What does `std::find` return when it finds nothing?', opts: ['nullptr', 'The `end()` iterator', 'It throws'], answer: 1, why: 'Always compare against `end()` before dereferencing.' },
+      { k: 'single', q: 'What is `back_inserter` for?', opts: ['Sorting', 'So the algorithm appends with `push_back` and the destination need not be pre-sized', 'Erasing'], answer: 1, why: 'Without it `copy_if` would write into existing slots and the destination would need sizing first.' },
+      { k: 'single', q: 'Why can you not use `<=` as a comparator?', opts: ['It is slow', 'It is not a strict weak ordering and the sort can run off the array', 'It does not compile'], answer: 1, why: '`a < a` would be true, which `std::sort` does not expect. The result can be a crash.' },
+      { k: 'single', q: 'What is the advantage of `std::ranges::sort(v)`?', opts: ['Faster', 'No iterator pair needed, more readable', 'It can sort more'], answer: 1, why: 'The C++20 ranges version. Same algorithm, less noise.' },
+    ],
+    note: {
+      summary: ['Do not hand-write a loop for something an algorithm already does.', 'Every algorithm takes an iterator pair, not a container.', '`find` returns `end()` when nothing matches.', 'Custom sort rules are passed as lambdas.', 'A comparator must be a strict weak ordering: `<`, never `<=`.', 'Without `back_inserter` the destination must be pre-sized.', 'C++20: `std::ranges::sort(v)`.'],
+      terms: [{ term: 'strict weak ordering', def: 'The requirement on a comparator; `a < a` is always false.' }, { term: 'back_inserter', def: 'An iterator that appends to the destination with `push_back`.' }, { term: 'ranges', def: 'The C++20 variant taking a whole container.' }],
+    },
+  },
+  {
+    day: 16,
+    title: 'Lambda expressions',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A lambda is an **anonymous function written in place**. Use it when a function is needed in exactly one spot — typically as an algorithm argument.' },
+      { k: 'code', lang: 'cpp', src: 'auto twice = [](int x) { return x * 2; };\nstd::cout << twice(21);         // 42\n\n/* Full form:\n   [capture](parameters) -> return { body } */\nauto divide = [](int a, int b) -> double {\n    return static_cast<double>(a) / b;\n};', explain: 'The compiler usually deduces the return type; state it only when there are several `return`s with different types, or you want to be precise.' },
+      { k: 'callout', tone: 'key', md: 'The square brackets are the **capture list**: what the lambda can see from its surroundings.\n\n- `[]` — nothing\n- `[x]` — a copy of `x`\n- `[&x]` — `x` by reference\n- `[=]` — everything by copy\n- `[&]` — everything by reference\n- `[this]` — the current object' },
+      { k: 'code', lang: 'cpp', src: 'int threshold = 20;\nauto weak = [threshold](const Rover& r) {    // a copy\n    return r.battery() < threshold;\n};\n\nint count = 0;\nstd::for_each(v.begin(), v.end(), [&count](int) {\n    ++count;                                 // by reference: visible outside\n});', explain: 'With a copy the lambda stays independent. With a reference it can modify the outer variable — but only while that variable is alive.' },
+      { k: 'callout', tone: 'warn', md: '`[&]` is **dangerous when the lambda outlives the scope**: the reference dangles and calling it is undefined behaviour. If you store or return a lambda, capture by copy.' },
+      { k: 'callout', tone: 'tip', md: 'Spell out what you capture rather than using `[=]` or `[&]`. An explicit `[threshold]` makes the dependency visible at a glance — and the compiler catches typos.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is a lambda?', opts: ['A template', 'An anonymous function written in place', 'A container'], answer: 1, why: 'Useful when a function is needed in exactly one place, such as an algorithm argument.' },
+      { k: 'single', q: 'What does the `[&x]` capture mean?', opts: ['A copy of `x`', '`x` by reference: the lambda can modify the outer variable', 'Nothing'], answer: 1, why: 'The reference points at the outer variable. Changes are visible outside — but only while the original lives.' },
+      { k: 'single', q: 'When is `[&]` dangerous?', opts: ['Never', 'When the lambda outlives the scope: the reference dangles', 'In short lambdas'], answer: 1, why: 'A stored or returned lambda would reference destroyed variables. Capture by copy instead.' },
+      { k: 'single', q: 'Why spell out captured names instead of `[=]`?', opts: ['Faster', 'The dependency is visible and the compiler catches typos', 'Shorter'], answer: 1, why: 'An explicit list documents. `[=]` hides what the lambda depends on.' },
+      { k: 'single', q: 'When must you state a lambda return type?', opts: ['Always', 'When several `return`s have different types, or you want to be precise', 'Never'], answer: 1, why: 'Otherwise the compiler deduces it. Write it when the deduction is not what you want.' },
+    ],
+    note: {
+      summary: ['A lambda is an anonymous function written in place.', 'Form: `[capture](parameters) -> type { body }`.', 'Capture: `[x]` copy, `[&x]` reference, `[=]`/`[&]` everything.', '`[&]` dangles if the lambda outlives the scope.', 'Spell out what you capture: it documents and is checkable.', 'The compiler usually deduces the return type.'],
+      terms: [{ term: 'lambda', def: 'An anonymous function object defined in place.' }, { term: 'capture list', def: 'The square brackets: what the lambda sees from outside.' }, { term: 'dangling reference', def: 'A reference to a variable that no longer exists.' }],
+    },
+  },
+  {
+    day: 17,
+    title: 'auto and type deduction',
+    minutes: 20,
+    lesson: [
+      { k: 'text', md: '`auto` asks the compiler to work out the type from the initialiser. It is not a dynamic type: the type is still fixed at compile time and cannot change afterwards.' },
+      { k: 'code', lang: 'cpp', src: 'auto n = 42;                       // int\nauto d = 3.14;                     // double\nauto s = std::string{"hello"};     // std::string\n\nstd::map<std::string, std::vector<int>> m;\nfor (const auto& [key, list] : m) {      // structured binding\n    std::cout << key << ": " << list.size() << "\\n";\n}', explain: 'Without `auto` the iterator type would be `std::map<std::string, std::vector<int>>::const_iterator`. The structured binding (C++17) also splits the pair into key and value.' },
+      { k: 'callout', tone: 'key', md: 'When to use it? When the type is **obvious from the right-hand side**, or when writing it out would be painfully long: iterators, lambdas, template expressions. When the type is meaningful information for the reader, write it out.' },
+      { k: 'callout', tone: 'warn', md: '`auto` **drops references and const**. `auto x = v[0];` makes a copy even when `v[0]` was a reference. If you do not want a copy, you need `const auto&`. This is the most common hidden performance bug in C++.' },
+      { k: 'text', md: 'The practical order to work through:\n\n1. `const auto&` — reading, not copying (the default)\n2. `auto&` — you want to modify\n3. `auto` — you really want a copy\n4. `auto&&` — in generic template code, a forwarding reference' },
+      { k: 'callout', tone: 'tip', md: '`const auto& [key, value]` finally makes map traversal readable. It was one of the most used additions in C++17.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does `auto` mean?', opts: ['A dynamic run-time type', 'The compiler works out the type from the initialiser, at compile time', 'Automatic memory management'], answer: 1, why: 'The type is still static and fixed at compile time; you simply do not have to write it.' },
+      { k: 'single', q: 'What happens with `auto x = v[0];` when `v[0]` is a reference?', opts: ['It stays a reference', 'A copy is made, because `auto` drops the reference', 'Compile error'], answer: 1, why: 'The most common hidden copy in C++. Use `const auto&` when you do not want to copy.' },
+      { k: 'single', q: 'What is the right default for reading?', opts: ['`auto`', '`const auto&`', '`auto&&`'], answer: 1, why: 'No copy and no modification. Deviate only with a reason.' },
+      { k: 'single', q: 'What does `const auto& [key, value]` do?', opts: ['Declares two variables', 'Structured binding: splits the pair into key and value', 'Defines a lambda'], answer: 1, why: 'A C++17 addition. It is what finally made map traversal readable.' },
+      { k: 'single', q: 'When should you NOT use `auto`?', opts: ['For long iterator types', 'When the type is meaningful information for the reader', 'For lambdas'], answer: 1, why: '`auto` is good when the type is obvious or irrelevant. When it carries a message, write it out.' },
+    ],
+    note: {
+      summary: ['`auto` deduces the type from the initialiser, at compile time.', 'Use it for long or obvious types: iterators, lambdas, templates.', '`auto` drops references and const — a source of hidden copies.', 'Order: `const auto&`, `auto&`, `auto`, `auto&&`.', 'Structured binding (C++17): `const auto& [key, value]`.', 'When the type is meaningful information, write it out.'],
+      terms: [{ term: 'type deduction', def: 'The compiler inferring a type from the initialiser.' }, { term: 'structured binding', def: 'Splitting a pair or struct into several names.' }, { term: 'hidden copy', def: 'An unintended copy caused by `auto` instead of a reference.' }],
+    },
+  },
+];
