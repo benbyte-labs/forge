@@ -1,5 +1,6 @@
 import type { Track } from '../../types';
 import { javaEnB } from './java-b';
+import { javaEnC } from './java-c';
 
 export const javaEn: Track = {
   id: 'java',
@@ -105,5 +106,6 @@ export const javaEn: Track = {
       },
     },
     ...javaEnB,
+    ...javaEnC,
   ],
 };
