@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { cEnB } from './c-b';
 
 export const cEn: Track = {
   id: 'c',
@@ -103,5 +104,6 @@ export const cEn: Track = {
         terms: [{ term: 'pointer', def: 'A variable holding a memory address.' }, { term: 'address-of operator (&)', def: "Returns a variable's memory address." }, { term: 'dereference (*)', def: 'Accessing the value at the address a pointer holds.' }],
       },
     },
+    ...cEnB,
   ],
 };

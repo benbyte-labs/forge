@@ -1,4 +1,5 @@
 import type { Track } from '../../types';
+import { cHuB } from './c-b';
 
 export const cHu: Track = {
   id: 'c',
@@ -103,5 +104,6 @@ export const cHu: Track = {
         terms: [{ term: 'mutató', def: 'Memóriacímet tároló változó.' }, { term: 'címképző operátor (&)', def: 'Egy változó memóriacímét adja vissza.' }, { term: 'feloldás (*)', def: 'A mutató által megadott címen lévő értékhez való hozzáférés.' }],
       },
     },
+    ...cHuB,
   ],
 };
