@@ -1,101 +1,171 @@
 # FORGE
 
-Asztali tanulóapp programozáshoz, robotikához, fizikához, CAD-hez és
-Blenderhez. Offline fut, négy nyelven, és minden lecke után jegyzetet ad,
-amiből később tanulhatsz.
+An offline desktop app for learning to program, build robots, and work with
+physics, CAD and Blender. Eight 30-day tracks, hand-written in Hungarian and
+English, with a note generated after every lesson so you can revise later.
 
-## Mit tud
+*[Magyar leírás](README.hu.md)*
 
-- **Nyolc trek, 30-30 nap** — négy programozási nyelv (Python, Java, C, C++),
-  Robotika, Fizika, CAD és Blender. Összesen 240 nap nyelvenként, kézzel
-  megírva. Minden nap: lecke → gyakorlat → kvíz → jegyzet.
-- **Kód Labor** — beépített szerkesztő. A Python a gépeden fut (Pyodide),
-  internet nélkül. A feladatot futtatás ellenőrzi, nem a kód kinézete.
-- **Robot Labor** — 3D rover és hattengelyes robotkar. Irányítható csúszkával,
-  billentyűzettel (W/S/A/D) és **a saját kódoddal**. A küldetéseket a gép
-  ellenőrzi abból, amit a robot ténylegesen csinált.
-- **Fizika Labor** — hat interaktív szimuláció: ferde hajítás, rugó, lejtő,
-  nyomaték, áramkör, egyenáramú motor. Mindegyik analitikus megoldáshoz van
-  hitelesítve.
-- **CAD Labor** — STL és 3MF nézegető: forgatás, drótváz, metszet, méretek,
-  térfogat. A saját fájljaidat is megnyitja.
-- **Jegyzetfüzet** — minden lecke után automatikus jegyzet: összefoglaló,
-  fogalmak, és egy „Figyelj erre!" blokk abból, amit a kvízben elrontottál.
-  Kereshető (ékezet nélkül is), saját megjegyzéssel bővíthető, Markdownba
-  exportálható.
-- **Streak és jutalmak** — napi cél, sorozatszámláló, streak freeze, XP és
-  szintek. A mérföldkövek valódi tartalmat oldanak fel: témát, robot-festést,
-  új pályát.
+---
 
-## Futtatás
+## What it is
 
-Fejlesztés böngészőben:
+FORGE is a single desktop window with no account, no telemetry and no network
+access at all. Everything — including the Python runtime — ships inside the
+app and runs on your machine.
+
+**Eight tracks, 30 days each.** Every day is one lesson: read → practise →
+quiz → note.
+
+| Group | Tracks |
+|---|---|
+| Programming | Python, Java, C, C++ |
+| Making | Robotics, CAD, Blender |
+| Science | Physics |
+
+That is 240 days per language, 480 lessons in total, all written by hand
+rather than generated.
+
+## Features
+
+- **Code Lab** — a built-in editor. Python runs locally through
+  [Pyodide](https://pyodide.org/); JavaScript runs in a sandboxed worker.
+  Exercises are checked by running your code, not by matching text.
+  Runaway loops are terminated rather than freezing the app.
+- **Robot Lab** — a 3D rover and a six-axis arm. Drive them with sliders, with
+  the keyboard (W/S/A/D), or **with your own code**. Missions are judged on
+  what the robot actually did.
+- **Physics Lab** — six interactive simulations (projectile, spring, incline,
+  torque, circuit, DC motor), each verified against an analytic solution.
+- **CAD Lab** — an STL and 3MF viewer with rotation, wireframe, section view,
+  dimensions and volume. It opens your own files too.
+- **Notebook** — every finished lesson writes a note: a summary, the key terms,
+  and a "watch out" block built from the quiz questions you got wrong.
+  Searchable (accent-insensitive), extendable with your own remarks, and
+  exportable to Markdown.
+- **Streaks and rewards** — a daily goal, a streak counter with freezes, XP and
+  levels. Milestones unlock real content: themes, robot skins, new arenas.
+- **Four interface languages** — Hungarian, English, German and Spanish.
+  Lessons exist in Hungarian and English; the other two fall back to English
+  until translated.
+
+## Download
+
+Prebuilt Linux packages are published on the
+[Releases](../../releases) page.
+
+### AppImage (any Linux distribution)
 
 ```bash
-npm install && npm run dev
+chmod +x FORGE_0.1.0_amd64.AppImage
+./FORGE_0.1.0_amd64.AppImage
 ```
 
-Asztali ablakban:
+No installation and no root needed. To get a menu entry, move it somewhere
+permanent first — `~/Applications/` is a good spot — because the launcher
+points at wherever the file lives.
+
+### Debian and Ubuntu
+
+```bash
+sudo dpkg -i FORGE_0.1.0_amd64.deb
+```
+
+### Other platforms
+
+Only Linux builds are published at the moment. The project is a standard
+Tauri 2 app, so Windows and macOS builds should work from source — they have
+simply not been tested.
+
+## Build from source
+
+You need [Node.js](https://nodejs.org/) 20 or newer and the
+[Tauri prerequisites](https://tauri.app/start/prerequisites/) for your system
+(Rust, plus WebKitGTK and a few build tools on Linux).
+
+```bash
+git clone https://github.com/<user>/forge.git
+cd forge
+npm install
+```
+
+Run it in a desktop window:
 
 ```bash
 npm run tauri dev
 ```
 
-Telepíthető csomag készítése:
+Build installable packages:
 
 ```bash
 npm run tauri build
 ```
 
-Az eredmény a `src-tauri/target/release/bundle/` alatt található `.AppImage`
-és `.deb` fájl.
+The `.AppImage` and `.deb` land in `src-tauri/target/release/bundle/`.
 
-## Hol vannak az adataid
+To work on the interface in a browser instead, `npm run dev` serves it at
+`http://localhost:1420`. The labs all work there; only the file dialogs need
+the desktop shell.
 
-Minden helyben marad, `~/.local/share/hu.forge.app/state.json`. Semmi nem megy
-ki a gépről, és az app soha nem hív hálózatot.
+## Where your data lives
 
-Mentés készítése és visszatöltése: **Beállítások → Mentés**.
+Everything stays on your machine, in a single file:
 
-## Tesztek
+```
+~/.local/share/hu.forge.app/state.json
+```
+
+Nothing leaves the computer, and the app never opens a network connection.
+
+Back it up or restore it from **Settings → Backup**, or just copy that file.
+Deleting it resets the app to a clean state.
+
+## Tests
 
 ```bash
 npm test
 npm run typecheck
 ```
 
-A szabályok (XP, streak, jutalmak, kvízpontozás, ismétlés, jegyzet) tiszta
-függvények a `src/engine/` alatt, UI nélkül, végigtesztelve. A tananyagot egy
-validációs teszt őrzi: ha egy napból hiányzik a jegyzet, vagy a magyar és az
-angol változat eltér, a teszt elbukik, nem a felhasználó lát üres képernyőt.
+The rules — XP, streaks, rewards, quiz scoring, spaced repetition, note
+building — are pure functions under `src/engine/` with no UI, and they are
+tested directly. An architecture test keeps that layer free of React, Three.js
+and Tauri imports, so the logic stays portable and fast to test.
 
-## Új tanulónap hozzáadása
+The curriculum has its own validation suite: if a day is missing its note, if
+the Hungarian and English versions disagree about which days or questions
+exist, if two days in a track share a title, or if a day's title has drifted
+from the planned 30-day arc, the tests fail. A content mistake breaks the
+build rather than reaching a learner as an empty screen.
 
-1. Írd meg a napot `src/content/hu/tracks/<trek>*.ts`-ben és ugyanazt
-   `src/content/en/tracks/<trek>*.ts`-ben. A hosszabb treket több fájlra bontjuk
-   (`cad.ts`, `cad-b.ts`, `cad-c.ts`, ...), és a `cad.ts` fűzi össze őket.
-2. `npm test` — a validációs teszt megmondja, ha valami hiányzik. Ellenőrzi azt
-   is, hogy a nap címe egyezik a `plannedTitles` megfelelő elemével, és hogy
-   egy treken belül nincs két azonos című nap.
+## Project layout
 
-## Nyelvek
+```
+src/engine/     pure rules, no UI — the tested core
+src/content/    the curriculum, as typed modules (hu/ and en/)
+src/features/   one folder per screen: lesson, quiz, labs, notebook
+src/i18n/       interface translations, with fallback to English
+src-tauri/      the Rust shell: window, file dialogs, atomic saves
+```
 
-A felület magyarul, angolul, németül és spanyolul van meg. A tananyag magyarul
-és angolul teljes; a másik két nyelven a leckék angolul jelennek meg, amíg nincs
-fordítás — ezt a `CONTENT_FALLBACK` intézi a `src/content/index.ts`-ben.
+Lessons are TypeScript modules rather than runtime JSON on purpose: a missing
+day or a malformed block is a compile error, not a crash in front of a learner.
 
-Új nyelv hozzáadása:
+## What it deliberately does not do
 
-1. Másold `src/i18n/ui/hu.ts`-t egy új fájlba, és fordítsd le. Elég a
-   `Partial<Record<UiKey, string>>`: ami hiányzik, az angolra esik vissza.
-2. Vedd fel a `Locale` típusba (`src/engine/types.ts`) és a `DICTS` táblába
-   (`src/i18n/index.tsx`).
-3. A tananyag fordítása külön lépés: hozd létre a `src/content/<nyelv>/tracks/`
-   mappát, és vedd fel a `TRACKS` táblába.
+It is not a CAD kernel — the CAD Lab teaches and drills, it does not replace
+FreeCAD. It does not drive real hardware. The Java, C and C++ lessons are for
+reading and quizzing; only Python and JavaScript execute inside the app. And
+it uses no AI: the curriculum is written and version-controlled.
 
-## Amit szándékosan nem tud
+## Contributing
 
-Nem valódi CAD-kernel: a CAD Labor tanít és gyakoroltat, nem vált ki egy
-FreeCAD-et. Nem vezérel valódi hardvert. A Java, C és C++ leckék kódja olvasásra
-és kvízre való — ezek a nyelvek nem futnak az appon belül, csak a Python és a
-JavaScript. Nem használ AI-t: a tananyag megírt és verziózott.
+Adding a lesson day means writing it in both `src/content/hu/tracks/` and
+`src/content/en/tracks/`, then running `npm test` — the validation suite will
+tell you what is missing. Longer tracks are split across several files
+(`cad.ts`, `cad-b.ts`, `cad-c.ts`, …) that the main file stitches together.
+
+Adding an interface language needs only one dictionary: copy
+`src/i18n/ui/hu.ts`, translate what you can, and register it in
+`src/engine/types.ts` and `src/i18n/index.tsx`. Missing keys fall back to
+English, so a partial translation is still useful.
