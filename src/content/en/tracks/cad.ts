@@ -3,6 +3,7 @@ import { cadEnB } from './cad-b';
 import { cadEnC } from './cad-c';
 import { cadEnD } from './cad-d';
 import { cadEnE } from './cad-e';
+import { cadEnF } from './cad-f';
 
 export const cadEn: Track = {
   id: 'cad',
@@ -36,7 +37,7 @@ export const cadEn: Track = {
     'Print orientation',
     'Avoiding supports',
     'Slicing and layer height',
-    'Post-processing and fit',
+    'Post-processing and fitting',
     'Your first robot part',
     'Designing a complete chassis',
   ],
@@ -131,5 +132,6 @@ export const cadEn: Track = {
     ...cadEnC,
     ...cadEnD,
     ...cadEnE,
+    ...cadEnF,
   ],
 };
