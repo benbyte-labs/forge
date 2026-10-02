@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { cadEnB } from './cad-b';
 import { cadEnC } from './cad-c';
 import { cadEnD } from './cad-d';
+import { cadEnE } from './cad-e';
 
 export const cadEn: Track = {
   id: 'cad',
@@ -30,8 +31,8 @@ export const cadEn: Track = {
     'Designing a motor mount',
     'Cable routing',
     'Technical drawings',
-    'Dimensioning and annotation',
-    'Choosing a material',
+    'Dimensioning and symbols',
+    'Choosing materials',
     'Print orientation',
     'Avoiding supports',
     'Slicing and layer height',
@@ -129,5 +130,6 @@ export const cadEn: Track = {
     ...cadEnB,
     ...cadEnC,
     ...cadEnD,
+    ...cadEnE,
   ],
 };
