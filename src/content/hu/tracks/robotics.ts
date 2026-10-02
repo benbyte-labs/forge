@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { roboticsHuB } from './robotics-b';
 import { roboticsHuC } from './robotics-c';
 import { roboticsHuD } from './robotics-d';
+import { roboticsHuE } from './robotics-e';
 
 export const roboticsHu: Track = {
   id: 'robotics',
@@ -126,5 +127,6 @@ export const roboticsHu: Track = {
     ...roboticsHuB,
     ...roboticsHuC,
     ...roboticsHuD,
+    ...roboticsHuE,
   ],
 };

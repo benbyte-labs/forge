@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { roboticsEnB } from './robotics-b';
 import { roboticsEnC } from './robotics-c';
 import { roboticsEnD } from './robotics-d';
+import { roboticsEnE } from './robotics-e';
 
 export const roboticsEn: Track = {
   id: 'robotics',
@@ -28,12 +29,12 @@ export const roboticsEn: Track = {
     'Line following',
     'Obstacle avoidance',
     'Mapping basics',
-    'Localisation',
-    'Path planning on a grid',
+    'Localization',
+    'Grid path planning',
     'The A* algorithm',
     'State machines',
     'Behaviour trees',
-    'Safety and the emergency stop',
+    'Safety and emergency stop',
     'Testing in simulation',
     'Choosing components',
     'Assembly and wiring',
@@ -126,5 +127,6 @@ export const roboticsEn: Track = {
     ...roboticsEnB,
     ...roboticsEnC,
     ...roboticsEnD,
+    ...roboticsEnE,
   ],
 };
