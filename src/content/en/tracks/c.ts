@@ -1,6 +1,7 @@
 import type { Track } from '../../types';
 import { cEnB } from './c-b';
 import { cEnC } from './c-c';
+import { cEnD } from './c-d';
 
 export const cEn: Track = {
   id: 'c',
@@ -23,7 +24,7 @@ export const cEn: Track = {
     'Headers and translation units',
     'The preprocessor',
     'Make and the build process',
-    'Working with files',
+    'File handling',
     'Bitwise operations',
     'Enums and unions',
     'const and volatile',
@@ -107,5 +108,6 @@ export const cEn: Track = {
     },
     ...cEnB,
     ...cEnC,
+    ...cEnD,
   ],
 };
