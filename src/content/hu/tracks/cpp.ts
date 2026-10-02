@@ -1,6 +1,7 @@
 import type { Track } from '../../types';
 import { cppHuB } from './cpp-b';
 import { cppHuC } from './cpp-c';
+import { cppHuD } from './cpp-d';
 
 export const cppHu: Track = {
   id: 'cpp',
@@ -107,5 +108,6 @@ export const cppHu: Track = {
     },
     ...cppHuB,
     ...cppHuC,
+    ...cppHuD,
   ],
 };

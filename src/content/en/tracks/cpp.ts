@@ -1,6 +1,7 @@
 import type { Track } from '../../types';
 import { cppEnB } from './cpp-b';
 import { cppEnC } from './cpp-c';
+import { cppEnD } from './cpp-d';
 
 export const cppEn: Track = {
   id: 'cpp',
@@ -26,7 +27,7 @@ export const cppEn: Track = {
     'const correctness',
     'Exception handling',
     'Namespaces',
-    'Splitting header and source',
+    'Splitting headers and sources',
     'CMake basics',
     'Reading compiler errors',
     'Unit testing',
@@ -107,5 +108,6 @@ export const cppEn: Track = {
     },
     ...cppEnB,
     ...cppEnC,
+    ...cppEnD,
   ],
 };
