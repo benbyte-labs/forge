@@ -71,6 +71,9 @@ export const en: Record<UiKey, string> = {
   'track.minutes': '{n} min',
 
   // ── Lesson ───────────────────────────────────────────────────────
+  'lesson.next': 'Next',
+  'lesson.prev': 'Back',
+  'lesson.step': '{a}/{b}',
   'lesson.toQuiz': 'Go to the quiz',
   'lesson.toLab': 'Go to the lab',
   'lesson.done': 'Lesson read',

@@ -77,6 +77,9 @@ export const de: Partial<Record<UiKey, string>> = {
   'track.open': 'Öffnen',
   'track.minutes': '{n} Min',
 
+  'lesson.next': 'Weiter',
+  'lesson.prev': 'Zurück',
+  'lesson.step': '{a}/{b}',
   'lesson.toQuiz': 'Zum Quiz',
   'lesson.toLab': 'Zur Übung',
   'lesson.done': 'Lektion gelesen',

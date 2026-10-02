@@ -69,6 +69,9 @@ export const hu = {
   'track.minutes': '{n} perc',
 
   // ── Lesson ───────────────────────────────────────────────────────
+  'lesson.next': 'Tovább',
+  'lesson.prev': 'Vissza',
+  'lesson.step': '{a}/{b}',
   'lesson.toQuiz': 'Irány a kvíz',
   'lesson.toLab': 'Irány a gyakorlat',
   'lesson.done': 'Lecke elolvasva',

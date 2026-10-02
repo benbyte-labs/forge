@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore } from '../../app/store';
 import { ALL_DOMAINS, getDay, type Domain } from '../../content';
@@ -65,30 +66,84 @@ export function LessonPage() {
 
       <h1>{content.title}</h1>
 
-      <div className="lessonbody">
-        {content.lesson.map((block, i) => (
-          <BlockRenderer key={i} block={block} />
+      <LessonSteps
+        key={`${domain}:${day}`}
+        domain={domain}
+        day={day}
+        content={content}
+        onReachEnd={() => {
+          if (!done) completeLesson(domain, day);
+        }}
+        onFinish={() => navigate(`/track/${domain}/${day}/quiz`)}
+      />
+    </article>
+  );
+}
+
+/**
+ * One lesson block per screen, the way the quiz shows one question per screen.
+ * A lesson is five to seven blocks plus an optional lab, which together are far
+ * taller than a window; paging them keeps every step readable without scrolling.
+ */
+function LessonSteps({
+  domain,
+  day,
+  content,
+  onReachEnd,
+  onFinish,
+}: {
+  domain: Domain;
+  day: number;
+  content: NonNullable<ReturnType<typeof getDay>>;
+  onReachEnd: () => void;
+  onFinish: () => void;
+}) {
+  const t = useT();
+  const [step, setStep] = useState(0);
+
+  // The lab is tall enough to need a screen of its own, so it becomes the
+  // last step rather than sitting underneath the final block.
+  const total = content.lesson.length + (content.lab ? 1 : 0);
+  const onLab = !!content.lab && step === total - 1;
+  const atEnd = step === total - 1;
+
+  useEffect(() => {
+    if (atEnd) onReachEnd();
+  }, [atEnd, onReachEnd]);
+
+  return (
+    <>
+      <div className="dots" aria-hidden="true">
+        {Array.from({ length: total }, (_, i) => (
+          <span key={i} className="dot" data-state={i === step ? 'now' : i < step ? 'past' : 'future'} />
         ))}
       </div>
 
-      {content.lab && <LabTaskPanel domain={domain} day={day} task={content.lab} />}
+      <div className="lessonstep" role="group" aria-label={t('lesson.step', { a: step + 1, b: total })}>
+        {onLab ? (
+          <LabTaskPanel domain={domain} day={day} task={content.lab!} />
+        ) : (
+          <BlockRenderer block={content.lesson[step]} />
+        )}
+      </div>
 
       <footer className="lessonfoot">
-        {!done && (
-          <Button variant="ghost" onClick={() => completeLesson(domain, day)}>
-            <Icon name="check" size={16} /> {t('lesson.markDone')}
+        <span className="lessonfoot__count dim">{t('lesson.step', { a: step + 1, b: total })}</span>
+        {step > 0 && (
+          <Button variant="ghost" onClick={() => setStep((s) => s - 1)}>
+            ← {t('lesson.prev')}
           </Button>
         )}
-        <Button
-          variant="primary"
-          onClick={() => {
-            if (!done) completeLesson(domain, day);
-            navigate(`/track/${domain}/${day}/quiz`);
-          }}
-        >
-          {t('lesson.toQuiz')} →
-        </Button>
+        {atEnd ? (
+          <Button variant="primary" onClick={onFinish}>
+            {t('lesson.toQuiz')} →
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={() => setStep((s) => s + 1)}>
+            {t('lesson.next')} →
+          </Button>
+        )}
       </footer>
-    </article>
+    </>
   );
 }
