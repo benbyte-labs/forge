@@ -1,0 +1,173 @@
+import type { Day } from '../../types';
+
+/** C++ track, days 24-30. */
+export const cppEnE: Day[] = [
+  {
+    day: 24,
+    title: 'Performance and optimisation',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'C++ is a fast language, but fast code does not come from the language. A few principles matter far more than any small trick.' },
+      { k: 'callout', tone: 'key', md: 'The order worth thinking in:\n\n1. **A better algorithm** — `O(n)` instead of `O(n log n)`; the order-of-magnitude win is here\n2. **Better memory use** — contiguous data, fewer allocations\n3. **Fewer copies** — `const&`, moves, `reserve`\n4. **Only at the end**: compiler flags and small tricks' },
+      { k: 'text', md: 'The **cache** matters more than the operation count today. A read from RAM is hundreds of cycles; the same read from cache is a few. That is why walking a `vector` beats walking a linked list, even where the list looks better in theory.' },
+      { k: 'code', lang: 'cpp', src: '// Slow: every push_back may reallocate and copy\nstd::vector<int> v;\nfor (int i = 0; i < 1000000; ++i) v.push_back(i);\n\n// Fast: a single allocation\nstd::vector<int> v;\nv.reserve(1000000);\nfor (int i = 0; i < 1000000; ++i) v.push_back(i);\n\n// Avoiding a hidden copy\nfor (const auto& item : big_list) { /* no copy */ }\nfor (auto item : big_list)        { /* copies every element! */ }', explain: 'A single `reserve` call can save an order of magnitude. And `const auto&` prevents the commonest hidden performance bug in C++ (day 17).' },
+      { k: 'callout', tone: 'warn', md: '**Premature optimisation** is worse than slow code: it makes the code unreadable and usually speeds up the wrong place. Most of a program run time is produced by a few percent of its code. **Measure first**, then optimise.' },
+      { k: 'callout', tone: 'tip', md: 'Tools for measuring: `std::chrono::steady_clock` for a rough figure, **perf** or **Valgrind callgrind** for a detailed profile. Use `steady_clock`, not `system_clock` — the latter can jump backwards when the clock syncs.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What gives the biggest win?', opts: ['Compiler flags', 'A better algorithm', 'Small tricks'], answer: 1, why: 'The order-of-magnitude difference is there; the rest is a constant factor.' },
+      { k: 'single', q: 'Why does a `vector` beat a linked list in practice?', opts: ['Less code', 'Contiguous memory, so better cache behaviour', 'It holds fewer elements'], answer: 1, why: 'A RAM read is hundreds of cycles, a cache read a few.' },
+      { k: 'single', q: 'What does `reserve` save?', opts: ['Memory', 'Repeated reallocation and copying', 'Code'], answer: 1, why: 'A single call can save an order of magnitude at a million elements.' },
+      { k: 'single', q: 'What is wrong with `for (auto item : list)`?', opts: ['It does not compile', 'It copies every element', 'It compiles slowly'], answer: 1, why: '`const auto&` does not copy — the commonest hidden performance bug in C++.' },
+      { k: 'single', q: 'What should you do before optimising?', opts: ['Optimise everywhere', 'Measure', 'Rewrite the code'], answer: 1, why: 'Most of the run time comes from a few percent of the code.' },
+    ],
+    note: {
+      summary: ['Order: algorithm, memory, copies, and only then tricks.', 'Cache behaviour matters more than operation count today.', 'A `vector` beats a linked list because of contiguous memory.', 'A single `reserve` call can save an order of magnitude.', '`for (auto item : ...)` copies; use `const auto&`.', 'Measure first, then optimise: `steady_clock`, perf, callgrind.'],
+      terms: [{ term: 'cache behaviour', def: 'How well a data layout suits the processor cache.' }, { term: 'premature optimisation', def: 'Speeding up without measuring, at the cost of readability.' }, { term: 'profiler', def: 'A tool showing where the run time goes.' }],
+    },
+  },
+  {
+    day: 25,
+    title: 'The cost of moving and copying',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'The biggest addition in C++11 is **move semantics**: instead of copying an object you **take over its resource**. That is what made modern C++ fast where copying used to be required.' },
+      { k: 'code', lang: 'cpp', src: 'std::vector<int> make() {\n    std::vector<int> v(1000000);\n    return v;                      // no copy: a move (or elision)\n}\n\nstd::vector<int> a = make();       // no copy\nstd::vector<int> b = a;            // COPIES: a million elements\nstd::vector<int> c = std::move(a); // MOVES: only the pointer travels\n// a is valid but unspecified from here -- do not use it', explain: 'A move transfers the internal pointer, not the data. At a million elements that is the difference between milliseconds and nanoseconds.' },
+      { k: 'callout', tone: 'key', md: '`std::move` **moves nothing**: it only marks an object as "its resource may be taken". The actual move is done by the move constructor or assignment. The name is misleading, but that is what it means.' },
+      { k: 'callout', tone: 'warn', md: 'After a move the object is in a **valid but unspecified** state. It can be destroyed and it can be assigned a new value, but you must **not read** from it. Using `a` after `std::move(a)` is the commonest modern C++ bug.' },
+      { k: 'text', md: 'The **Rule of Zero** is the practical lesson: if your class holds only smart pointers and containers, write **no** destructor, copy or move functions. The compiler generates them all correctly. If you write one, write all five (the Rule of Five).' },
+      { k: 'callout', tone: 'tip', md: 'Do not write `return std::move(v);` for a return value. Without it the compiler applies **elision**, which is cheaper even than a move: no intermediate object is created at all. `std::move` there prevents elision and makes it worse.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does moving do?', opts: ['A faster copy', 'Takes over the resource instead of copying', 'Frees memory'], answer: 1, why: 'The internal pointer transfers, not the data. At a million elements the difference is huge.' },
+      { k: 'single', q: 'What does `std::move` do?', opts: ['It moves', 'It only marks an object as having a takeable resource', 'It deletes'], answer: 1, why: 'The actual move is done by the move constructor or assignment.' },
+      { k: 'single', q: 'What state is an object in after a move?', opts: ['Deleted', 'Valid but unspecified: do not read from it', 'Unchanged'], answer: 1, why: 'It can be destroyed or reassigned, but not read.' },
+      { k: 'single', q: 'What is the Rule of Zero?', opts: ['Do not write classes', 'With only smart pointers and containers inside, write no destructor or copy functions', 'Everything should be zero'], answer: 1, why: 'The compiler generates them all correctly. Write one and you write all five.' },
+      { k: 'single', q: 'Why not write `return std::move(v);`?', opts: ['It is longer', 'Because it prevents elision, which is cheaper than a move', 'It does not compile'], answer: 1, why: 'With elision no intermediate object is created at all.' },
+    ],
+    note: {
+      summary: ['A move transfers the resource rather than copying the data.', '`std::move` does not move: it marks.', 'After a move the object is valid but unspecified — do not read it.', 'Rule of Zero: write no special functions when you do not need them.', 'Write one and you must write all five (Rule of Five).', 'Do not write `return std::move(v);` — it prevents elision.'],
+      terms: [{ term: 'move semantics', def: 'Taking over a resource instead of copying it.' }, { term: 'Rule of Zero', def: 'Write no special members when the members manage themselves.' }, { term: 'elision', def: 'Omitting the intermediate object entirely.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'Concurrency basics',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'Since C++11 threading is part of the standard library. The `<thread>`, `<mutex>` and `<atomic>` headers give portable tools.' },
+      { k: 'code', lang: 'cpp', src: '#include <thread>\n#include <mutex>\n#include <atomic>\n\nstd::atomic<int> counter{0};         // atomic, no lock needed\n\nstd::mutex m;\nstd::vector<int> shared;\n\nvoid work() {\n    ++counter;                       // safe\n\n    std::lock_guard<std::mutex> lock(m);  // RAII: unlocks on exit\n    shared.push_back(42);\n}', explain: '`lock_guard` is RAII based: the constructor locks and the destructor unlocks — on exceptions too. With manual `lock()` and `unlock()` an early `return` would leave it locked forever.' },
+      { k: 'callout', tone: 'key', md: 'The order of choice is the same as elsewhere:\n\n1. **Do not share mutable state** — the answer where possible\n2. **`std::atomic`** for simple types — counters, flags\n3. **`std::lock_guard` or `scoped_lock`** for compound data\n4. **`std::async` and `std::future`** for task-based parallelism' },
+      { k: 'code', lang: 'cpp', src: '#include <future>\n\n// Task based: no thread management\nauto fut = std::async(std::launch::async, []{\n    return long_computation(42);\n});\n\n// ... other work meanwhile ...\n\nint result = fut.get();   // waits here, and rethrows any exception here' , explain: '`std::async` is the simplest route: no thread to start and join, and an exception raised in the task surfaces at `get()`.' },
+      { k: 'callout', tone: 'warn', md: 'A `std::thread` object must be **joined or detached before destruction**. If you do neither, the destructor kills the program with `std::terminate`. Since C++20 there is `std::jthread`, which joins by itself — use that in new code.' },
+      { k: 'callout', tone: 'tip', md: 'Build with `-fsanitize=thread`: **ThreadSanitizer** catches race conditions at run time, even ones that happened not to cause a fault in that run. It is the most effective tool for checking threaded code.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Why is `lock_guard` better than manual `lock()`/`unlock()`?', opts: ['Faster', 'RAII: it unlocks on an exception or an early return too', 'Shorter'], answer: 1, why: 'Managed by hand, an early `return` would leave the mutex locked forever.' },
+      { k: 'single', q: 'When is `std::atomic` enough?', opts: ['Always', 'For simple types: counters and flags', 'For compound data structures'], answer: 1, why: 'Compound data needs `lock_guard` or `scoped_lock`.' },
+      { k: 'single', q: 'What is the advantage of `std::async`?', opts: ['It is faster', 'No thread management, and exceptions surface at `get()`', 'Less memory'], answer: 1, why: 'Task-based parallelism: the library manages the thread lifecycle.' },
+      { k: 'single', q: 'What happens when a `std::thread` is destroyed without join or detach?', opts: ['Nothing', 'The destructor kills the program with `std::terminate`', 'It waits'], answer: 1, why: 'Since C++20 there is `std::jthread`, which joins by itself.' },
+      { k: 'single', q: 'What does `-fsanitize=thread` give you?', opts: ['Faster threads', 'Run-time detection of race conditions', 'More threads'], answer: 1, why: 'Even ones that happened not to cause a fault in that particular run.' },
+    ],
+    note: {
+      summary: ['Since C++11 threading is standard: `<thread>`, `<mutex>`, `<atomic>`.', '`lock_guard` is RAII based and unlocks on exceptions.', 'Order: do not share, atomic, lock_guard, async.', '`std::async` is task based: no thread management.', 'A `std::thread` must be joined or detached; C++20 has `jthread`.', 'ThreadSanitizer (`-fsanitize=thread`) catches races.'],
+      terms: [{ term: 'lock_guard', def: 'An RAII mutex lock released at the end of scope.' }, { term: 'std::async', def: 'A function providing task-based parallelism.' }, { term: 'jthread', def: 'A C++20 thread that joins itself on destruction.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Modern C++ style',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: '"Modern C++" is not a new language but **different habits**. Since C++11 almost everything you learned to fear in old code has a safe replacement.' },
+      { k: 'callout', tone: 'key', md: 'The replacement table:\n\n| Old | Modern |\n|---|---|\n| `new` / `delete` | `make_unique`, `make_shared` |\n| raw array | `std::vector`, `std::array` |\n| `char*` | `std::string`, `std::string_view` |\n| `NULL` | `nullptr` |\n| function pointer | lambda |\n| manual loop | an algorithm or a range-based `for` |\n| macro | `constexpr` or `inline` function |' },
+      { k: 'code', lang: 'cpp', src: '// Old style\nchar* name = (char*)malloc(32);\nstrcpy(name, "Alpha");\nfor (int i = 0; i < n; i++) if (arr[i] > 10) count++;\nfree(name);\n\n// Modern\nstd::string name = "Alpha";\nauto count = std::ranges::count_if(arr, [](int x) { return x > 10; });', explain: 'The modern version is shorter, cannot leak, cannot overrun, and says exactly what it does rather than how it does it.' },
+      { k: 'text', md: 'Four habits that matter most:\n\n- **`const` on everything** that does not change (day 17)\n- **`auto` where the type is obvious or long**, but not where it carries meaning\n- **`enum class`** instead of plain `enum`: no implicit conversion to int\n- **`std::optional`** to signal "no value", instead of `-1` or `nullptr`' },
+      { k: 'callout', tone: 'warn', md: 'A **raw pointer is not forbidden** — it just must not **own**. A `Rover*` parameter is fine when it means "look at this, but it is not yours". Use `unique_ptr` for ownership and a raw pointer or reference for observation.' },
+      { k: 'callout', tone: 'tip', md: 'The **C++ Core Guidelines** (Stroustrup and Sutter) are the reference. You need not read it all: `clang-tidy` checks most of its rules automatically and tells you straight away what could be written more modernly.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What replaces `new`/`delete`?', opts: ['`malloc`', '`make_unique` and `make_shared`', 'Nothing'], answer: 1, why: 'Smart pointers never forget the release, exceptions included.' },
+      { k: 'single', q: 'What is the advantage of `enum class` over plain `enum`?', opts: ['It is faster', 'It does not convert to int implicitly', 'It holds more values'], answer: 1, why: 'A plain enum converts implicitly, which causes accidental bugs.' },
+      { k: 'single', q: 'How should you signal "no value"?', opts: ['Return `-1`', 'With `std::optional`', 'With `nullptr`'], answer: 1, why: '`-1` and `nullptr` are ambiguous; `optional` states the intent.' },
+      { k: 'single', q: 'Are raw pointers forbidden in modern C++?', opts: ['Yes', 'No, they just must not own', 'Only in functions'], answer: 1, why: 'They are fine for observation; ownership needs `unique_ptr`.' },
+      { k: 'single', q: 'What checks the Core Guidelines automatically?', opts: ['The compiler', '`clang-tidy`', 'The linker'], answer: 1, why: 'It tells you straight away what could be written more modernly.' },
+    ],
+    note: {
+      summary: ['Modern C++ is not a new language but different habits.', 'Replace: new→make_unique, array→vector, char*→string, NULL→nullptr.', 'An algorithm or range-based `for` instead of a manual loop.', '`const` everywhere; `auto` where obvious; `enum class`; `std::optional`.', 'Raw pointers are allowed but must not own.', '`clang-tidy` checks the Core Guidelines.'],
+      terms: [{ term: 'enum class', def: 'A strongly typed enumeration with no implicit conversion.' }, { term: 'std::optional', def: 'A type expressing a possibly absent value.' }, { term: 'Core Guidelines', def: 'The reference rule set for modern C++.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Embedded C++',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'C++ works on embedded systems too and offers much over C — but some language features have to be given up.' },
+      { k: 'callout', tone: 'key', md: 'What you get **for free** over C (at zero run-time cost):\n\n- **Templates** — type-safe genericity, expanded at compile time\n- **`constexpr`** — constants and tables computed at compile time\n- **RAII** — releasing a resource cannot be forgotten\n- **`enum class`** and strong typing' },
+      { k: 'code', lang: 'cpp', src: '// RAII for disabling interrupts: re-enabling cannot be forgotten\nclass InterruptLock {\npublic:\n    InterruptLock()  { __disable_irq(); }\n    ~InterruptLock() { __enable_irq(); }\n};\n\nvoid critical_section() {\n    InterruptLock lock;           // disabled\n    shared_data++;\n}                                 // automatically re-enabled here', explain: 'In C you would have to re-enable by hand on every exit path. Here the destructor does it — on an early `return` too. This is the biggest embedded advantage of C++.' },
+      { k: 'text', md: 'What you **give up** on a small microcontroller:\n\n- **Exceptions** — large code size and unpredictable timing; `-fno-exceptions`\n- **RTTI** (`dynamic_cast`, `typeid`) — rarely needed; `-fno-rtti`\n- **`std::string`, `std::vector`** — dynamic allocation\n- **`iostream`** — it can pull in ten kilobytes' },
+      { k: 'callout', tone: 'warn', md: 'A **virtual function is not free**: every object with virtual methods carries a pointer to the virtual table, and a call is an indirect jump. A few bytes and a few cycles — usually acceptable, but not inside a tight loop.' },
+      { k: 'callout', tone: 'tip', md: '`constexpr` is the best friend of embedded C++: you can compute a lookup table (sine values, say) **at compile time** and it lands in the data segment of the binary. Zero run-time cost, and no hand-computed numbers pasted into the source.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does C++ give over C at zero run-time cost?', opts: ['Exceptions', 'Templates, `constexpr`, RAII, `enum class`', 'Dynamic allocation'], answer: 1, why: 'They all resolve at compile time or cost nothing at run time.' },
+      { k: 'single', q: 'What is the biggest embedded benefit of RAII?', opts: ['Less memory', 'Re-enabling or releasing cannot be forgotten, even on an early return', 'Faster execution'], answer: 1, why: 'In C you would write it by hand on every exit path.' },
+      { k: 'single', q: 'Why are exceptions switched off in embedded systems?', opts: ['They do not work', 'Large code size and unpredictable timing', 'They are non-standard'], answer: 1, why: 'That is why people build with `-fno-exceptions`.' },
+      { k: 'single', q: 'What does a virtual function cost?', opts: ['Nothing', 'A pointer in the object and an indirect jump per call', 'Dynamic allocation'], answer: 1, why: 'Usually acceptable, but not inside a tight loop.' },
+      { k: 'single', q: 'What is `constexpr` good for in embedded work?', opts: ['Faster compilation', 'Computing a lookup table at compile time, at zero run-time cost', 'Less RAM'], answer: 1, why: 'No hand-computed numbers pasted into the source.' },
+    ],
+    note: {
+      summary: ['C++ works on embedded systems with a few concessions.', 'Free: templates, `constexpr`, RAII, `enum class`.', 'RAII for interrupt locks and resources cannot be forgotten.', 'Give up: exceptions, RTTI, `std::string`/`vector`, `iostream`.', 'A virtual function costs a pointer and an indirect jump.', '`constexpr` lookup tables at compile time: zero run-time cost.'],
+      terms: [{ term: 'zero-cost abstraction', def: 'A language feature with no run-time price.' }, { term: '-fno-exceptions', def: 'A compiler flag disabling exception handling.' }, { term: 'virtual table', def: 'The function pointer table behind virtual calls.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'A small program',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: 'Put it together: a robot fleet manager using everything the track covered — classes, smart pointers, templates, algorithms, exceptions.' },
+      { k: 'code', lang: 'cpp', src: '#include <memory>\n#include <vector>\n#include <algorithm>\n#include <optional>\n\nclass Rover {\n    std::string name_;\n    int battery_;\npublic:\n    Rover(std::string name, int battery)\n        : name_(std::move(name)), battery_(battery) {\n        if (name_.empty()) throw std::invalid_argument("Name is required");\n        if (battery_ < 0 || battery_ > 100)\n            throw std::out_of_range("Battery must be 0 to 100");\n    }\n\n    const std::string& name() const { return name_; }\n    int  battery()  const { return battery_; }\n    bool operable() const { return battery_ > 5; }\n};', explain: 'The constructor **validates and throws**: the object can never exist in an invalid state. `std::move(name)` avoids copying the string (day 25).' },
+      { k: 'code', lang: 'cpp', src: 'class Fleet {\n    std::vector<std::unique_ptr<Rover>> rovers_;\npublic:\n    void add(std::unique_ptr<Rover> r) {\n        rovers_.push_back(std::move(r));\n    }\n\n    std::optional<const Rover*> find(std::string_view name) const {\n        auto it = std::ranges::find_if(rovers_,\n            [name](const auto& r) { return r->name() == name; });\n        if (it == rovers_.end()) return std::nullopt;\n        return it->get();\n    }\n\n    double averageBattery() const {\n        if (rovers_.empty()) return 0.0;\n        auto total = std::accumulate(rovers_.begin(), rovers_.end(), 0,\n            [](int a, const auto& r) { return a + r->battery(); });\n        return static_cast<double>(total) / rovers_.size();\n    }\n};', explain: '`unique_ptr` makes **ownership explicit**: the fleet owns the rovers and its destructor releases them all. `find` returns an `optional` rather than `nullptr`, so the caller cannot forget the check.' },
+      { k: 'callout', tone: 'key', md: 'These few lines contain the whole way of thinking in modern C++: **RAII** for ownership, **exceptions** against invalid state, **`optional`** to express absence, **algorithms** instead of manual loops, and **`const`** everywhere it is possible.' },
+      { k: 'callout', tone: 'warn', md: '`std::string_view` **does not own** the characters: it only points at them. Never store one in a member, and never return a view of a string that dies when the function returns. As a parameter it is perfect: it does not copy.' },
+      { k: 'callout', tone: 'tip', md: 'If `Rover` were not polymorphic, the `unique_ptr` would be unnecessary too: a plain `std::vector<Rover>` would do. A smart pointer is justified when you need **polymorphism** or the object must outlive the container. Otherwise storing by value is simpler and faster.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Why does the constructor throw?', opts: ['To slow it down', 'So the object can never exist in an invalid state', 'For testing'], answer: 1, why: '`new` returns no reference when the constructor throws.' },
+      { k: 'single', q: 'What does `unique_ptr` express in the fleet?', opts: ['Speed', 'Explicit ownership: the fleet owns the rovers', 'Sharing'], answer: 1, why: 'Its destructor releases them all, exceptions included.' },
+      { k: 'single', q: 'Why does `find` return an `optional`?', opts: ['It is faster', 'Because it expresses absence and the caller cannot forget the check', 'Because it is required'], answer: 1, why: '`nullptr` is ambiguous; `optional` states the intent.' },
+      { k: 'single', q: 'What must you not do with a `string_view`?', opts: ['Pass it as a parameter', 'Store it in a member or point at a dying string', 'Compare it'], answer: 1, why: 'It does not own the characters: it only points at them.' },
+      { k: 'single', q: 'When is a smart pointer justified in a container?', opts: ['Always', 'For polymorphism, or when the object outlives the container', 'Never'], answer: 1, why: 'Otherwise a by-value `std::vector<Rover>` is simpler and faster.' },
+    ],
+    note: {
+      summary: ['The constructor validates and throws: no invalid object exists.', '`std::move` on the parameter avoids copying the string.', '`unique_ptr` makes ownership explicit.', '`optional` expresses absence instead of `nullptr`.', '`string_view` does not own: fine as a parameter, not for storage.', 'Smart pointers in a container only for polymorphism or longer lifetime.'],
+      terms: [{ term: 'string_view', def: 'A non-owning view of a character sequence.' }, { term: 'ownership', def: 'Who is responsible for releasing an object.' }, { term: 'optional', def: 'A type expressing a possibly absent value.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'The complete project',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'In thirty days you have covered the core of modern C++: classes, RAII, templates, the STL, lambdas, moves, threads. Here is how it assembles into a finished project.' },
+      { k: 'callout', tone: 'key', md: 'What a finished C++ project contains:\n\n- **`CMakeLists.txt`** with a target-centric structure (day 21)\n- **Source layout** — `include/`, `src/`, `test/`\n- **Tests** in Catch2 or GoogleTest (day 23)\n- **`clang-format`** and **`clang-tidy`** configuration\n- **Sanitizers** in the debug build\n- **README** — what it does, what it builds with, how to run it' },
+      { k: 'text', md: 'Four principles of modern C++ that recurred throughout the track:\n\n1. **RAII** — every resource tied to an object lifetime\n2. **Zero-cost abstraction** — higher-level code should not be slower\n3. **Strong typing** — let the compiler find the bug, not the user\n4. **No manual memory management** — no `new` and no `delete`' },
+      { k: 'callout', tone: 'warn', md: 'C++ is a **big language** and you do not need all of it. Template metaprogramming, the subtleties of move semantics and concepts arrive when you need them. Anyone who wants to learn everything before writing anything never writes anything.' },
+      { k: 'text', md: 'Where to go next:\n\n- **C++20 concepts and ranges** — clearer templates, more readable algorithms\n- **Qt or Dear ImGui** — a graphical interface\n- **Boost** — what the standard does not yet contain\n- **ROS 2** — a robotics framework built on C++\n- **Profiling** — perf, VTune, when speed is the goal' },
+      { k: 'callout', tone: 'tip', md: 'The best way to learn C++ is **reading existing, high-quality code**. Look at how the `fmt` library or `nlohmann/json` is written — they are modern, readable C++ and teach more about style than any course. Then write something you actually use.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What belongs to a finished C++ project?', opts: ['Only the source', 'CMakeLists, source layout, tests, clang-format/tidy, sanitizers, README', 'Only the tests'], answer: 1, why: 'Without formatting and static analysis the code quality stays uneven.' },
+      { k: 'single', q: 'What is the first principle of modern C++?', opts: ['Speed', 'RAII: every resource tied to an object lifetime', 'Brevity'], answer: 1, why: 'It follows that nothing leaks, even on an exception.' },
+      { k: 'single', q: 'What does zero-cost abstraction mean?', opts: ['Free libraries', 'Higher-level code should not be slower than hand-written', 'No memory use'], answer: 1, why: 'Templates and `constexpr` resolve at compile time.' },
+      { k: 'single', q: 'Do you need all of C++ to start?', opts: ['Yes', 'No: the subtleties arrive when you need them', 'Only the templates'], answer: 1, why: 'Anyone who wants to learn everything first never writes anything.' },
+      { k: 'single', q: 'What is the best way to learn C++?', opts: ['Courses', 'Reading high-quality existing code, then a project of your own', 'Videos'], answer: 1, why: '`fmt` or `nlohmann/json` teach more about style than any course.' },
+    ],
+    note: {
+      summary: ['A finished project: CMakeLists, source layout, tests, formatter, tidy, sanitizers, README.', 'Four principles: RAII, zero-cost abstraction, strong typing, no manual memory.', 'C++ is big and you do not need all of it to start.', 'Next: C++20 concepts and ranges, Qt, Boost, ROS 2, profiling.', 'Best learning: read high-quality code, then build your own project.'],
+      terms: [{ term: 'RAII', def: 'Resource management tied to object lifetime.' }, { term: 'zero-cost abstraction', def: 'Higher-level code with no run-time overhead.' }, { term: 'clang-tidy', def: 'A static analyser that also checks the Core Guidelines.' }],
+    },
+  },
+];

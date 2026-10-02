@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { cppEnB } from './cpp-b';
 import { cppEnC } from './cpp-c';
 import { cppEnD } from './cpp-d';
+import { cppEnE } from './cpp-e';
 
 export const cppEn: Track = {
   id: 'cpp',
@@ -32,8 +33,8 @@ export const cppEn: Track = {
     'Reading compiler errors',
     'Unit testing',
     'Performance and optimisation',
-    'The cost of copying and moving',
-    'Threading basics',
+    'The cost of moving and copying',
+    'Concurrency basics',
     'Modern C++ style',
     'Embedded C++',
     'A small program',
@@ -109,5 +110,6 @@ export const cppEn: Track = {
     ...cppEnB,
     ...cppEnC,
     ...cppEnD,
+    ...cppEnE,
   ],
 };

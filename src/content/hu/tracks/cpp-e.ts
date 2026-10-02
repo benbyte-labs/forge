@@ -1,0 +1,173 @@
+import type { Day } from '../../types';
+
+/** C++ trek, 24–30. nap. */
+export const cppHuE: Day[] = [
+  {
+    day: 24,
+    title: 'Teljesítmény és optimalizálás',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A C++ gyors nyelv, de a gyors kód nem a nyelvtől lesz gyors. Néhány elv sokkal többet számít, mint bármilyen apró trükk.' },
+      { k: 'callout', tone: 'key', md: 'A sorrend, amiben érdemes gondolkodni:\n\n1. **Jobb algoritmus** — `O(n log n)` helyett `O(n)`; itt van a nagyságrendi nyereség\n2. **Jobb memóriahasználat** — összefüggő adat, kevesebb foglalás\n3. **Kevesebb másolás** — `const&`, mozgatás, `reserve`\n4. **Csak a végén**: fordítói kapcsolók és apró trükkök' },
+      { k: 'text', md: 'A **gyorsítótár** (cache) ma fontosabb, mint a műveletszám. Egy memóriaolvasás a RAM-ból több száz órajel; ugyanaz a gyorsítótárból néhány. Ezért gyorsabb egy `vector` végigjárása, mint egy láncolt listáé, még ha a lista elméletben kedvezőbb is.' },
+      { k: 'code', lang: 'cpp', src: '// Lassú: minden push_back újrafoglalhat és másolhat\nstd::vector<int> v;\nfor (int i = 0; i < 1000000; ++i) v.push_back(i);\n\n// Gyors: egyetlen foglalás\nstd::vector<int> v;\nv.reserve(1000000);\nfor (int i = 0; i < 1000000; ++i) v.push_back(i);\n\n// Rejtett másolás elkerülése\nfor (const auto& elem : nagy_lista) { /* nem másol */ }\nfor (auto elem : nagy_lista)        { /* minden elemet lemásol! */ }', explain: 'A `reserve` egyetlen hívása nagyságrendnyi időt spórolhat. A `const auto&` pedig a C++ leggyakoribb rejtett teljesítményhibáját előzi meg (17. nap).' },
+      { k: 'callout', tone: 'warn', md: 'A **korai optimalizálás** rosszabb, mint a lassú kód: olvashatatlanná teszi, és rendszerint nem is ott gyorsít, ahol kellene. A programok futásidejének nagy része néhány százalékban keletkezik. Előbb **mérj**, aztán optimalizálj.' },
+      { k: 'callout', tone: 'tip', md: 'A mérés eszközei: `std::chrono::steady_clock` a durva méréshez, **perf** vagy **Valgrind callgrind** a részletes profilhoz. A `steady_clock`-ot használd, ne a `system_clock`-ot — utóbbi visszaugorhat, ha az óra szinkronizálódik.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi adja a legnagyobb nyereséget?', opts: ['Fordítói kapcsolók', 'A jobb algoritmus', 'Apró trükkök'], answer: 1, why: 'Itt van a nagyságrendi különbség; a többi csak konstans szorzó.' },
+      { k: 'single', q: 'Miért gyorsabb a `vector` a láncolt listánál a gyakorlatban?', opts: ['Kevesebb kód', 'Összefüggő memória, tehát jobb gyorsítótár-viselkedés', 'Kevesebb elemet tárol'], answer: 1, why: 'Egy RAM-olvasás több száz órajel, a gyorsítótárból néhány.' },
+      { k: 'single', q: 'Mit spórol a `reserve`?', opts: ['Memóriát', 'Az ismételt újrafoglalást és másolást', 'Kódot'], answer: 1, why: 'Egyetlen hívás nagyságrendnyi időt spórolhat egymillió elemnél.' },
+      { k: 'single', q: 'Mi a baj a `for (auto elem : lista)` alakkal?', opts: ['Nem fordul le', 'Minden elemet lemásol', 'Lassan fordul'], answer: 1, why: 'A `const auto&` nem másol — ez a C++ leggyakoribb rejtett teljesítményhibája.' },
+      { k: 'single', q: 'Mit tegyél az optimalizálás előtt?', opts: ['Optimalizálj mindenhol', 'Mérj', 'Írd át a kódot'], answer: 1, why: 'A futásidő nagy része néhány százalék kódban keletkezik.' },
+    ],
+    note: {
+      summary: ['Sorrend: algoritmus, memória, másolás, és csak végül trükkök.', 'A gyorsítótár ma fontosabb a műveletszámnál.', 'A `vector` gyorsabb a láncolt listánál az összefüggő memória miatt.', '`reserve` egyetlen hívása nagyságrendnyi időt spórolhat.', '`for (auto elem : ...)` minden elemet lemásol; használj `const auto&`-t.', 'Előbb mérj, aztán optimalizálj. Eszköz: `steady_clock`, perf, callgrind.'],
+      terms: [{ term: 'gyorsítótár-viselkedés', def: 'Mennyire jól illeszkedik az adatelrendezés a processzor gyorsítótárához.' }, { term: 'korai optimalizálás', def: 'Mérés nélküli gyorsítás, ami rontja az olvashatóságot.' }, { term: 'profilozó', def: 'Eszköz, ami megmutatja, hol telik a futásidő.' }],
+    },
+  },
+  {
+    day: 25,
+    title: 'Mozgatás és másolás költsége',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A C++11 legnagyobb újdonsága a **mozgatás** (move): ahelyett, hogy lemásolnál egy objektumot, **elveszed az erőforrását**. Ettől lett a modern C++ gyors ott, ahol régen másolni kellett.' },
+      { k: 'code', lang: 'cpp', src: 'std::vector<int> keszit() {\n    std::vector<int> v(1000000);\n    return v;                     // nem másol: mozgat (vagy elízió)\n}\n\nstd::vector<int> a = keszit();    // nincs másolás\nstd::vector<int> b = a;           // MÁSOL: egymillió elem\nstd::vector<int> c = std::move(a); // MOZGAT: csak a mutatót viszi\n// a innentől érvényes, de meghatározatlan állapotú -- ne használd', explain: 'A mozgatás a belső mutatót viszi át, nem az adatot. Egymillió elemnél ez a különbség milliszekundum és nanoszekundum között.' },
+      { k: 'callout', tone: 'key', md: 'A `std::move` **nem mozgat semmit**: csak megjelöli az objektumot, hogy „ennek az erőforrása elvihető". A tényleges mozgatást a mozgató konstruktor vagy értékadás végzi. A név félrevezető, de ez a jelentése.' },
+      { k: 'callout', tone: 'warn', md: 'Mozgatás után az objektum **érvényes, de meghatározatlan** állapotban van. Meg lehet semmisíteni és új értéket lehet neki adni, de **olvasni nem szabad** belőle. A `std::move(a)` után az `a` használata a leggyakoribb modern C++ hiba.' },
+      { k: 'text', md: 'A **nulla szabálya** (Rule of Zero) a gyakorlati tanulság: ha az osztályod csak okos mutatókat és konténereket tartalmaz, **ne írj** se destruktort, se másoló, se mozgató függvényt. A fordító mindet helyesen generálja. Ha írsz egyet, írd meg mind az ötöt (Rule of Five).' },
+      { k: 'callout', tone: 'tip', md: 'Egy függvény visszatérési értékénél ne írj `return std::move(v);` sort. A fordító enélkül **elíziót** alkalmaz, ami még a mozgatásnál is olcsóbb: egyáltalán nem hoz létre köztes objektumot. A `std::move` itt megakadályozza az elíziót, tehát ront.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a mozgatás lényege?', opts: ['Gyorsabb másolás', 'Az erőforrás elvétele másolás helyett', 'Memóriafelszabadítás'], answer: 1, why: 'A belső mutató kerül át, nem az adat. Egymillió elemnél óriási a különbség.' },
+      { k: 'single', q: 'Mit csinál a `std::move`?', opts: ['Mozgat', 'Csak megjelöli az objektumot, hogy az erőforrása elvihető', 'Töröl'], answer: 1, why: 'A tényleges mozgatást a mozgató konstruktor vagy értékadás végzi.' },
+      { k: 'single', q: 'Milyen állapotban van egy objektum mozgatás után?', opts: ['Törölt', 'Érvényes, de meghatározatlan: ne olvass belőle', 'Változatlan'], answer: 1, why: 'Megsemmisíthető és új értéket kaphat, de olvasni nem szabad belőle.' },
+      { k: 'single', q: 'Mi a nulla szabálya (Rule of Zero)?', opts: ['Ne írj osztályt', 'Ha csak okos mutatók és konténerek vannak benne, ne írj destruktort és másolót', 'Minden legyen nulla'], answer: 1, why: 'A fordító mindet helyesen generálja. Ha egyet írsz, írd meg mind az ötöt.' },
+      { k: 'single', q: 'Miért ne írj `return std::move(v);` sort?', opts: ['Hosszabb', 'Mert megakadályozza az elíziót, ami még olcsóbb a mozgatásnál', 'Nem fordul le'], answer: 1, why: 'Elízió esetén egyáltalán nem jön létre köztes objektum.' },
+    ],
+    note: {
+      summary: ['A mozgatás az erőforrást viszi át, nem az adatot másolja.', '`std::move` nem mozgat: megjelöl.', 'Mozgatás után az objektum érvényes, de meghatározatlan — ne olvass belőle.', 'Rule of Zero: ne írj speciális függvényt, ha nem kell.', 'Ha egyet írsz, írd meg mind az ötöt (Rule of Five).', 'Ne írj `return std::move(v);` — megakadályozza az elíziót.'],
+      terms: [{ term: 'mozgató szemantika', def: 'Erőforrás átvétele másolás helyett.' }, { term: 'Rule of Zero', def: 'Ne írj speciális tagfüggvényt, ha a tagok maguk kezelik magukat.' }, { term: 'elízió', def: 'A köztes objektum létrejöttének teljes elhagyása.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'Többszálúság alapok',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A C++11 óta a szálkezelés a szabványos könyvtár része. A `<thread>`, `<mutex>` és `<atomic>` fejlécek platformfüggetlen eszközöket adnak.' },
+      { k: 'code', lang: 'cpp', src: '#include <thread>\n#include <mutex>\n#include <atomic>\n\nstd::atomic<int> szamlalo{0};        // oszthatatlan, nem kell zár\n\nstd::mutex m;\nstd::vector<int> kozos;\n\nvoid munka() {\n    ++szamlalo;                      // biztonságos\n\n    std::lock_guard<std::mutex> zar(m);   // RAII: kilépéskor felold\n    kozos.push_back(42);\n}', explain: 'A `lock_guard` RAII-alapú: a konstruktora zár, a destruktora felold — kivétel esetén is. Kézzel hívott `lock()` és `unlock()` esetén egy korai `return` örökre zárva hagyná.' },
+      { k: 'callout', tone: 'key', md: 'A választás sorrendje ugyanaz, mint máshol:\n\n1. **Ne ossz meg módosítható állapotot** — ha lehet, ez a megoldás\n2. **`std::atomic`** egyszerű típusokhoz — számláló, jelzőbit\n3. **`std::lock_guard` vagy `scoped_lock`** összetett adatra\n4. **`std::async` és `std::future`** feladatalapú párhuzamossághoz' },
+      { k: 'code', lang: 'cpp', src: '#include <future>\n\n// Feladatalapú: nem kell szálat kezelni\nauto jovo = std::async(std::launch::async, []{\n    return hosszu_szamitas(42);\n});\n\n// ... közben más munka ...\n\nint eredmeny = jovo.get();   // itt vár meg, és ide dobja a kivételt is', explain: 'Az `std::async` a legegyszerűbb út: nem kell szálat indítani és lezárni, és a feladatban keletkezett kivétel a `get()` hívásnál jelenik meg.' },
+      { k: 'callout', tone: 'warn', md: 'Egy `std::thread` objektumot **meg kell semmisítés előtt `join`-olni vagy `detach`-olni**. Ha egyiket sem teszed, a destruktor `std::terminate`-tel megöli a programot. C++20-tól van `std::jthread`, ami magától `join`-ol — új kódban azt használd.' },
+      { k: 'callout', tone: 'tip', md: 'Fordíts `-fsanitize=thread` kapcsolóval: a **ThreadSanitizer** futásidőben elkapja a versenyhelyzeteket, még olyanokat is, amik épp nem okoztak hibát abban a futásban. Ez a leghatékonyabb eszköz szálas kód ellenőrzésére.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Miért jobb a `lock_guard` a kézi `lock()`/`unlock()` párnál?', opts: ['Gyorsabb', 'RAII: kivétel vagy korai return esetén is felold', 'Rövidebb'], answer: 1, why: 'Kézzel kezelve egy korai `return` örökre zárva hagyná a mutexet.' },
+      { k: 'single', q: 'Mikor elég a `std::atomic`?', opts: ['Mindig', 'Egyszerű típusokhoz: számláló, jelzőbit', 'Összetett adatszerkezethez'], answer: 1, why: 'Összetett adatra `lock_guard` vagy `scoped_lock` kell.' },
+      { k: 'single', q: 'Mi az `std::async` előnye?', opts: ['Gyorsabb', 'Nem kell szálat kezelni, és a kivétel a `get()`-nél jelenik meg', 'Kevesebb memória'], answer: 1, why: 'Feladatalapú párhuzamosság: a könyvtár kezeli a szálak életciklusát.' },
+      { k: 'single', q: 'Mi történik egy `join` és `detach` nélküli `std::thread` megsemmisítésekor?', opts: ['Semmi', 'A destruktor `std::terminate`-tel megöli a programot', 'Vár rá'], answer: 1, why: 'C++20-tól van `std::jthread`, ami magától `join`-ol.' },
+      { k: 'single', q: 'Mit ad a `-fsanitize=thread` kapcsoló?', opts: ['Gyorsabb szálakat', 'Futásidőben elkapja a versenyhelyzeteket', 'Több szálat'], answer: 1, why: 'Olyanokat is, amik épp nem okoztak hibát abban a futásban.' },
+    ],
+    note: {
+      summary: ['C++11 óta a szálkezelés szabványos: `<thread>`, `<mutex>`, `<atomic>`.', '`lock_guard` RAII-alapú: kivétel esetén is felold.', 'Sorrend: ne ossz állapotot, atomic, lock_guard, async.', '`std::async` feladatalapú: nem kell szálat kezelni.', '`std::thread`-et join-olni vagy detach-olni kell; C++20-ban `jthread`.', 'ThreadSanitizer (`-fsanitize=thread`) elkapja a versenyhelyzeteket.'],
+      terms: [{ term: 'lock_guard', def: 'RAII-alapú mutexzár, ami hatókör végén felold.' }, { term: 'std::async', def: 'Feladatalapú párhuzamosságot adó függvény.' }, { term: 'jthread', def: 'C++20 szál, ami megsemmisítéskor magától join-ol.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Modern C++ stílus',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A „modern C++" nem új nyelv, hanem **más szokások**. A C++11 óta szinte minden, amit a régi kódban veszélyesnek tanultál, kiváltható valami biztonságossal.' },
+      { k: 'callout', tone: 'key', md: 'A csere-táblázat:\n\n| Régi | Modern |\n|---|---|\n| `new` / `delete` | `make_unique`, `make_shared` |\n| nyers tömb | `std::vector`, `std::array` |\n| `char*` | `std::string`, `std::string_view` |\n| `NULL` | `nullptr` |\n| függvénymutató | lambda |\n| kézi ciklus | algoritmus vagy tartomány alapú `for` |\n| makró | `constexpr` vagy `inline` függvény |' },
+      { k: 'code', lang: 'cpp', src: '// Régi stílus\nchar* nev = (char*)malloc(32);\nstrcpy(nev, "Alfa");\nfor (int i = 0; i < n; i++) if (tomb[i] > 10) db++;\nfree(nev);\n\n// Modern\nstd::string nev = "Alfa";\nauto db = std::ranges::count_if(tomb, [](int x) { return x > 10; });', explain: 'A modern változat rövidebb, nem szivároghat, nem csordulhat túl, és pontosan azt mondja, amit csinál — nem azt, hogyan csinálja.' },
+      { k: 'text', md: 'Négy szokás, ami a legtöbbet számít:\n\n- **Mindent `const`**, ami nem változik (17. nap)\n- **`auto` ott, ahol a típus nyilvánvaló vagy hosszú**, de nem ott, ahol üzenete van\n- **`enum class`** a sima `enum` helyett: nem alakul magától egésszé\n- **`std::optional`** a „nincs érték" jelzésére, `-1` vagy `nullptr` helyett' },
+      { k: 'callout', tone: 'warn', md: 'A **nyers mutató nem tiltott** — csak ne **tulajdonoljon**. Egy `Rover*` paraméter rendben van, ha azt jelenti: „ezt nézd meg, de nem a tiéd". Tulajdonláshoz `unique_ptr`, megfigyeléshez nyers mutató vagy hivatkozás.' },
+      { k: 'callout', tone: 'tip', md: 'A **C++ Core Guidelines** (Stroustrup és Sutter) a hivatkozási alap. Nem kell végigolvasni: a `clang-tidy` ellenőrzi a legtöbb szabályát automatikusan, és rögtön megmondja, mit lehetne modernebbül írni.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi váltja ki a `new`/`delete` párost?', opts: ['`malloc`', '`make_unique` és `make_shared`', 'Semmi'], answer: 1, why: 'Az okos mutatók nem felejtik el a felszabadítást, kivétel esetén sem.' },
+      { k: 'single', q: 'Mi az `enum class` előnye a sima `enum`-mal szemben?', opts: ['Gyorsabb', 'Nem alakul magától egésszé', 'Több értéket bír'], answer: 1, why: 'A sima enum implicit egésszé konvertálódik, ami véletlen hibákat okoz.' },
+      { k: 'single', q: 'Mivel jelezd, hogy nincs érték?', opts: ['`-1` visszaadásával', '`std::optional`-lel', '`nullptr`-rel'], answer: 1, why: 'A `-1` és a `nullptr` jelentése nem egyértelmű; az `optional` kifejezi a szándékot.' },
+      { k: 'single', q: 'Tiltott-e a nyers mutató modern C++-ban?', opts: ['Igen', 'Nem, csak ne tulajdonoljon', 'Csak függvényben'], answer: 1, why: 'Megfigyelésre jó; tulajdonláshoz `unique_ptr` kell.' },
+      { k: 'single', q: 'Mi ellenőrzi automatikusan a Core Guidelines szabályait?', opts: ['A fordító', '`clang-tidy`', 'A linker'], answer: 1, why: 'Rögtön megmondja, mit lehetne modernebbül írni.' },
+    ],
+    note: {
+      summary: ['A modern C++ nem új nyelv, hanem más szokások.', 'Csere: new→make_unique, tömb→vector, char*→string, NULL→nullptr.', 'Kézi ciklus helyett algoritmus vagy tartomány alapú `for`.', 'Mindent `const`; `auto` ahol nyilvánvaló; `enum class`; `std::optional`.', 'A nyers mutató megengedett, de ne tulajdonoljon.', 'A `clang-tidy` ellenőrzi a Core Guidelines szabályait.'],
+      terms: [{ term: 'enum class', def: 'Erősen típusos felsorolás, implicit konverzió nélkül.' }, { term: 'std::optional', def: 'Esetleg hiányzó értéket kifejező típus.' }, { term: 'Core Guidelines', def: 'A modern C++ hivatkozási szabálygyűjteménye.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Beágyazott C++',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A C++ beágyazott rendszeren is használható, és sok előnyt ad a C-hez képest — de néhány nyelvi elemet le kell mondani.' },
+      { k: 'callout', tone: 'key', md: 'Amit **ingyen** kapsz a C-hez képest (nulla futásidejű költséggel):\n\n- **Sablonok** — típusbiztos általánosítás, fordítási időben kifejtve\n- **`constexpr`** — fordítási időben kiszámolt konstansok és táblázatok\n- **RAII** — az erőforrás felszabadítása nem felejthető el\n- **`enum class`** és erős típusosság' },
+      { k: 'code', lang: 'cpp', src: '// RAII egy megszakítás-tiltáshoz: nem felejthető el a visszakapcsolás\nclass MegszakitasTiltas {\npublic:\n    MegszakitasTiltas()  { __disable_irq(); }\n    ~MegszakitasTiltas() { __enable_irq(); }\n};\n\nvoid kritikus_szakasz() {\n    MegszakitasTiltas zar;        // tilt\n    kozos_adat++;\n}                                 // itt automatikusan visszakapcsol', explain: 'C-ben a visszakapcsolást kézzel kellene kiírni minden kilépési ágon. Itt a destruktor elvégzi — korai `return` esetén is. Ez a C++ legnagyobb beágyazott előnye.' },
+      { k: 'text', md: 'Amit **le kell mondani** kis mikrovezérlőn:\n\n- **Kivételek** — nagy kódméret és kiszámíthatatlan futásidő; `-fno-exceptions`\n- **RTTI** (`dynamic_cast`, `typeid`) — ritkán kell; `-fno-rtti`\n- **`std::string`, `std::vector`** — dinamikus foglalás\n- **`iostream`** — tíz kilobájtot is hozhat' },
+      { k: 'callout', tone: 'warn', md: 'A **virtuális függvény nem ingyen van**: minden virtuális metódussal rendelkező objektum hordoz egy mutatót a virtuális táblára, és a hívás egy közvetett ugrás. Néhány bájt és néhány órajel — rendszerint megengedhető, de egy szűk ciklusban nem.' },
+      { k: 'callout', tone: 'tip', md: 'A `constexpr` a beágyazott C++ legjobb barátja: egy keresőtáblázatot (például szinusz értékeket) **fordítási időben** kiszámíthatsz, és a bináris adatszegmensébe kerül. Nulla futásidejű költség, és nem kell kézzel kiszámolt számokat bemásolni a kódba.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mit ad a C++ a C-hez képest nulla futásidejű költséggel?', opts: ['Kivételeket', 'Sablonokat, `constexpr`-t, RAII-t, `enum class`-t', 'Dinamikus foglalást'], answer: 1, why: 'Ezek mind fordítási időben oldódnak fel vagy nulla költségűek.' },
+      { k: 'single', q: 'Mi a RAII legnagyobb beágyazott haszna?', opts: ['Kevesebb memória', 'Nem felejthető el a visszakapcsolás vagy felszabadítás, korai return esetén sem', 'Gyorsabb futás'], answer: 1, why: 'C-ben minden kilépési ágon kézzel kellene kiírni.' },
+      { k: 'single', q: 'Miért kapcsolják ki a kivételeket beágyazott rendszeren?', opts: ['Nem működnek', 'Nagy kódméret és kiszámíthatatlan futásidő', 'Nem szabványosak'], answer: 1, why: 'Ezért fordítanak `-fno-exceptions` kapcsolóval.' },
+      { k: 'single', q: 'Mi a virtuális függvény költsége?', opts: ['Semmi', 'Egy mutató az objektumban és egy közvetett ugrás híváskor', 'Dinamikus foglalás'], answer: 1, why: 'Rendszerint megengedhető, de egy szűk ciklusban nem.' },
+      { k: 'single', q: 'Mire jó a `constexpr` beágyazott rendszerben?', opts: ['Gyorsabb fordítás', 'Keresőtáblázat kiszámítása fordítási időben, nulla futásidejű költséggel', 'Kevesebb RAM'], answer: 1, why: 'Nem kell kézzel kiszámolt számokat bemásolni a kódba.' },
+    ],
+    note: {
+      summary: ['A C++ beágyazott rendszeren is használható, néhány lemondással.', 'Ingyen: sablonok, `constexpr`, RAII, `enum class`.', 'A RAII megszakítás-tiltáshoz és erőforráshoz nem felejthető el.', 'Lemondás: kivételek, RTTI, `std::string`/`vector`, `iostream`.', 'A virtuális függvény mutatót és közvetett ugrást jelent.', '`constexpr` keresőtáblázat fordítási időben: nulla futásidejű költség.'],
+      terms: [{ term: 'nulla költségű absztrakció', def: 'Nyelvi elem, aminek nincs futásidejű ára.' }, { term: '-fno-exceptions', def: 'Fordítói kapcsoló a kivételkezelés kikapcsolására.' }, { term: 'virtuális tábla', def: 'A virtuális hívásokhoz tartozó függvénymutató-táblázat.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'Egy kisebb program',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: 'Rakjuk össze: egy robotflotta-kezelő, ami mindent használ, amit a trek során megtanultál — osztályok, okos mutatók, sablonok, algoritmusok, kivételek.' },
+      { k: 'code', lang: 'cpp', src: '#include <memory>\n#include <vector>\n#include <algorithm>\n#include <optional>\n\nclass Rover {\n    std::string nev_;\n    int akku_;\npublic:\n    Rover(std::string nev, int akku)\n        : nev_(std::move(nev)), akku_(akku) {\n        if (nev_.empty()) throw std::invalid_argument("Név kötelező");\n        if (akku_ < 0 || akku_ > 100)\n            throw std::out_of_range("Akku 0 és 100 közt");\n    }\n\n    const std::string& nev() const { return nev_; }\n    int  akku()      const { return akku_; }\n    bool uzemkepes() const { return akku_ > 5; }\n};', explain: 'A konstruktor **ellenőriz és dob**: az objektum sosem jöhet létre érvénytelen állapotban. A `std::move(nev)` elkerüli a sztring másolását (25. nap).' },
+      { k: 'code', lang: 'cpp', src: 'class Flotta {\n    std::vector<std::unique_ptr<Rover>> roverek_;\npublic:\n    void hozzaad(std::unique_ptr<Rover> r) {\n        roverek_.push_back(std::move(r));\n    }\n\n    std::optional<const Rover*> keres(std::string_view nev) const {\n        auto it = std::ranges::find_if(roverek_,\n            [nev](const auto& r) { return r->nev() == nev; });\n        if (it == roverek_.end()) return std::nullopt;\n        return it->get();\n    }\n\n    double atlagAkku() const {\n        if (roverek_.empty()) return 0.0;\n        auto osszeg = std::accumulate(roverek_.begin(), roverek_.end(), 0,\n            [](int a, const auto& r) { return a + r->akku(); });\n        return static_cast<double>(osszeg) / roverek_.size();\n    }\n};', explain: 'A `unique_ptr` **egyértelművé teszi a tulajdonlást**: a flotta birtokolja a rovereket, és a destruktora mindet felszabadítja. A `keres` `optional`-t ad vissza, nem `nullptr`-t — így a hívó nem felejtheti el az ellenőrzést.' },
+      { k: 'callout', tone: 'key', md: 'Ebben a néhány sorban benne van a modern C++ egész gondolkodása: **RAII** a tulajdonláshoz, **kivétel** az érvénytelen állapot ellen, **`optional`** a hiányzó érték kifejezésére, **algoritmus** kézi ciklus helyett, **`const`** mindenhol, ahol lehet.' },
+      { k: 'callout', tone: 'warn', md: 'A `std::string_view` **nem birtokolja** a karaktereket: csak rámutat. Soha ne tárold el egy tagváltozóban, és ne add vissza olyan sztringre mutatót, ami a függvényből kilépve megszűnik. Paraméterként viszont tökéletes: nem másol.' },
+      { k: 'callout', tone: 'tip', md: 'Ha a `Rover` nem lenne polimorf, a `unique_ptr` is felesleges volna: elég lenne `std::vector<Rover>`. Az okos mutató akkor indokolt, ha **polimorfizmus** kell, vagy az objektumnak túl kell élnie a konténert. Egyébként az érték szerinti tárolás egyszerűbb és gyorsabb.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Miért dob kivételt a konstruktor?', opts: ['Hogy lassabb legyen', 'Hogy az objektum sose jöhessen létre érvénytelen állapotban', 'Hogy teszteljük'], answer: 1, why: 'A `new` nem ad vissza hivatkozást, ha a konstruktor dob.' },
+      { k: 'single', q: 'Mit fejez ki a `unique_ptr` a flottában?', opts: ['Gyorsaságot', 'Egyértelmű tulajdonlást: a flotta birtokolja a rovereket', 'Megosztást'], answer: 1, why: 'A destruktor mindet felszabadítja, kivétel esetén is.' },
+      { k: 'single', q: 'Miért `optional`-t ad vissza a `keres`?', opts: ['Gyorsabb', 'Mert kifejezi a hiányzó értéket, és a hívó nem felejtheti el az ellenőrzést', 'Mert kötelező'], answer: 1, why: 'A `nullptr` jelentése nem egyértelmű; az `optional` kifejezi a szándékot.' },
+      { k: 'single', q: 'Mit nem szabad a `string_view`-val csinálni?', opts: ['Paraméterként átadni', 'Tagváltozóban tárolni vagy megszűnő sztringre mutatni', 'Összehasonlítani'], answer: 1, why: 'Nem birtokolja a karaktereket: csak rámutat.' },
+      { k: 'single', q: 'Mikor indokolt az okos mutató egy konténerben?', opts: ['Mindig', 'Ha polimorfizmus kell, vagy az objektum túléli a konténert', 'Soha'], answer: 1, why: 'Egyébként az érték szerinti `std::vector<Rover>` egyszerűbb és gyorsabb.' },
+    ],
+    note: {
+      summary: ['A konstruktor ellenőriz és dob: nincs érvénytelen objektum.', '`std::move` a paraméteren elkerüli a sztringmásolást.', '`unique_ptr` egyértelművé teszi a tulajdonlást.', '`optional` fejezi ki a hiányzó értéket `nullptr` helyett.', '`string_view` nem birtokol: paraméternek jó, tárolni nem.', 'Okos mutató konténerben csak polimorfizmushoz vagy hosszabb élettartamhoz.'],
+      terms: [{ term: 'string_view', def: 'Nem birtokló nézet egy karaktersorozatra.' }, { term: 'tulajdonlás', def: 'Ki felelős az objektum felszabadításáért.' }, { term: 'optional', def: 'Esetleg hiányzó értéket kifejező típus.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'A teljes projekt',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'Harminc nap alatt végigmentél a modern C++ alapkészletén: osztályok, RAII, sablonok, STL, lambdák, mozgatás, szálak. Nézzük, hogyan áll össze egy befejezett projektté.' },
+      { k: 'callout', tone: 'key', md: 'Egy kész C++ projekt összetevői:\n\n- **`CMakeLists.txt`** célközpontú felépítéssel (21. nap)\n- **Forrásszerkezet** — `include/`, `src/`, `test/`\n- **Tesztek** Catch2 vagy GoogleTest keretben (23. nap)\n- **`clang-format`** és **`clang-tidy`** konfiguráció\n- **Sanitizerek** a hibakereső építésben\n- **README** — mit csinál, mivel fordul, hogyan kell futtatni' },
+      { k: 'text', md: 'A modern C++ négy alapelve, ami az egész trekben visszatért:\n\n1. **RAII** — minden erőforrás egy objektum élettartamához kötve\n2. **Nulla költségű absztrakció** — a magasabb szintű kód ne legyen lassabb\n3. **Erős típusosság** — a fordító találja meg a hibát, ne a felhasználó\n4. **Nincs kézi memóriakezelés** — `new` és `delete` nélkül' },
+      { k: 'callout', tone: 'warn', md: 'A C++ **nagy nyelv**, és nem kell mind ismerni. A sablon-metaprogramozás, a mozgató szemantika finomságai és a koncepciók akkor jönnek, amikor szükséged lesz rájuk. Aki mindent meg akar tanulni, mielőtt bármit megír, sosem ír meg semmit.' },
+      { k: 'text', md: 'Merre tovább:\n\n- **C++20 koncepciók és tartományok** — érthetőbb sablonok, olvashatóbb algoritmusok\n- **Qt vagy Dear ImGui** — grafikus felület\n- **Boost** — amit a szabvány még nem tartalmaz\n- **ROS 2** — robotikai keretrendszer, C++ alapokon\n- **Profilozás** — perf, VTune, ha a sebesség a cél' },
+      { k: 'callout', tone: 'tip', md: 'A C++ tanulásának legjobb módja **meglévő, jó minőségű kód olvasása**. Nézd meg, hogyan van megírva a `fmt` könyvtár vagy a `nlohmann/json` — ezek modern, olvasható C++-ok, és többet tanítanak a stílusról, mint bármilyen tananyag. Aztán írj valamit, amit tényleg használsz.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi tartozik egy kész C++ projekthez?', opts: ['Csak a forrás', 'CMakeLists, forrásszerkezet, tesztek, clang-format/tidy, sanitizerek, README', 'Csak a tesztek'], answer: 1, why: 'A formázás és a statikus elemzés nélkül a kód minősége egyenetlen marad.' },
+      { k: 'single', q: 'Mi a modern C++ első alapelve?', opts: ['Gyorsaság', 'RAII: minden erőforrás egy objektum élettartamához kötve', 'Rövidség'], answer: 1, why: 'Ebből következik, hogy kivétel esetén sem szivárog semmi.' },
+      { k: 'single', q: 'Mit jelent a nulla költségű absztrakció?', opts: ['Ingyenes könyvtárak', 'A magasabb szintű kód ne legyen lassabb a kézzel írtnál', 'Nincs memóriahasználat'], answer: 1, why: 'A sablonok és a `constexpr` fordítási időben oldódnak fel.' },
+      { k: 'single', q: 'Kell-e az egész C++-t ismerni a kezdéshez?', opts: ['Igen', 'Nem: a finomságok akkor jönnek, amikor szükség lesz rájuk', 'Csak a sablonokat'], answer: 1, why: 'Aki mindent meg akar tanulni, mielőtt bármit megír, sosem ír meg semmit.' },
+      { k: 'single', q: 'Mi a C++ tanulásának legjobb módja?', opts: ['Tananyagok', 'Meglévő, jó minőségű kód olvasása, aztán saját projekt', 'Videók'], answer: 1, why: 'A `fmt` vagy a `nlohmann/json` többet tanít a stílusról, mint bármilyen tananyag.' },
+    ],
+    note: {
+      summary: ['Kész projekt: CMakeLists, forrásszerkezet, tesztek, formázó, tidy, sanitizerek, README.', 'Négy alapelv: RAII, nulla költségű absztrakció, erős típusosság, nincs kézi memóriakezelés.', 'A C++ nagy nyelv, és nem kell mind ismerni a kezdéshez.', 'Tovább: C++20 koncepciók és tartományok, Qt, Boost, ROS 2, profilozás.', 'A legjobb tanulás: jó minőségű kód olvasása, aztán saját projekt.'],
+      terms: [{ term: 'RAII', def: 'Erőforrás-kezelés az objektum élettartamához kötve.' }, { term: 'nulla költségű absztrakció', def: 'Magasabb szintű kód futásidejű többletköltség nélkül.' }, { term: 'clang-tidy', def: 'Statikus elemző, ami a Core Guidelines szabályait is ellenőrzi.' }],
+    },
+  },
+];
