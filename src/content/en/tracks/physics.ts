@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { physicsEnB } from './physics-b';
 import { physicsEnC } from './physics-c';
 import { physicsEnD } from './physics-d';
+import { physicsEnE } from './physics-e';
 
 export const physicsEn: Track = {
   id: 'physics',
@@ -32,8 +33,8 @@ export const physicsEn: Track = {
     'Generators and induction',
     'Efficiency',
     'Thermodynamics basics',
-    'Heat transfer and cooling',
-    'Material strength',
+    'Thermal conduction and cooling',
+    'Strength of materials',
     'Stress and strain',
     'Waves and sound',
     'Light and optics',
@@ -133,5 +134,6 @@ export const physicsEn: Track = {
     ...physicsEnB,
     ...physicsEnC,
     ...physicsEnD,
+    ...physicsEnE,
   ],
 };
