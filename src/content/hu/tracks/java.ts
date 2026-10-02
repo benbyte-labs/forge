@@ -1,6 +1,7 @@
 import type { Track } from '../../types';
 import { javaHuB } from './java-b';
 import { javaHuC } from './java-c';
+import { javaHuD } from './java-d';
 
 export const javaHu: Track = {
   id: 'java',
@@ -107,5 +108,6 @@ export const javaHu: Track = {
     },
     ...javaHuB,
     ...javaHuC,
+    ...javaHuD,
   ],
 };

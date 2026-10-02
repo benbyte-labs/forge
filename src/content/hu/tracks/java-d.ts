@@ -1,0 +1,173 @@
+import type { Day } from '../../types';
+
+/** JAVA trek, 18–24. nap. */
+export const javaHuD: Day[] = [
+  {
+    day: 18,
+    title: 'Iterátor és for-each',
+    minutes: 20,
+    lesson: [
+      { k: 'text', md: 'Az **iterátor** a bejárás egységes nyelve. Minden gyűjtemény tud adni egyet, és ettől működik ugyanaz a `for-each` ciklus `List`-en, `Set`-en és `Map`-en is.' },
+      { k: 'code', lang: 'java', src: 'List<String> nevek = List.of("Alfa", "Beta", "Gamma");\n\nfor (String n : nevek) {          // for-each: ezt használd\n    System.out.println(n);\n}\n\nIterator<String> it = nevek.iterator();   // a motorháztető alatt ez fut\nwhile (it.hasNext()) {\n    System.out.println(it.next());\n}', explain: 'A `for-each` a háttérben pontosan ezt csinálja. Minden osztály bejárható így, ami megvalósítja az `Iterable` interfészt.' },
+      { k: 'callout', tone: 'warn', md: 'Bejárás közben **ne módosítsd** a gyűjteményt — `ConcurrentModificationException` lesz belőle. Ha törölni kell, az iterátor saját `remove()` metódusát használd, vagy a `removeIf` metódust.' },
+      { k: 'code', lang: 'java', src: '// Rossz: kivételt dob\nfor (String n : nevek) {\n    if (n.startsWith("B")) nevek.remove(n);\n}\n\n// Jó: egyetlen sor\nnevek.removeIf(n -> n.startsWith("B"));\n\n// Vagy explicit iterátorral:\nIterator<String> it = nevek.iterator();\nwhile (it.hasNext()) {\n    if (it.next().startsWith("B")) it.remove();\n}', explain: 'A `removeIf` a legolvashatóbb. Az iterátor `remove()` metódusa akkor kell, ha a törlés feltétele bonyolultabb.' },
+      { k: 'text', md: 'A `Map` bejárásának három módja:\n\n- `map.keySet()` — csak a kulcsok\n- `map.values()` — csak az értékek\n- `map.entrySet()` — kulcs és érték együtt, ez a leggyakoribb és a leggyorsabb' },
+      { k: 'callout', tone: 'tip', md: 'Saját osztályt is bejárhatóvá tehetsz: valósítsd meg az `Iterable<T>` interfészt, és írd meg az `iterator()` metódust. Innentől a te osztályod is működik a `for-each` ciklusban.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi az iterátor szerepe?', opts: ['Rendez', 'A bejárás egységes nyelve minden gyűjteményhez', 'Másol'], answer: 1, why: 'Ettől működik ugyanaz a `for-each` ciklus List-en, Set-en és Map-en is.' },
+      { k: 'single', q: 'Mi történik, ha bejárás közben módosítod a gyűjteményt?', opts: ['Semmi', '`ConcurrentModificationException`', 'Lefagy'], answer: 1, why: 'A gyűjtemény észleli a módosítást, és hibát dob a következő `next()` hívásnál.' },
+      { k: 'single', q: 'Mi a legolvashatóbb mód feltételes törlésre?', opts: ['`for-each` cikluson belül `remove`', '`removeIf(feltetel)`', 'Új lista építése'], answer: 1, why: 'Egyetlen sor, és nem dob kivételt. Bonyolultabb esetben az iterátor `remove()` metódusa jön.' },
+      { k: 'single', q: 'Melyik a leggyorsabb mód egy `Map` kulcs-érték bejárására?', opts: ['`keySet()` és utána `get()`', '`entrySet()`', '`values()`'], answer: 1, why: 'A `keySet()` plusz `get()` minden kulcsra újra keres. Az `entrySet()` egyszerre adja mindkettőt.' },
+      { k: 'single', q: 'Hogyan teszed a saját osztályodat `for-each`-elhetővé?', opts: ['Kiterjeszted a List-et', 'Megvalósítod az `Iterable<T>` interfészt', 'Nem lehet'], answer: 1, why: 'Az `iterator()` metódus megírásával az osztály bekerül a nyelvi szintű `for-each` támogatásba.' },
+    ],
+    note: {
+      summary: ['Az iterátor a bejárás egységes nyelve minden gyűjteményhez.', 'A `for-each` a háttérben iterátort használ.', 'Bejárás közbeni módosítás `ConcurrentModificationException`-t dob.', 'Feltételes törlésre `removeIf`, bonyolultabb esetben iterátor `remove()`.', 'Map bejárás: `entrySet()` a leggyorsabb kulcs-érték párokhoz.', '`Iterable<T>` megvalósításával saját osztály is bejárható.'],
+      terms: [{ term: 'iterátor', def: 'Bejárási pozíciót tartó objektum.' }, { term: 'Iterable', def: 'Interfész, ami a `for-each` bejárást lehetővé teszi.' }, { term: 'entrySet', def: 'Egy Map kulcs-érték párjainak halmaza.' }],
+    },
+  },
+  {
+    day: 19,
+    title: 'Generikusok',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A **generikus** típusparaméter azt mondja meg, **mit tartalmaz** egy gyűjtemény vagy osztály. A fordító ebből ellenőrzi a helyességet, és így nem kell futásidőben kiderülnie a hibának.' },
+      { k: 'code', lang: 'java', src: '// Generikus nélkül: minden Object, mindenhol castolni kell\nList lista = new ArrayList();\nlista.add("szoveg");\nString s = (String) lista.get(0);     // futásidejű kockázat\n\n// Generikussal: a fordító ellenőriz\nList<String> nevek = new ArrayList<>();\nnevek.add("Alfa");\nString n = nevek.get(0);              // nincs cast, nincs kockázat\n// nevek.add(42);                     // le sem fordul', explain: 'A generikus a hibát fordítási időre hozza előre. Ez a Java 5 óta a legfontosabb nyelvi biztonsági háló.' },
+      { k: 'code', lang: 'java', src: 'public class Doboz<T> {\n    private T tartalom;\n\n    public void betesz(T ertek) { this.tartalom = ertek; }\n    public T kivesz()           { return tartalom; }\n}\n\nDoboz<String> d = new Doboz<>();\nd.betesz("Alfa");\nString s = d.kivesz();        // nincs cast', explain: 'Saját generikus osztály. A `T` csak jelölés: a fordító minden használatnál behelyettesíti a valódi típust.' },
+      { k: 'callout', tone: 'key', md: 'A **korlátos típusparaméter** megszorítja, mi lehet a `T`:\n\n`public <T extends Number> double osszeg(List<T> lista)`\n\nÍgy a metóduson belül hívhatod a `doubleValue()` metódust, mert a fordító tudja, hogy a `T` egy `Number`.' },
+      { k: 'callout', tone: 'warn', md: 'A Java generikusai **törlődnek** futásidőben (type erasure): a `List<String>` és a `List<Integer>` ugyanaz az osztály a lefordított kódban. Ezért nem lehet `new T()`-t írni, és ezért nem lehet `List<String>` típusra `instanceof`-ot alkalmazni.' },
+      { k: 'text', md: 'A **joker** (`?`) olvasási rugalmasságot ad:\n\n- `List<? extends Number>` — bármilyen szám listája, de **csak olvasni** lehet\n- `List<? super Integer>` — olyan lista, amibe `Integer`-t lehet **írni**\n\nA szabály neve PECS: *Producer Extends, Consumer Super*.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a generikusok fő haszna?', opts: ['Gyorsabb futás', 'A típushibát fordítási időre hozza előre', 'Kisebb memóriahasználat'], answer: 1, why: 'Nincs cast és nincs futásidejű `ClassCastException` meglepetés.' },
+      { k: 'single', q: 'Mit jelent a `<T extends Number>`?', opts: ['A T örökli a Number-t és csak szám lehet', 'A T bármi lehet', 'A T egy új osztály'], answer: 0, why: 'Korlátos típusparaméter: a metóduson belül hívhatók a Number metódusai.' },
+      { k: 'single', q: 'Mi a type erasure?', opts: ['A generikus típus törlődik futásidőben', 'A változók törlése', 'Szemétgyűjtés'], answer: 0, why: 'A `List<String>` és a `List<Integer>` ugyanaz az osztály a lefordított kódban.' },
+      { k: 'single', q: 'Miért nem lehet `new T()`-t írni?', opts: ['Mert lassú', 'Mert a type erasure miatt futásidőben nincs T típusinformáció', 'Mert tiltott'], answer: 1, why: 'A fordított kódban már nem létezik a T. Ezért kell helyette gyártó függvényt vagy `Class<T>` paramétert átadni.' },
+      { k: 'single', q: 'Mit jelent a PECS szabály?', opts: ['Producer Extends, Consumer Super', 'Public Every Class Static', 'Parameter Erasure'], answer: 0, why: 'Amiből olvasol, az `extends`; amibe írsz, az `super`.' },
+    ],
+    note: {
+      summary: ['A generikus típusparaméter fordítási időben ellenőrzi a tartalmat.', 'Nincs cast, nincs futásidejű `ClassCastException`.', 'Saját generikus osztály: `class Doboz<T>`.', 'Korlátos paraméter: `<T extends Number>`.', 'Type erasure: a generikus típus futásidőben eltűnik, ezért nincs `new T()`.', 'PECS: Producer Extends, Consumer Super.'],
+      terms: [{ term: 'típusparaméter', def: 'A generikus osztály vagy metódus helykitöltő típusa.' }, { term: 'type erasure', def: 'A generikus információ törlése fordításkor.' }, { term: 'PECS', def: 'Szabály a joker típusok helyes irányára.' }],
+    },
+  },
+  {
+    day: 20,
+    title: 'Lambda és funkcionális interfész',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A **lambda** rövid, névtelen függvény. Java 8 óta ez váltotta ki a névtelen belső osztályok hosszú szertartását.' },
+      { k: 'code', lang: 'java', src: '// Régen:\nComparator<String> c = new Comparator<String>() {\n    @Override\n    public int compare(String a, String b) {\n        return a.length() - b.length();\n    }\n};\n\n// Lambdával:\nComparator<String> c2 = (a, b) -> a.length() - b.length();\n\n// Metódushivatkozással:\nComparator<String> c3 = Comparator.comparingInt(String::length);', explain: 'Mindhárom ugyanazt csinálja. A harmadik a legolvashatóbb — a `String::length` metódushivatkozás a lambda rövidítése.' },
+      { k: 'callout', tone: 'key', md: 'A lambda ott használható, ahol egy **funkcionális interfész** kell: olyan interfész, aminek pontosan **egy** absztrakt metódusa van. A `@FunctionalInterface` annotáció ezt fordítási időben ellenőrzi.' },
+      { k: 'text', md: 'A `java.util.function` csomag kész interfészei:\n\n- `Predicate<T>` — `T` → `boolean`. Szűréshez.\n- `Function<T,R>` — `T` → `R`. Átalakításhoz.\n- `Consumer<T>` — `T` → semmi. Mellékhatáshoz.\n- `Supplier<T>` — semmi → `T`. Előállításhoz.\n- `BiFunction<T,U,R>` — két bemenet, egy kimenet.' },
+      { k: 'callout', tone: 'warn', md: 'A lambda csak **végleges vagy gyakorlatilag végleges** (effectively final) helyi változókat használhat a környezetéből. Ha a változót a lambda létrehozása után módosítod, a kód nem fordul le. Ennek oka: a lambda túlélheti a metódust.' },
+      { k: 'text', md: 'A **metódushivatkozás** négy alakja:\n\n- `String::length` — példánymetódus tetszőleges példányon\n- `System.out::println` — konkrét példány metódusa\n- `Integer::parseInt` — statikus metódus\n- `ArrayList::new` — konstruktor' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a funkcionális interfész?', opts: ['Bármilyen interfész', 'Olyan interfész, aminek pontosan egy absztrakt metódusa van', 'Egy osztály'], answer: 1, why: 'Ezért tudja a fordító egyértelműen megfeleltetni a lambdát a metódusnak.' },
+      { k: 'single', q: 'Melyik interfész való szűréshez?', opts: ['`Function<T,R>`', '`Predicate<T>`', '`Supplier<T>`'], answer: 1, why: 'A `Predicate` egy `T`-t vesz és `boolean`-t ad: pontosan ez a szűrőfeltétel.' },
+      { k: 'single', q: 'Milyen helyi változót használhat egy lambda?', opts: ['Bármilyet', 'Csak véglegeset vagy gyakorlatilag véglegeset', 'Semmilyet'], answer: 1, why: 'A lambda túlélheti a metódust, ezért a változó értékét a létrehozáskor rögzíteni kell.' },
+      { k: 'single', q: 'Mit jelent a `String::length`?', opts: ['Egy új metódust', 'Metódushivatkozás: lambda rövidítése', 'Egy változót'], answer: 1, why: 'A `s -> s.length()` lambda rövid alakja. Olvashatóbb, és nincs benne elírási lehetőség.' },
+      { k: 'single', q: 'Mit jelent az `ArrayList::new`?', opts: ['Egy példányt', 'Konstruktorhivatkozás', 'Statikus metódust'], answer: 1, why: 'Ez a `() -> new ArrayList<>()` rövid alakja; gyakran `Supplier`-ként adják át.' },
+    ],
+    note: {
+      summary: ['A lambda rövid, névtelen függvény; a névtelen belső osztályt váltotta ki.', 'Funkcionális interfész: pontosan egy absztrakt metódus.', '`Predicate` szűr, `Function` átalakít, `Consumer` fogyaszt, `Supplier` előállít.', 'A lambda csak véglegesnek számító helyi változót használhat.', 'Metódushivatkozás négy alakja: példány-, konkrét példány-, statikus metódus, konstruktor.'],
+      terms: [{ term: 'funkcionális interfész', def: 'Egyetlen absztrakt metódust tartalmazó interfész.' }, { term: 'metódushivatkozás', def: 'A `Osztaly::metodus` alakú lambda-rövidítés.' }, { term: 'effectively final', def: 'Helyi változó, amit a kezdőérték után nem módosítanak.' }],
+    },
+  },
+  {
+    day: 21,
+    title: 'Stream API',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A **stream** nem adattároló, hanem **műveletsor** egy adatforrás fölött. Megmondod, mit akarsz, nem azt, hogyan járja be.' },
+      { k: 'code', lang: 'java', src: 'List<Rover> roverek = /* ... */;\n\nList<String> gyengeNevek = roverek.stream()\n    .filter(r -> r.getAkku() < 20)      // köztes művelet\n    .map(Rover::getNev)                 // köztes művelet\n    .sorted()                           // köztes művelet\n    .toList();                          // záró művelet', explain: 'A köztes műveletek **lustán** épülnek: semmi nem fut le, amíg nincs záró művelet. A `toList()` indítja el a teljes láncot, egyetlen bejárásban.' },
+      { k: 'callout', tone: 'key', md: 'Két fajta művelet:\n\n- **Köztes** (`filter`, `map`, `sorted`, `distinct`, `limit`) — új streamet ad vissza, lustán\n- **Záró** (`toList`, `forEach`, `count`, `reduce`, `anyMatch`, `collect`) — ez indítja el a láncot és adja az eredményt' },
+      { k: 'code', lang: 'java', src: '// Statisztika egy lépésben\ndouble atlag = roverek.stream()\n    .mapToInt(Rover::getAkku)\n    .average().orElse(0);\n\n// Csoportosítás\nMap<Boolean, List<Rover>> ketCsoport = roverek.stream()\n    .collect(Collectors.partitioningBy(r -> r.getAkku() > 50));\n\n// Összefűzés\nString lista = roverek.stream()\n    .map(Rover::getNev)\n    .collect(Collectors.joining(", "));', explain: 'A `Collectors` osztály a stream legerősebb része: csoportosítás, összefűzés, számlálás, összegzés — mind kész.' },
+      { k: 'callout', tone: 'warn', md: 'Egy streamet **csak egyszer** lehet felhasználni. A második bejárás `IllegalStateException`-t dob. Ha kétszer kell, kétszer hívd a `stream()` metódust a forráson.' },
+      { k: 'callout', tone: 'tip', md: 'A `parallelStream()` csábító, de a legtöbb esetben **lassabb**: a szálak indítása és az eredmények összefésülése többe kerül, mint amit nyer. Csak nagy adathalmazon és tényleg drága műveleteknél érdemes — és mérd meg, ne hidd el.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a stream?', opts: ['Adattároló', 'Műveletsor egy adatforrás fölött', 'Egy fájl'], answer: 1, why: 'Nem tárol: a forrás adatait dolgozza fel a megadott műveletlánccal.' },
+      { k: 'single', q: 'Mikor fut le egy köztes művelet?', opts: ['Azonnal', 'Csak akkor, amikor záró művelet következik', 'Soha'], answer: 1, why: 'A lusta kiértékelés miatt az egész lánc egyetlen bejárásban fut le a záró műveletnél.' },
+      { k: 'single', q: 'Melyik záró művelet?', opts: ['`filter`', '`toList`', '`map`'], answer: 1, why: 'A `filter` és a `map` új streamet ad vissza. A `toList` eredményt ad, és elindítja a láncot.' },
+      { k: 'single', q: 'Hányszor használható fel egy stream?', opts: ['Akárhányszor', 'Egyszer', 'Kétszer'], answer: 1, why: 'A második bejárás `IllegalStateException`-t dob. Hívd újra a `stream()` metódust a forráson.' },
+      { k: 'single', q: 'Mikor éri meg a `parallelStream()`?', opts: ['Mindig', 'Nagy adathalmazon, drága műveleteknél — és méréssel igazolva', 'Soha'], answer: 1, why: 'A szálindítás és összefésülés költsége kis adathalmazon többe kerül, mint amit nyer.' },
+    ],
+    note: {
+      summary: ['A stream műveletsor egy adatforrás fölött, nem tároló.', 'Köztes művelet lusta; a záró indítja el a láncot.', 'Köztes: filter, map, sorted, distinct, limit. Záró: toList, count, reduce, collect.', 'A `Collectors` ad csoportosítást, összefűzést, statisztikát.', 'Egy stream csak egyszer használható fel.', 'A `parallelStream()` gyakran lassabb; mérd meg.'],
+      terms: [{ term: 'stream', def: 'Lusta műveletlánc egy adatforrás fölött.' }, { term: 'köztes művelet', def: 'Új streamet adó, lustán kiértékelt lépés.' }, { term: 'Collectors', def: 'Kész záró gyűjtőműveletek osztálya.' }],
+    },
+  },
+  {
+    day: 22,
+    title: 'Fájlkezelés',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A modern Java fájlkezelése a `java.nio.file` csomagban van. A régi `java.io.File` osztályt új kódban már ne használd.' },
+      { k: 'code', lang: 'java', src: 'import java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\n\nPath ut = Path.of("adatok", "roverek.txt");\n\n// Teljes fájl beolvasása (kis fájlhoz)\nString tartalom = Files.readString(ut, StandardCharsets.UTF_8);\nList<String> sorok = Files.readAllLines(ut, StandardCharsets.UTF_8);\n\n// Írás\nFiles.writeString(ut, "Alfa\\nBeta\\n", StandardCharsets.UTF_8);\n\n// Létezik-e?\nif (Files.exists(ut)) { /* ... */ }', explain: 'A `Path.of` platformfüggetlenül építi az útvonalat: Linuxon `/`, Windowson `\\` lesz belőle. Sose fűzz össze útvonalat sztringként.' },
+      { k: 'callout', tone: 'key', md: 'A **karakterkódolást mindig add meg explicit** (`StandardCharsets.UTF_8`). Enélkül a rendszer alapértelmezését használja, és ugyanaz a kód más gépen más eredményt ad — ami az ékezetes szövegeknél azonnal látszik.' },
+      { k: 'code', lang: 'java', src: '// Nagy fájl: soronként, memóriába töltés nélkül\ntry (Stream<String> sorok = Files.lines(ut, StandardCharsets.UTF_8)) {\n    long db = sorok.filter(s -> s.startsWith("Rover"))\n                   .count();\n}', explain: 'A `Files.lines` stream nyitva tart egy fájlt, ezért **kötelező** try-with-resources-ba tenni. Egy gigabájtos naplófájlt is feldolgoz néhány megabájt memóriából.' },
+      { k: 'callout', tone: 'warn', md: 'Minden fájlművelet dobhat `IOException`-t — ez **checked** kivétel. Vagy kezeld, vagy add tovább `throws`-szal. Ne nyeld el üres `catch` blokkal: a hiányzó fájl és a jogosultsági hiba két különböző probléma.' },
+      { k: 'text', md: 'Hasznos műveletek:\n\n- `Files.createDirectories(ut)` — a teljes könyvtárláncot létrehozza\n- `Files.copy(forras, cel, StandardCopyOption.REPLACE_EXISTING)`\n- `Files.delete(ut)` vagy `Files.deleteIfExists(ut)`\n- `Files.walk(gyoker)` — rekurzív bejárás streamként' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Melyik csomagot használd új kódban?', opts: ['`java.io.File`', '`java.nio.file`', '`java.util.file`'], answer: 1, why: 'A `java.nio.file` a modern API: jobb hibajelzés, stream támogatás, szimbolikus linkek kezelése.' },
+      { k: 'single', q: 'Miért kell explicit karakterkódolást megadni?', opts: ['Gyorsabb', 'Mert e nélkül a rendszer alapértelmezését használja, és gépenként más az eredmény', 'Nem kell'], answer: 1, why: 'Ékezetes szövegnél ez azonnal látszik: ugyanaz a kód más gépen elrontja a fájlt.' },
+      { k: 'single', q: 'Miért kell a `Files.lines` streamet try-with-resources-ba tenni?', opts: ['Hogy gyorsabb legyen', 'Mert nyitva tart egy fájlt, amit be kell zárni', 'Nem kell'], answer: 1, why: 'Enélkül a fájlleíró nyitva marad, és sok ilyen után elfogy az operációs rendszer kerete.' },
+      { k: 'single', q: 'Milyen kivételt dobhat egy fájlművelet?', opts: ['`RuntimeException`', '`IOException`, ami checked', 'Semmilyet'], answer: 1, why: 'A fordító számon kéri: vagy kezeld, vagy add tovább `throws`-szal.' },
+      { k: 'single', q: 'Hogyan építesz platformfüggetlen útvonalat?', opts: ['Sztring összefűzéssel', '`Path.of("adatok", "fajl.txt")`', 'Mindig `/` jellel'], answer: 1, why: 'A `Path.of` a rendszernek megfelelő elválasztót használja. Sztring összefűzés Windowson eltörik.' },
+    ],
+    note: {
+      summary: ['Új kódban `java.nio.file`, nem `java.io.File`.', '`Path.of(...)` platformfüggetlen útvonalat épít.', 'Mindig add meg explicit a karakterkódolást (UTF_8).', 'Kis fájl: `readString` / `readAllLines`. Nagy fájl: `Files.lines` streamként.', '`Files.lines` kötelezően try-with-resources-ba.', 'Minden fájlművelet `IOException`-t dobhat — ez checked.'],
+      terms: [{ term: 'Path', def: 'Platformfüggetlen fájlútvonal objektum.' }, { term: 'Files', def: 'Statikus segédosztály fájlműveletekhez.' }, { term: 'karakterkódolás', def: 'A bájtok és a karakterek megfeleltetése, például UTF-8.' }],
+    },
+  },
+  {
+    day: 23,
+    title: 'Csomagok és importálás',
+    minutes: 20,
+    lesson: [
+      { k: 'text', md: 'A **csomag** (package) névtér és szervezési egység. Megakadályozza a névütközést, és meghatározza, mi látszik honnan.' },
+      { k: 'code', lang: 'java', src: 'package hu.forge.robot.hajtas;      // mindig az első sor\n\nimport java.util.List;               // konkrét osztály\nimport java.util.*;                  // kerülendő: nem látszik, mi jön be\nimport static java.lang.Math.PI;     // statikus importálás\n\npublic class Motor { /* ... */ }', explain: 'A csomagdeklaráció az első utasítás a fájlban. A csomagnév a könyvtárszerkezetet is meghatározza: `hu/forge/robot/hajtas/Motor.java`.' },
+      { k: 'callout', tone: 'key', md: 'A csomagnév **fordított domain** szerint képződik: `hu.forge.robot`. Ez garantálja, hogy a te `Motor` osztályod ne ütközzön valaki máséval, még akkor sem, ha mindketten ugyanabba a programba kerültök.' },
+      { k: 'text', md: 'A csomagok szervezésének két iskolája:\n\n- **Réteg szerint**: `controller`, `service`, `repository`. Kis projektben átlátható.\n- **Funkció szerint**: `hajtas`, `erzekelo`, `navigacio`. Nagy projektben ez jobb, mert egy funkció változtatása egy csomagot érint.' },
+      { k: 'callout', tone: 'warn', md: 'A **csillagos importálás** (`import java.util.*`) kerülendő: elrejti, honnan jön egy osztály, és névütközést okozhat. Például a `java.util.List` és a `java.awt.List` két különböző dolog — csillaggal importálva a fordító nem tudja, melyikre gondoltál.' },
+      { k: 'text', md: 'A **statikus importálás** (`import static`) a konstansoknál és tesztekben hasznos: `assertEquals(...)` helyett nem kell `Assertions.assertEquals(...)`. Máshol óvatosan: ha a forrás nem derül ki, nehezebb olvasni a kódot.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a csomag szerepe?', opts: ['Gyorsítja a futást', 'Névtér és szervezési egység; megakadályozza a névütközést', 'Tömöríti a kódot'], answer: 1, why: 'A csomagnév határozza meg a könyvtárszerkezetet és a láthatóságot is.' },
+      { k: 'single', q: 'Hogyan képződik a csomagnév?', opts: ['Véletlenszerűen', 'Fordított domain szerint: `hu.forge.robot`', 'A fájlnévből'], answer: 1, why: 'Ez garantálja a globális egyediséget, ha több könyvtár kerül egy programba.' },
+      { k: 'single', q: 'Miért kerülendő az `import java.util.*`?', opts: ['Lassú', 'Elrejti, honnan jön egy osztály, és névütközést okozhat', 'Nem fordul le'], answer: 1, why: 'A `java.util.List` és a `java.awt.List` két különböző dolog.' },
+      { k: 'single', q: 'Hol hasznos a statikus importálás?', opts: ['Mindenhol', 'Konstansoknál és tesztekben', 'Soha'], answer: 1, why: 'Tesztekben az `assertEquals(...)` olvashatóbb. Máshol elrejti a forrást.' },
+      { k: 'single', q: 'Melyik szervezés jobb nagy projektben?', opts: ['Réteg szerint', 'Funkció szerint', 'Mindegy'], answer: 1, why: 'Funkció szerint szervezve egy változtatás egyetlen csomagot érint, nem hármat.' },
+    ],
+    note: {
+      summary: ['A csomag névtér és szervezési egység.', 'A csomagdeklaráció a fájl első utasítása, és meghatározza a könyvtárat.', 'Csomagnév fordított domain szerint: `hu.forge.robot`.', 'Szervezés: réteg szerint kis projektben, funkció szerint nagyban.', 'Csillagos importálás kerülendő: elrejti a forrást, ütközhet.', 'Statikus importálás konstansokhoz és tesztekhez jó.'],
+      terms: [{ term: 'csomag', def: 'Osztályok névtere és szervezési egysége.' }, { term: 'statikus importálás', def: 'Statikus tag behozatala osztálynév nélküli használatra.' }, { term: 'névütközés', def: 'Két azonos nevű osztály ugyanabban a hatókörben.' }],
+    },
+  },
+  {
+    day: 24,
+    title: 'Build: Maven alapok',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A **Maven** három dolgot old meg: letölti a függőségeket, lefordítja a projektet, és előállítja a futtatható csomagot. Mindezt egyetlen fájlból, a `pom.xml`-ből vezérelve.' },
+      { k: 'text', md: 'A szabványos könyvtárszerkezet, amit a Maven elvár:\n\n```\nsrc/main/java        — a forráskód\nsrc/main/resources   — konfiguráció, adatfájlok\nsrc/test/java        — a tesztek\ntarget/              — a kimenet (ne tedd verziókövetésbe)\n```' },
+      { k: 'code', lang: 'java', src: '/* pom.xml -- a lényeg\n<project>\n  <groupId>hu.forge</groupId>\n  <artifactId>robot</artifactId>\n  <version>1.0.0</version>\n\n  <dependencies>\n    <dependency>\n      <groupId>org.junit.jupiter</groupId>\n      <artifactId>junit-jupiter</artifactId>\n      <version>5.10.0</version>\n      <scope>test</scope>\n    </dependency>\n  </dependencies>\n</project>\n*/', explain: 'A három koordináta — groupId, artifactId, version — azonosít minden függőséget a világon. A `scope: test` azt jelenti, hogy a JUnit nem kerül bele a kiadott csomagba.' },
+      { k: 'callout', tone: 'key', md: 'A legfontosabb parancsok:\n\n- `mvn compile` — fordít\n- `mvn test` — fordít és futtatja a teszteket\n- `mvn package` — JAR fájlt készít\n- `mvn clean` — törli a `target` könyvtárat\n\nEzek **egymásra épülnek**: a `package` magától lefuttatja a tesztet is.' },
+      { k: 'callout', tone: 'warn', md: 'A **tranzitív függőségek** csendben hozhatnak be sokat: egy könyvtár maga is függ tíz másiktól. Az `mvn dependency:tree` megmutatja a teljes fát. Verzióütközésnél a Mavenben a **legközelebbi** definíció nyer — ez néha meglepő.' },
+      { k: 'text', md: 'A Gradle ugyanazt a feladatot oldja meg, csak Groovy vagy Kotlin szkriptből, XML helyett. Androidon és új projektekben gyakoribb; a vállalati Java világban még mindig a Maven az elterjedtebb.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mit old meg a Maven?', opts: ['Csak a fordítást', 'Függőségkezelést, fordítást és csomagolást', 'Csak a tesztelést'], answer: 1, why: 'Mindhármat egyetlen `pom.xml` fájlból vezérelve.' },
+      { k: 'single', q: 'Hol van a forráskód a szabványos szerkezetben?', opts: ['`src/`', '`src/main/java`', '`source/`'], answer: 1, why: 'A tesztek `src/test/java` alatt, a kimenet a `target` könyvtárban.' },
+      { k: 'single', q: 'Mit azonosít a három koordináta?', opts: ['A fejlesztőt', 'Minden függőséget egyértelműen: groupId, artifactId, version', 'A fordítót'], answer: 1, why: 'Ez a hármas globálisan egyedi, ezért tudja a Maven letölteni a központi tárból.' },
+      { k: 'single', q: 'Mit jelent a `scope: test`?', opts: ['Csak teszteléshez kell, nem kerül a kiadott csomagba', 'Csak a teszteket fordítja', 'Kikapcsolja a függőséget'], answer: 0, why: 'A JUnit nem kell a futtatáshoz, csak a tesztek fordításához és futtatásához.' },
+      { k: 'single', q: 'Mit mutat az `mvn dependency:tree`?', opts: ['A forrásfájlokat', 'A teljes függőségi fát, a tranzitív függőségekkel együtt', 'A teszteket'], answer: 1, why: 'Verzióütközés keresésére ez az első parancs. A legközelebbi definíció nyer.' },
+    ],
+    note: {
+      summary: ['A Maven függőséget kezel, fordít és csomagol, a `pom.xml` alapján.', 'Szabványos szerkezet: `src/main/java`, `src/test/java`, `target`.', 'Három koordináta: groupId, artifactId, version.', '`scope: test` — a függőség nem kerül a kiadott csomagba.', 'Parancsok: compile, test, package, clean — egymásra épülnek.', '`mvn dependency:tree` mutatja a tranzitív függőségeket.'],
+      terms: [{ term: 'pom.xml', def: 'A Maven projektleíró fájlja.' }, { term: 'tranzitív függőség', def: 'Egy függőség saját függőségei.' }, { term: 'scope', def: 'A függőség érvényességi köre, például `test`.' }],
+    },
+  },
+];

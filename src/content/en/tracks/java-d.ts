@@ -1,0 +1,173 @@
+import type { Day } from '../../types';
+
+/** JAVA track, days 18-24. */
+export const javaEnD: Day[] = [
+  {
+    day: 18,
+    title: 'Iterators and for-each',
+    minutes: 20,
+    lesson: [
+      { k: 'text', md: 'An **iterator** is the common language of traversal. Every collection can supply one, which is why the same `for-each` loop works on a `List`, a `Set` and a `Map`.' },
+      { k: 'code', lang: 'java', src: 'List<String> names = List.of("Alpha", "Beta", "Gamma");\n\nfor (String n : names) {          // for-each: use this\n    System.out.println(n);\n}\n\nIterator<String> it = names.iterator();   // what runs underneath\nwhile (it.hasNext()) {\n    System.out.println(it.next());\n}', explain: 'The `for-each` does exactly this behind the scenes. Any class implementing `Iterable` can be traversed this way.' },
+      { k: 'callout', tone: 'warn', md: 'Do **not modify** a collection while iterating it — that gives a `ConcurrentModificationException`. To remove, use the iterator own `remove()` method, or `removeIf`.' },
+      { k: 'code', lang: 'java', src: '// Wrong: throws\nfor (String n : names) {\n    if (n.startsWith("B")) names.remove(n);\n}\n\n// Right: one line\nnames.removeIf(n -> n.startsWith("B"));\n\n// Or with an explicit iterator:\nIterator<String> it = names.iterator();\nwhile (it.hasNext()) {\n    if (it.next().startsWith("B")) it.remove();\n}', explain: '`removeIf` reads best. The iterator `remove()` is for when the removal condition is more involved.' },
+      { k: 'text', md: 'Three ways to traverse a `Map`:\n\n- `map.keySet()` — keys only\n- `map.values()` — values only\n- `map.entrySet()` — key and value together, the commonest and fastest' },
+      { k: 'callout', tone: 'tip', md: 'You can make your own class traversable: implement `Iterable<T>` and write the `iterator()` method. Your class then works in a `for-each` loop too.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is an iterator for?', opts: ['Sorting', 'The common language of traversal across collections', 'Copying'], answer: 1, why: 'That is why the same `for-each` loop works on a List, a Set and a Map.' },
+      { k: 'single', q: 'What happens if you modify a collection while iterating?', opts: ['Nothing', '`ConcurrentModificationException`', 'It hangs'], answer: 1, why: 'The collection detects the change and throws on the next `next()` call.' },
+      { k: 'single', q: 'What is the most readable way to remove conditionally?', opts: ['`remove` inside a for-each', '`removeIf(condition)`', 'Build a new list'], answer: 1, why: 'One line and no exception. For more involved cases use the iterator `remove()`.' },
+      { k: 'single', q: 'What is the fastest way to traverse a `Map` by key and value?', opts: ['`keySet()` then `get()`', '`entrySet()`', '`values()`'], answer: 1, why: '`keySet()` plus `get()` searches again for every key. `entrySet()` gives both at once.' },
+      { k: 'single', q: 'How do you make your own class usable in a for-each?', opts: ['Extend List', 'Implement `Iterable<T>`', 'You cannot'], answer: 1, why: 'Writing the `iterator()` method puts your class into the language-level for-each support.' },
+    ],
+    note: {
+      summary: ['An iterator is the common traversal language of collections.', '`for-each` uses an iterator underneath.', 'Modifying while iterating throws `ConcurrentModificationException`.', 'Conditional removal: `removeIf`, or the iterator `remove()`.', 'Map traversal: `entrySet()` is fastest for key-value pairs.', 'Implement `Iterable<T>` to make your own class traversable.'],
+      terms: [{ term: 'iterator', def: 'An object holding a traversal position.' }, { term: 'Iterable', def: 'The interface enabling for-each traversal.' }, { term: 'entrySet', def: 'The set of key-value pairs in a Map.' }],
+    },
+  },
+  {
+    day: 19,
+    title: 'Generics',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A **generic** type parameter states **what a collection or class contains**. The compiler checks correctness from that, so the error does not have to surface at run time.' },
+      { k: 'code', lang: 'java', src: '// Without generics: everything is Object and needs casting\nList list = new ArrayList();\nlist.add("text");\nString s = (String) list.get(0);      // run-time risk\n\n// With generics: the compiler checks\nList<String> names = new ArrayList<>();\nnames.add("Alpha");\nString n = names.get(0);              // no cast, no risk\n// names.add(42);                     // does not compile', explain: 'Generics move the error forward to compile time. Since Java 5 this has been the language most important safety net.' },
+      { k: 'code', lang: 'java', src: 'public class Box<T> {\n    private T contents;\n\n    public void put(T value) { this.contents = value; }\n    public T take()          { return contents; }\n}\n\nBox<String> b = new Box<>();\nb.put("Alpha");\nString s = b.take();          // no cast', explain: 'Your own generic class. `T` is just a placeholder: the compiler substitutes the real type at every use.' },
+      { k: 'callout', tone: 'key', md: 'A **bounded type parameter** restricts what `T` can be:\n\n`public <T extends Number> double sum(List<T> list)`\n\nInside the method you can then call `doubleValue()`, because the compiler knows `T` is a `Number`.' },
+      { k: 'callout', tone: 'warn', md: 'Java generics are **erased** at run time (type erasure): `List<String>` and `List<Integer>` are the same class in compiled code. That is why you cannot write `new T()` and cannot apply `instanceof` to `List<String>`.' },
+      { k: 'text', md: 'The **wildcard** (`?`) adds flexibility:\n\n- `List<? extends Number>` — a list of any numbers, but **read-only**\n- `List<? super Integer>` — a list you can **write** an `Integer` into\n\nThe rule is PECS: *Producer Extends, Consumer Super*.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is the main benefit of generics?', opts: ['Faster execution', 'They move type errors forward to compile time', 'Less memory'], answer: 1, why: 'No casting and no surprise `ClassCastException` at run time.' },
+      { k: 'single', q: 'What does `<T extends Number>` mean?', opts: ['T must be a Number subtype', 'T can be anything', 'T is a new class'], answer: 0, why: 'A bounded type parameter: inside the method you can call Number methods.' },
+      { k: 'single', q: 'What is type erasure?', opts: ['The generic type disappears at run time', 'Deleting variables', 'Garbage collection'], answer: 0, why: '`List<String>` and `List<Integer>` are the same class in compiled code.' },
+      { k: 'single', q: 'Why can you not write `new T()`?', opts: ['Too slow', 'Because erasure leaves no T type information at run time', 'It is forbidden'], answer: 1, why: 'T no longer exists in the compiled code. Pass a factory or a `Class<T>` instead.' },
+      { k: 'single', q: 'What does PECS stand for?', opts: ['Producer Extends, Consumer Super', 'Public Every Class Static', 'Parameter Erasure'], answer: 0, why: 'What you read from uses `extends`; what you write to uses `super`.' },
+    ],
+    note: {
+      summary: ['A generic type parameter lets the compiler check contents.', 'No casting, no run-time `ClassCastException`.', 'Your own generic class: `class Box<T>`.', 'Bounded parameter: `<T extends Number>`.', 'Type erasure removes generics at run time, so no `new T()`.', 'PECS: Producer Extends, Consumer Super.'],
+      terms: [{ term: 'type parameter', def: 'The placeholder type of a generic class or method.' }, { term: 'type erasure', def: 'Removal of generic information at compile time.' }, { term: 'PECS', def: 'The rule for choosing wildcard direction.' }],
+    },
+  },
+  {
+    day: 20,
+    title: 'Lambdas and functional interfaces',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A **lambda** is a short anonymous function. Since Java 8 it has replaced the long ceremony of anonymous inner classes.' },
+      { k: 'code', lang: 'java', src: '// The old way:\nComparator<String> c = new Comparator<String>() {\n    @Override\n    public int compare(String a, String b) {\n        return a.length() - b.length();\n    }\n};\n\n// With a lambda:\nComparator<String> c2 = (a, b) -> a.length() - b.length();\n\n// With a method reference:\nComparator<String> c3 = Comparator.comparingInt(String::length);', explain: 'All three do the same. The third reads best — `String::length` is a method reference, a shorthand for the lambda.' },
+      { k: 'callout', tone: 'key', md: 'A lambda works wherever a **functional interface** is expected: an interface with exactly **one** abstract method. The `@FunctionalInterface` annotation checks that at compile time.' },
+      { k: 'text', md: 'Ready-made interfaces in `java.util.function`:\n\n- `Predicate<T>` — `T` → `boolean`. For filtering.\n- `Function<T,R>` — `T` → `R`. For transforming.\n- `Consumer<T>` — `T` → nothing. For side effects.\n- `Supplier<T>` — nothing → `T`. For producing.\n- `BiFunction<T,U,R>` — two inputs, one output.' },
+      { k: 'callout', tone: 'warn', md: 'A lambda may only use **final or effectively final** local variables from its surroundings. Modify the variable after creating the lambda and the code will not compile. The reason: the lambda can outlive the method.' },
+      { k: 'text', md: 'Four forms of **method reference**:\n\n- `String::length` — an instance method on any instance\n- `System.out::println` — a method on a specific instance\n- `Integer::parseInt` — a static method\n- `ArrayList::new` — a constructor' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is a functional interface?', opts: ['Any interface', 'An interface with exactly one abstract method', 'A class'], answer: 1, why: 'That is what lets the compiler map the lambda unambiguously to the method.' },
+      { k: 'single', q: 'Which interface is for filtering?', opts: ['`Function<T,R>`', '`Predicate<T>`', '`Supplier<T>`'], answer: 1, why: '`Predicate` takes a `T` and returns `boolean`: exactly a filter condition.' },
+      { k: 'single', q: 'Which local variables may a lambda use?', opts: ['Any', 'Only final or effectively final ones', 'None'], answer: 1, why: 'The lambda can outlive the method, so the value must be fixed at creation.' },
+      { k: 'single', q: 'What does `String::length` mean?', opts: ['A new method', 'A method reference: shorthand for a lambda', 'A variable'], answer: 1, why: 'It is the short form of `s -> s.length()`. Clearer, and no room for typos.' },
+      { k: 'single', q: 'What does `ArrayList::new` mean?', opts: ['An instance', 'A constructor reference', 'A static method'], answer: 1, why: 'It is the short form of `() -> new ArrayList<>()`, often passed as a `Supplier`.' },
+    ],
+    note: {
+      summary: ['A lambda is a short anonymous function replacing anonymous inner classes.', 'Functional interface: exactly one abstract method.', '`Predicate` filters, `Function` transforms, `Consumer` consumes, `Supplier` produces.', 'A lambda may only capture effectively final locals.', 'Four method reference forms: instance, bound instance, static, constructor.'],
+      terms: [{ term: 'functional interface', def: 'An interface with a single abstract method.' }, { term: 'method reference', def: 'The `Class::method` shorthand for a lambda.' }, { term: 'effectively final', def: 'A local variable never reassigned after initialisation.' }],
+    },
+  },
+  {
+    day: 21,
+    title: 'The Stream API',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A **stream** is not a container but a **pipeline of operations** over a source. You say what you want, not how to traverse it.' },
+      { k: 'code', lang: 'java', src: 'List<Rover> rovers = /* ... */;\n\nList<String> weakNames = rovers.stream()\n    .filter(r -> r.getBattery() < 20)   // intermediate\n    .map(Rover::getName)                // intermediate\n    .sorted()                           // intermediate\n    .toList();                          // terminal', explain: 'Intermediate operations build **lazily**: nothing runs until a terminal operation. `toList()` kicks off the whole chain in a single pass.' },
+      { k: 'callout', tone: 'key', md: 'Two kinds of operation:\n\n- **Intermediate** (`filter`, `map`, `sorted`, `distinct`, `limit`) — returns a new stream, lazily\n- **Terminal** (`toList`, `forEach`, `count`, `reduce`, `anyMatch`, `collect`) — starts the chain and produces the result' },
+      { k: 'code', lang: 'java', src: '// Statistics in one step\ndouble average = rovers.stream()\n    .mapToInt(Rover::getBattery)\n    .average().orElse(0);\n\n// Grouping\nMap<Boolean, List<Rover>> twoGroups = rovers.stream()\n    .collect(Collectors.partitioningBy(r -> r.getBattery() > 50));\n\n// Joining\nString list = rovers.stream()\n    .map(Rover::getName)\n    .collect(Collectors.joining(", "));', explain: 'The `Collectors` class is the most powerful part of streams: grouping, joining, counting, summing — all ready made.' },
+      { k: 'callout', tone: 'warn', md: 'A stream can be consumed **only once**. A second traversal throws `IllegalStateException`. If you need it twice, call `stream()` on the source twice.' },
+      { k: 'callout', tone: 'tip', md: '`parallelStream()` is tempting, but usually **slower**: starting threads and merging results costs more than it saves. It pays only on large data with genuinely expensive work — and measure, do not assume.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is a stream?', opts: ['A container', 'A pipeline of operations over a source', 'A file'], answer: 1, why: 'It stores nothing: it processes the source through the chain you describe.' },
+      { k: 'single', q: 'When does an intermediate operation run?', opts: ['Immediately', 'Only when a terminal operation follows', 'Never'], answer: 1, why: 'Lazy evaluation means the whole chain runs in one pass at the terminal operation.' },
+      { k: 'single', q: 'Which one is terminal?', opts: ['`filter`', '`toList`', '`map`'], answer: 1, why: '`filter` and `map` return a new stream. `toList` produces a result and starts the chain.' },
+      { k: 'single', q: 'How many times can a stream be consumed?', opts: ['Any number', 'Once', 'Twice'], answer: 1, why: 'A second traversal throws `IllegalStateException`. Call `stream()` on the source again.' },
+      { k: 'single', q: 'When does `parallelStream()` pay off?', opts: ['Always', 'On large data with expensive work — verified by measurement', 'Never'], answer: 1, why: 'Thread startup and merging cost more than they save on small data.' },
+    ],
+    note: {
+      summary: ['A stream is a pipeline over a source, not a container.', 'Intermediate operations are lazy; the terminal one starts the chain.', 'Intermediate: filter, map, sorted, distinct, limit. Terminal: toList, count, reduce, collect.', '`Collectors` provides grouping, joining and statistics.', 'A stream can be consumed only once.', '`parallelStream()` is often slower; measure it.'],
+      terms: [{ term: 'stream', def: 'A lazy operation pipeline over a data source.' }, { term: 'intermediate operation', def: 'A lazily evaluated step returning a new stream.' }, { term: 'Collectors', def: 'A class of ready-made terminal collection operations.' }],
+    },
+  },
+  {
+    day: 22,
+    title: 'Working with files',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'Modern Java file handling lives in `java.nio.file`. Do not use the old `java.io.File` class in new code.' },
+      { k: 'code', lang: 'java', src: 'import java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\n\nPath path = Path.of("data", "rovers.txt");\n\n// Read a whole file (small files)\nString content = Files.readString(path, StandardCharsets.UTF_8);\nList<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);\n\n// Write\nFiles.writeString(path, "Alpha\\nBeta\\n", StandardCharsets.UTF_8);\n\n// Does it exist?\nif (Files.exists(path)) { /* ... */ }', explain: '`Path.of` builds the path portably: `/` on Linux, `\\` on Windows. Never concatenate paths as strings.' },
+      { k: 'callout', tone: 'key', md: 'Always state the **character encoding** explicitly (`StandardCharsets.UTF_8`). Without it Java uses the platform default, and the same code gives different results on another machine — which shows immediately with accented text.' },
+      { k: 'code', lang: 'java', src: '// Large file: line by line, without loading it into memory\ntry (Stream<String> lines = Files.lines(path, StandardCharsets.UTF_8)) {\n    long count = lines.filter(s -> s.startsWith("Rover"))\n                      .count();\n}', explain: '`Files.lines` keeps a file open, so try-with-resources is **mandatory**. It can process a gigabyte log file from a few megabytes of memory.' },
+      { k: 'callout', tone: 'warn', md: 'Every file operation can throw `IOException` — a **checked** exception. Either handle it or declare it with `throws`. Do not swallow it in an empty `catch`: a missing file and a permission error are two different problems.' },
+      { k: 'text', md: 'Useful operations:\n\n- `Files.createDirectories(path)` — creates the whole directory chain\n- `Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING)`\n- `Files.delete(path)` or `Files.deleteIfExists(path)`\n- `Files.walk(root)` — recursive traversal as a stream' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Which package should new code use?', opts: ['`java.io.File`', '`java.nio.file`', '`java.util.file`'], answer: 1, why: '`java.nio.file` is the modern API: better errors, stream support, symbolic link handling.' },
+      { k: 'single', q: 'Why state the character encoding explicitly?', opts: ['It is faster', 'Otherwise the platform default is used and results differ by machine', 'No need'], answer: 1, why: 'With accented text this shows immediately: the same code corrupts the file elsewhere.' },
+      { k: 'single', q: 'Why must `Files.lines` be wrapped in try-with-resources?', opts: ['For speed', 'Because it keeps a file open that must be closed', 'No need'], answer: 1, why: 'Otherwise the file descriptor leaks, and enough of them exhaust the OS limit.' },
+      { k: 'single', q: 'What exception can a file operation throw?', opts: ['`RuntimeException`', '`IOException`, which is checked', 'None'], answer: 1, why: 'The compiler enforces it: handle it or declare it with `throws`.' },
+      { k: 'single', q: 'How do you build a portable path?', opts: ['String concatenation', '`Path.of("data", "file.txt")`', 'Always with `/`'], answer: 1, why: '`Path.of` uses the platform separator. String concatenation breaks on Windows.' },
+    ],
+    note: {
+      summary: ['Use `java.nio.file`, not `java.io.File`, in new code.', '`Path.of(...)` builds portable paths.', 'Always state the character encoding explicitly (UTF_8).', 'Small file: `readString` / `readAllLines`. Large file: `Files.lines` as a stream.', '`Files.lines` must be in try-with-resources.', 'Every file operation can throw a checked `IOException`.'],
+      terms: [{ term: 'Path', def: 'A portable file path object.' }, { term: 'Files', def: 'A static helper class for file operations.' }, { term: 'character encoding', def: 'The mapping between bytes and characters, such as UTF-8.' }],
+    },
+  },
+  {
+    day: 23,
+    title: 'Packages and imports',
+    minutes: 20,
+    lesson: [
+      { k: 'text', md: 'A **package** is a namespace and an organising unit. It prevents name clashes and determines what is visible from where.' },
+      { k: 'code', lang: 'java', src: 'package com.forge.robot.drive;      // always the first line\n\nimport java.util.List;               // a specific class\nimport java.util.*;                  // avoid: hides what comes in\nimport static java.lang.Math.PI;     // static import\n\npublic class Motor { /* ... */ }', explain: 'The package declaration is the first statement in the file. The package name also defines the directory layout: `com/forge/robot/drive/Motor.java`.' },
+      { k: 'callout', tone: 'key', md: 'Package names use a **reversed domain**: `com.forge.robot`. That guarantees your `Motor` class will not clash with someone else even if both end up in the same program.' },
+      { k: 'text', md: 'Two schools of package organisation:\n\n- **By layer**: `controller`, `service`, `repository`. Clear in a small project.\n- **By feature**: `drive`, `sensor`, `navigation`. Better at scale, because changing one feature touches one package.' },
+      { k: 'callout', tone: 'warn', md: '**Star imports** (`import java.util.*`) are best avoided: they hide where a class comes from and can clash. For instance `java.util.List` and `java.awt.List` are different things — imported with a star, the compiler cannot tell which you meant.' },
+      { k: 'text', md: '**Static import** (`import static`) is useful for constants and in tests: `assertEquals(...)` instead of `Assertions.assertEquals(...)`. Elsewhere use it sparingly: if the source is not visible, the code is harder to read.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is a package for?', opts: ['Faster execution', 'A namespace and organising unit that prevents name clashes', 'Compressing code'], answer: 1, why: 'The package name also defines the directory layout and affects visibility.' },
+      { k: 'single', q: 'How are package names formed?', opts: ['Randomly', 'From a reversed domain: `com.forge.robot`', 'From the filename'], answer: 1, why: 'That guarantees global uniqueness when several libraries end up in one program.' },
+      { k: 'single', q: 'Why avoid `import java.util.*`?', opts: ['It is slow', 'It hides where a class comes from and can clash', 'It does not compile'], answer: 1, why: '`java.util.List` and `java.awt.List` are two different things.' },
+      { k: 'single', q: 'Where is a static import useful?', opts: ['Everywhere', 'For constants and in tests', 'Never'], answer: 1, why: 'In tests `assertEquals(...)` reads better. Elsewhere it hides the source.' },
+      { k: 'single', q: 'Which organisation is better at scale?', opts: ['By layer', 'By feature', 'Either'], answer: 1, why: 'Organised by feature, one change touches one package rather than three.' },
+    ],
+    note: {
+      summary: ['A package is a namespace and an organising unit.', 'The package declaration is the first statement and defines the directory.', 'Package names use a reversed domain: `com.forge.robot`.', 'Organise by layer in small projects, by feature at scale.', 'Avoid star imports: they hide the source and can clash.', 'Static imports suit constants and tests.'],
+      terms: [{ term: 'package', def: 'A namespace and organising unit for classes.' }, { term: 'static import', def: 'Importing a static member for use without the class name.' }, { term: 'name clash', def: 'Two classes with the same name in the same scope.' }],
+    },
+  },
+  {
+    day: 24,
+    title: 'Builds: Maven basics',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: '**Maven** solves three things: it downloads dependencies, compiles the project and produces a runnable package. All driven from one file, the `pom.xml`.' },
+      { k: 'text', md: 'The standard directory layout Maven expects:\n\n```\nsrc/main/java        — source code\nsrc/main/resources   — config and data files\nsrc/test/java        — tests\ntarget/              — output (do not commit it)\n```' },
+      { k: 'code', lang: 'java', src: '/* pom.xml -- the essentials\n<project>\n  <groupId>com.forge</groupId>\n  <artifactId>robot</artifactId>\n  <version>1.0.0</version>\n\n  <dependencies>\n    <dependency>\n      <groupId>org.junit.jupiter</groupId>\n      <artifactId>junit-jupiter</artifactId>\n      <version>5.10.0</version>\n      <scope>test</scope>\n    </dependency>\n  </dependencies>\n</project>\n*/', explain: 'The three coordinates — groupId, artifactId, version — identify every dependency in the world. `scope: test` means JUnit does not end up in the shipped package.' },
+      { k: 'callout', tone: 'key', md: 'The commands that matter:\n\n- `mvn compile` — compiles\n- `mvn test` — compiles and runs the tests\n- `mvn package` — builds a JAR\n- `mvn clean` — deletes the `target` directory\n\nThey **build on each other**: `package` runs the tests on its own.' },
+      { k: 'callout', tone: 'warn', md: '**Transitive dependencies** quietly pull in a lot: a library depends on ten more. `mvn dependency:tree` shows the whole tree. On a version clash Maven picks the **nearest** declaration — which is sometimes surprising.' },
+      { k: 'text', md: 'Gradle solves the same problem from a Groovy or Kotlin script instead of XML. It is more common on Android and in new projects; in enterprise Java, Maven is still more widespread.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does Maven solve?', opts: ['Compilation only', 'Dependency management, compilation and packaging', 'Testing only'], answer: 1, why: 'All three, driven from a single `pom.xml`.' },
+      { k: 'single', q: 'Where does source code live in the standard layout?', opts: ['`src/`', '`src/main/java`', '`source/`'], answer: 1, why: 'Tests go under `src/test/java` and output into `target`.' },
+      { k: 'single', q: 'What do the three coordinates identify?', opts: ['The developer', 'Every dependency uniquely: groupId, artifactId, version', 'The compiler'], answer: 1, why: 'That triple is globally unique, which is how Maven fetches it from the central repository.' },
+      { k: 'single', q: 'What does `scope: test` mean?', opts: ['Needed only for tests, not shipped in the package', 'It only compiles tests', 'It disables the dependency'], answer: 0, why: 'JUnit is not needed at run time, only for compiling and running tests.' },
+      { k: 'single', q: 'What does `mvn dependency:tree` show?', opts: ['The source files', 'The whole dependency tree, including transitive ones', 'The tests'], answer: 1, why: 'It is the first command to run for a version clash. The nearest declaration wins.' },
+    ],
+    note: {
+      summary: ['Maven manages dependencies, compiles and packages, driven by `pom.xml`.', 'Standard layout: `src/main/java`, `src/test/java`, `target`.', 'Three coordinates: groupId, artifactId, version.', '`scope: test` keeps a dependency out of the shipped package.', 'Commands: compile, test, package, clean — they build on each other.', '`mvn dependency:tree` reveals transitive dependencies.'],
+      terms: [{ term: 'pom.xml', def: 'The Maven project descriptor file.' }, { term: 'transitive dependency', def: 'A dependency of one of your dependencies.' }, { term: 'scope', def: 'The validity range of a dependency, such as `test`.' }],
+    },
+  },
+];
