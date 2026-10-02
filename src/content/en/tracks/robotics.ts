@@ -3,6 +3,7 @@ import { roboticsEnB } from './robotics-b';
 import { roboticsEnC } from './robotics-c';
 import { roboticsEnD } from './robotics-d';
 import { roboticsEnE } from './robotics-e';
+import { roboticsEnF } from './robotics-f';
 
 export const roboticsEn: Track = {
   id: 'robotics',
@@ -128,5 +129,6 @@ export const roboticsEn: Track = {
     ...roboticsEnC,
     ...roboticsEnD,
     ...roboticsEnE,
+    ...roboticsEnF,
   ],
 };
