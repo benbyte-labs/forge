@@ -1,12 +1,14 @@
 # FORGE
 
-Asztali tanulóapp kódoláshoz, robotikához, fizikához és CAD-hez. Offline fut,
-magyarul és angolul, és minden lecke után jegyzetet ad, amiből később tanulhatsz.
+Asztali tanulóapp programozáshoz, robotikához, fizikához, CAD-hez és
+Blenderhez. Offline fut, négy nyelven, és minden lecke után jegyzetet ad,
+amiből később tanulhatsz.
 
 ## Mit tud
 
-- **Négy trek, 30-30 nap** — Kódolás, Robotika, Fizika, CAD. Minden nap:
-  lecke → gyakorlat → kvíz → jegyzet.
+- **Nyolc trek, 30-30 nap** — négy programozási nyelv (Python, Java, C, C++),
+  Robotika, Fizika, CAD és Blender. Összesen 240 nap nyelvenként, kézzel
+  megírva. Minden nap: lecke → gyakorlat → kvíz → jegyzet.
 - **Kód Labor** — beépített szerkesztő. A Python a gépeden fut (Pyodide),
   internet nélkül. A feladatot futtatás ellenőrzi, nem a kód kinézete.
 - **Robot Labor** — 3D rover és hattengelyes robotkar. Irányítható csúszkával,
@@ -69,19 +71,31 @@ angol változat eltér, a teszt elbukik, nem a felhasználó lát üres képerny
 
 ## Új tanulónap hozzáadása
 
-1. Írd meg a napot `src/content/hu/tracks/<trek>.ts`-ben és ugyanazt
-   `src/content/en/tracks/<trek>.ts`-ben.
-2. `npm test` — a validációs teszt megmondja, ha valami hiányzik.
+1. Írd meg a napot `src/content/hu/tracks/<trek>*.ts`-ben és ugyanazt
+   `src/content/en/tracks/<trek>*.ts`-ben. A hosszabb treket több fájlra bontjuk
+   (`cad.ts`, `cad-b.ts`, `cad-c.ts`, ...), és a `cad.ts` fűzi össze őket.
+2. `npm test` — a validációs teszt megmondja, ha valami hiányzik. Ellenőrzi azt
+   is, hogy a nap címe egyezik a `plannedTitles` megfelelő elemével, és hogy
+   egy treken belül nincs két azonos című nap.
 
-## Új nyelv hozzáadása
+## Nyelvek
 
-1. Másold `src/i18n/ui/hu.ts`-t egy új fájlba, és fordítsd le.
+A felület magyarul, angolul, németül és spanyolul van meg. A tananyag magyarul
+és angolul teljes; a másik két nyelven a leckék angolul jelennek meg, amíg nincs
+fordítás — ezt a `CONTENT_FALLBACK` intézi a `src/content/index.ts`-ben.
+
+Új nyelv hozzáadása:
+
+1. Másold `src/i18n/ui/hu.ts`-t egy új fájlba, és fordítsd le. Elég a
+   `Partial<Record<UiKey, string>>`: ami hiányzik, az angolra esik vissza.
 2. Vedd fel a `Locale` típusba (`src/engine/types.ts`) és a `DICTS` táblába
    (`src/i18n/index.tsx`).
-3. Készítsd el a `src/content/<nyelv>/tracks/` mappát.
+3. A tananyag fordítása külön lépés: hozd létre a `src/content/<nyelv>/tracks/`
+   mappát, és vedd fel a `TRACKS` táblába.
 
 ## Amit szándékosan nem tud
 
 Nem valódi CAD-kernel: a CAD Labor tanít és gyakoroltat, nem vált ki egy
-FreeCAD-et. Nem vezérel valódi hardvert. Nem használ AI-t: a tananyag megírt
-és verziózott.
+FreeCAD-et. Nem vezérel valódi hardvert. A Java, C és C++ leckék kódja olvasásra
+és kvízre való — ezek a nyelvek nem futnak az appon belül, csak a Python és a
+JavaScript. Nem használ AI-t: a tananyag megírt és verziózott.
