@@ -3,6 +3,7 @@ import { physicsHuB } from './physics-b';
 import { physicsHuC } from './physics-c';
 import { physicsHuD } from './physics-d';
 import { physicsHuE } from './physics-e';
+import { physicsHuF } from './physics-f';
 
 export const physicsHu: Track = {
   id: 'physics',
@@ -135,5 +136,6 @@ export const physicsHu: Track = {
     ...physicsHuC,
     ...physicsHuD,
     ...physicsHuE,
+    ...physicsHuF,
   ],
 };

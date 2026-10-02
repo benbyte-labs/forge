@@ -3,6 +3,7 @@ import { physicsEnB } from './physics-b';
 import { physicsEnC } from './physics-c';
 import { physicsEnD } from './physics-d';
 import { physicsEnE } from './physics-e';
+import { physicsEnF } from './physics-f';
 
 export const physicsEn: Track = {
   id: 'physics',
@@ -35,7 +36,7 @@ export const physicsEn: Track = {
     'Thermodynamics basics',
     'Thermal conduction and cooling',
     'Strength of materials',
-    'Stress and strain',
+    'Stress and deformation',
     'Waves and sound',
     'Light and optics',
     'The physics in your robot',
@@ -135,5 +136,6 @@ export const physicsEn: Track = {
     ...physicsEnC,
     ...physicsEnD,
     ...physicsEnE,
+    ...physicsEnF,
   ],
 };
