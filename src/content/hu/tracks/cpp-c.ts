@@ -4,30 +4,6 @@ import type { Day } from '../../types';
 export const cppHuC: Day[] = [
   {
     day: 11,
-    title: 'Okos mutatók',
-    minutes: 24,
-    lesson: [
-      { k: 'text', md: 'A modern C++ egyik legfontosabb szabálya: **ne írj `new`-t és `delete`-et**. Az okos mutatók elvégzik helyetted, és nem felejtik el.' },
-      { k: 'code', lang: 'cpp', src: '#include <memory>\n\nauto r = std::make_unique<Rover>("Alfa");   // egyedüli tulajdonos\nr->lep(10);\n// a hatókör végén magától törlődik -- nincs delete\n\nauto kozos = std::make_shared<Terkep>();    // osztott tulajdon\nauto masik = kozos;                         // számláló: 2\n// mindkettő megszűntekor törlődik', explain: 'A `unique_ptr` nem másolható, csak mozgatható: pontosan egy tulajdonos van. A `shared_ptr` számol, és az utolsó megszűnésekor töröl.' },
-      { k: 'callout', tone: 'key', md: 'Az alapértelmezés a **`unique_ptr`**. Csak akkor válts `shared_ptr`-re, ha tényleg több hely birtokolja ugyanazt az objektumot, és nem lehet eldönteni, melyik él tovább. A `shared_ptr` drágább: atomi számlálót tart.' },
-      { k: 'text', md: 'A **RAII** elv áll mögötte: az erőforrás élettartama az objektum élettartamához kötött. A konstruktor szerez, a destruktor elenged — kivétel esetén is, mert a verem lebontása mindig lefut.' },
-      { k: 'callout', tone: 'warn', md: 'Két `shared_ptr`, ami egymásra mutat, **sosem szabadul fel**: a számláló kölcsönösen 1 marad. Ez a körkörös hivatkozás. A megoldás: az egyik irány legyen `weak_ptr`, ami nem számít bele a tulajdonlásba.' },
-      { k: 'callout', tone: 'tip', md: 'Mindig `make_unique` és `make_shared`, ne `unique_ptr<T>(new T)`. Rövidebb, kivételbiztos, és a `make_shared` egyetlen foglalásba teszi az objektumot és a számlálót.' },
-    ],
-    quiz: [
-      { k: 'single', q: 'Mi a `unique_ptr` lényege?', opts: ['Több tulajdonos osztozik rajta', 'Pontosan egy tulajdonos van; másolni nem lehet, csak mozgatni', 'Soha nem szabadul fel'], answer: 1, why: 'Az egyedüli tulajdon a legtisztább modell, és nincs számlálási költsége.' },
-      { k: 'single', q: 'Mi a RAII elv?', opts: ['Az erőforrás élettartama az objektum élettartamához kötött', 'Minden erőforrás globális', 'Kézi felszabadítás'], answer: 0, why: 'A konstruktor szerez, a destruktor elenged. Kivétel esetén is lefut, mert a verem lebontása garantált.' },
-      { k: 'single', q: 'Mi történik két egymásra mutató `shared_ptr` esetén?', opts: ['Hibát ad', 'Egyik sem szabadul fel: a számláló kölcsönösen 1 marad', 'Automatikusan megoldódik'], answer: 1, why: 'Ez a körkörös hivatkozás. Az egyik irányt `weak_ptr`-re cserélve megtörik a kör.' },
-      { k: 'single', q: 'Melyik az alapértelmezett választás?', opts: ['shared_ptr', 'unique_ptr', 'nyers mutató'], answer: 1, why: 'Egyedüli tulajdon, nincs számlálási költség. A `shared_ptr` csak valódi osztott tulajdon esetén indokolt.' },
-      { k: 'single', q: 'Miért jobb a `make_unique` a `unique_ptr<T>(new T)`-nél?', opts: ['Gyorsabb futás', 'Rövidebb és kivételbiztos', 'Több memóriát ad'], answer: 1, why: 'Nincs olyan köztes állapot, ahol a `new` már lefutott, de a mutató még nem vette át a tulajdont.' },
-    ],
-    note: {
-      summary: ['Modern C++-ban ne írj `new`-t és `delete`-et.', '`unique_ptr`: egyedüli tulajdon, csak mozgatható — ez az alapértelmezés.', '`shared_ptr`: számlált osztott tulajdon, drágább.', 'RAII: konstruktor szerez, destruktor elenged, kivétel esetén is.', 'Körkörös `shared_ptr` nem szabadul fel; `weak_ptr` töri meg.', 'Mindig `make_unique` / `make_shared`.'],
-      terms: [{ term: 'RAII', def: 'Erőforrás-kezelés az objektum élettartamához kötve.' }, { term: 'unique_ptr', def: 'Egyedüli tulajdonú okos mutató.' }, { term: 'weak_ptr', def: 'Nem tulajdonló hivatkozás, ami megtöri a körkörösséget.' }],
-    },
-  },
-  {
-    day: 12,
     title: 'Sablonok (template)',
     minutes: 24,
     lesson: [
@@ -51,7 +27,7 @@ export const cppHuC: Day[] = [
     },
   },
   {
-    day: 13,
+    day: 12,
     title: 'STL konténerek',
     minutes: 24,
     lesson: [
@@ -75,7 +51,7 @@ export const cppHuC: Day[] = [
     },
   },
   {
-    day: 14,
+    day: 13,
     title: 'Iterátorok',
     minutes: 22,
     lesson: [
@@ -99,7 +75,7 @@ export const cppHuC: Day[] = [
     },
   },
   {
-    day: 15,
+    day: 14,
     title: 'Algoritmusok: sort, find, transform',
     minutes: 24,
     lesson: [
@@ -123,7 +99,7 @@ export const cppHuC: Day[] = [
     },
   },
   {
-    day: 16,
+    day: 15,
     title: 'Lambda kifejezések',
     minutes: 22,
     lesson: [
@@ -147,7 +123,7 @@ export const cppHuC: Day[] = [
     },
   },
   {
-    day: 17,
+    day: 16,
     title: 'auto és típuskikövetkeztetés',
     minutes: 20,
     lesson: [

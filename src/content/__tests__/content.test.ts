@@ -27,6 +27,22 @@ describe('content', () => {
       expect(hu).toEqual(en);
     });
 
+    it(`${domain}: no two days teach the same topic`, () => {
+      for (const locale of LOCALES) {
+        const titles = getTrack(domain, locale).days.map((d) => d.title);
+        expect(titles, `${domain}/${locale}`).toEqual([...new Set(titles)]);
+      }
+    });
+
+    it(`${domain}: each written day carries its planned title`, () => {
+      for (const locale of LOCALES) {
+        const track = getTrack(domain, locale);
+        for (const d of track.days) {
+          expect(d.title, `${domain}/${locale} day ${d.day}`).toBe(track.plannedTitles[d.day - 1]);
+        }
+      }
+    });
+
     it(`${domain}: the planned 30-day arc is titled in both locales`, () => {
       for (const locale of LOCALES) {
         const track = getTrack(domain, locale);

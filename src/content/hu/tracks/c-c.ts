@@ -1,33 +1,9 @@
 import type { Day } from '../../types';
 
-/** C trek, 11–17. nap. */
+/** C trek, 11–16. nap. */
 export const cHuC: Day[] = [
   {
     day: 11,
-    title: 'Dinamikus memória: malloc és free',
-    minutes: 24,
-    lesson: [
-      { k: 'text', md: 'Eddig minden változód a **veremben** (stack) élt: a függvény belépésekor jött létre, kilépésekor eltűnt. Ha olyan adat kell, aminek a mérete csak futásidőben derül ki, vagy túl kell élnie a függvényt, a **kupacot** (heap) használod.' },
-      { k: 'code', lang: 'c', src: '#include <stdlib.h>\n\nint *tomb = malloc(n * sizeof *tomb);\nif (tomb == NULL) {\n    return -1;              /* nem sikerült a foglalás */\n}\n\nfor (int i = 0; i < n; i++) {\n    tomb[i] = i * i;\n}\n\nfree(tomb);\ntomb = NULL;                /* hogy ne maradjon lógó mutató */', explain: 'A `sizeof *tomb` jobb, mint a `sizeof(int)`: ha később a típus megváltozik, a sor magától követi. A `free` után a `NULL` beállítás nem kötelező, de megakadályozza a kétszeres felszabadítást.' },
-      { k: 'callout', tone: 'key', md: 'A `malloc` **nem nullázza** a memóriát: amit visszaad, az szemét. Ha nullázott memória kell, használd a `calloc(n, meret)` függvényt.' },
-      { k: 'text', md: 'A négy függvény, amit tudnod kell:\n\n- `malloc(meret)` — foglal, nem nulláz\n- `calloc(db, meret)` — foglal és nulláz\n- `realloc(p, uj)` — átméretez; **új címet adhat vissza**\n- `free(p)` — felszabadít' },
-      { k: 'callout', tone: 'warn', md: 'A `realloc` visszatérési értékét **soha ne írd közvetlenül a régi mutatóba**: `p = realloc(p, uj);` — ha a foglalás nem sikerül, `NULL`-t kapsz, és elvesztetted az eredeti mutatót is, vagyis kész a szivárgás. Használj ideiglenes változót.' },
-      { k: 'callout', tone: 'tip', md: 'A szabály, ami minden C memóriahibát megelőz: **minden `malloc`-hoz tartozzon pontosan egy `free`**, és már a foglalás pillanatában tudd, hol lesz a felszabadítás.' },
-    ],
-    quiz: [
-      { k: 'single', q: 'Mit ad vissza a `malloc`, ha nem sikerül a foglalás?', opts: ['0-t', 'NULL-t', 'Kivételt dob'], answer: 1, why: 'A C-ben nincs kivétel. A `NULL` visszatérés az egyetlen jelzés, ezért mindig ellenőrizd.' },
-      { k: 'single', q: 'Mi a különbség a `malloc` és a `calloc` között?', opts: ['A `calloc` nullázza a memóriát', 'A `malloc` gyorsabb mindig', 'Nincs különbség'], answer: 0, why: 'A `malloc` szemetet hagy. A `calloc` kinullázza a területet, és két paramétert vesz: darabszám és méret.' },
-      { k: 'single', q: 'Miért veszélyes a `p = realloc(p, uj);` sor?', opts: ['Lassú', 'Ha a foglalás sikertelen, NULL kerül p-be és elveszik az eredeti mutató', 'Nem fordul le'], answer: 1, why: 'A régi terület megmarad, de már nincs rá hivatkozásod. Ideiglenes változóba kell menteni az eredményt.' },
-      { k: 'single', q: 'Miért érdemes `free` után `NULL`-ra állítani a mutatót?', opts: ['Gyorsabb lesz', 'Megakadályozza a kétszeres felszabadítást és a lógó mutató használatát', 'Felszabadít még egy kis memóriát'], answer: 1, why: 'A `free(NULL)` biztonságos, semmit nem csinál. A `NULL` dereferálása pedig azonnal elszáll — ami jobb, mint a csendes adatvesztés.' },
-      { k: 'single', q: 'Miért jobb a `sizeof *tomb` a `sizeof(int)`-nél?', opts: ['Rövidebb', 'Ha a mutató típusa megváltozik, a kód magától követi', 'Gyorsabban fordul'], answer: 1, why: 'Így nincs két helyen leírva a típus. Típusváltáskor nem marad el a másik hely.' },
-    ],
-    note: {
-      summary: ['A verem a függvényhez kötött, a kupac túléli azt.', '`malloc` foglal de nem nulláz; `calloc` nulláz; `realloc` átméretez; `free` felszabadít.', 'A `malloc` visszatérését mindig ellenőrizd NULL-ra.', '`realloc` eredményét ideiglenes változóba tedd, különben szivárgás lehet.', '`free` után állítsd NULL-ra a mutatót.', 'Minden `malloc`-hoz pontosan egy `free` tartozzon.'],
-      terms: [{ term: 'kupac (heap)', def: 'Futásidőben foglalható memóriaterület.' }, { term: 'lógó mutató', def: 'Felszabadított területre mutató hivatkozás.' }, { term: 'calloc', def: 'Foglaló függvény, ami kinullázza a területet.' }],
-    },
-  },
-  {
-    day: 12,
     title: 'Memóriaszivárgás',
     minutes: 22,
     lesson: [
@@ -51,7 +27,7 @@ export const cHuC: Day[] = [
     },
   },
   {
-    day: 13,
+    day: 12,
     title: 'Mutató mutatóra',
     minutes: 22,
     lesson: [
@@ -75,7 +51,7 @@ export const cHuC: Day[] = [
     },
   },
   {
-    day: 14,
+    day: 13,
     title: 'Függvénymutatók',
     minutes: 22,
     lesson: [
@@ -99,7 +75,7 @@ export const cHuC: Day[] = [
     },
   },
   {
-    day: 15,
+    day: 14,
     title: 'Fejlécfájlok és fordítási egységek',
     minutes: 22,
     lesson: [
@@ -123,7 +99,7 @@ export const cHuC: Day[] = [
     },
   },
   {
-    day: 16,
+    day: 15,
     title: 'A preprocesszor',
     minutes: 22,
     lesson: [
@@ -147,7 +123,7 @@ export const cHuC: Day[] = [
     },
   },
   {
-    day: 17,
+    day: 16,
     title: 'Make és fordítási folyamat',
     minutes: 24,
     lesson: [

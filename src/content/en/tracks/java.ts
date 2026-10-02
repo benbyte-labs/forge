@@ -23,7 +23,7 @@ export const javaEn: Track = {
     'Abstract classes and interfaces',
     'Polymorphism in practice',
     'Exception handling',
-    'Your own exception',
+    'Custom exceptions',
     'Collections: List and Map',
     'Iterators and for-each',
     'Generics',

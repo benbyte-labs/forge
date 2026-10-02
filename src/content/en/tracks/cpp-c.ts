@@ -4,30 +4,6 @@ import type { Day } from '../../types';
 export const cppEnC: Day[] = [
   {
     day: 11,
-    title: 'Smart pointers',
-    minutes: 24,
-    lesson: [
-      { k: 'text', md: 'One of the most important rules in modern C++: **do not write `new` and `delete`**. Smart pointers do it for you, and they never forget.' },
-      { k: 'code', lang: 'cpp', src: '#include <memory>\n\nauto r = std::make_unique<Rover>("Alpha");   // sole owner\nr->step(10);\n// destroyed automatically at the end of scope -- no delete\n\nauto shared = std::make_shared<Map>();       // shared ownership\nauto other  = shared;                        // count: 2\n// destroyed when both are gone', explain: '`unique_ptr` cannot be copied, only moved: there is exactly one owner. `shared_ptr` counts references and deletes when the last one goes.' },
-      { k: 'callout', tone: 'key', md: 'The default is **`unique_ptr`**. Reach for `shared_ptr` only when several places really do own the same object and you cannot say which outlives the other. `shared_ptr` costs more: it keeps an atomic counter.' },
-      { k: 'text', md: 'The principle behind it is **RAII**: the lifetime of a resource is tied to the lifetime of an object. The constructor acquires, the destructor releases — even on an exception, because stack unwinding always runs.' },
-      { k: 'callout', tone: 'warn', md: 'Two `shared_ptr`s pointing at each other are **never released**: each count stays at 1. That is a reference cycle. The fix is to make one direction a `weak_ptr`, which does not count as ownership.' },
-      { k: 'callout', tone: 'tip', md: 'Always `make_unique` and `make_shared`, never `unique_ptr<T>(new T)`. Shorter, exception safe, and `make_shared` puts the object and the counter in a single allocation.' },
-    ],
-    quiz: [
-      { k: 'single', q: 'What is the point of `unique_ptr`?', opts: ['Several owners share it', 'Exactly one owner; it cannot be copied, only moved', 'It is never released'], answer: 1, why: 'Sole ownership is the clearest model and has no counting overhead.' },
-      { k: 'single', q: 'What is the RAII principle?', opts: ['Resource lifetime tied to object lifetime', 'All resources are global', 'Manual release'], answer: 0, why: 'The constructor acquires, the destructor releases. It runs on exceptions too, because stack unwinding is guaranteed.' },
-      { k: 'single', q: 'What happens with two `shared_ptr`s pointing at each other?', opts: ['An error', 'Neither is released: each count stays at 1', 'It resolves itself'], answer: 1, why: 'That is a reference cycle. Making one direction a `weak_ptr` breaks it.' },
-      { k: 'single', q: 'Which is the default choice?', opts: ['shared_ptr', 'unique_ptr', 'a raw pointer'], answer: 1, why: 'Sole ownership with no counting cost. `shared_ptr` is justified only by genuine shared ownership.' },
-      { k: 'single', q: 'Why is `make_unique` better than `unique_ptr<T>(new T)`?', opts: ['Faster execution', 'Shorter and exception safe', 'It allocates more memory'], answer: 1, why: 'There is no intermediate state where `new` has run but the pointer has not yet taken ownership.' },
-    ],
-    note: {
-      summary: ['In modern C++ do not write `new` and `delete`.', '`unique_ptr`: sole ownership, move-only — the default.', '`shared_ptr`: counted shared ownership, more expensive.', 'RAII: constructor acquires, destructor releases, exceptions included.', 'A `shared_ptr` cycle never releases; `weak_ptr` breaks it.', 'Always `make_unique` / `make_shared`.'],
-      terms: [{ term: 'RAII', def: 'Tying resource management to object lifetime.' }, { term: 'unique_ptr', def: 'A sole-ownership smart pointer.' }, { term: 'weak_ptr', def: 'A non-owning reference that breaks cycles.' }],
-    },
-  },
-  {
-    day: 12,
     title: 'Templates',
     minutes: 24,
     lesson: [
@@ -51,7 +27,7 @@ export const cppEnC: Day[] = [
     },
   },
   {
-    day: 13,
+    day: 12,
     title: 'STL containers',
     minutes: 24,
     lesson: [
@@ -75,7 +51,7 @@ export const cppEnC: Day[] = [
     },
   },
   {
-    day: 14,
+    day: 13,
     title: 'Iterators',
     minutes: 22,
     lesson: [
@@ -99,7 +75,7 @@ export const cppEnC: Day[] = [
     },
   },
   {
-    day: 15,
+    day: 14,
     title: 'Algorithms: sort, find, transform',
     minutes: 24,
     lesson: [
@@ -123,7 +99,7 @@ export const cppEnC: Day[] = [
     },
   },
   {
-    day: 16,
+    day: 15,
     title: 'Lambda expressions',
     minutes: 22,
     lesson: [
@@ -147,7 +123,7 @@ export const cppEnC: Day[] = [
     },
   },
   {
-    day: 17,
+    day: 16,
     title: 'auto and type deduction',
     minutes: 20,
     lesson: [

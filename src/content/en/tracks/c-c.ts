@@ -1,33 +1,9 @@
 import type { Day } from '../../types';
 
-/** C track, days 11-17. */
+/** C track, days 11-16. */
 export const cEnC: Day[] = [
   {
     day: 11,
-    title: 'Dynamic memory: malloc and free',
-    minutes: 24,
-    lesson: [
-      { k: 'text', md: 'So far every variable lived on the **stack**: created when the function was entered, gone when it returned. When the size is only known at run time, or the data has to outlive the function, you use the **heap**.' },
-      { k: 'code', lang: 'c', src: '#include <stdlib.h>\n\nint *arr = malloc(n * sizeof *arr);\nif (arr == NULL) {\n    return -1;              /* allocation failed */\n}\n\nfor (int i = 0; i < n; i++) {\n    arr[i] = i * i;\n}\n\nfree(arr);\narr = NULL;                 /* so no dangling pointer remains */', explain: '`sizeof *arr` beats `sizeof(int)`: if the type changes later, the line follows automatically. Setting NULL after free is not required, but it prevents a double free.' },
-      { k: 'callout', tone: 'key', md: '`malloc` **does not zero** the memory: what you get back is garbage. For zeroed memory use `calloc(n, size)`.' },
-      { k: 'text', md: 'The four functions you need:\n\n- `malloc(size)` — allocates, does not zero\n- `calloc(n, size)` — allocates and zeroes\n- `realloc(p, new)` — resizes; **may return a new address**\n- `free(p)` — releases' },
-      { k: 'callout', tone: 'warn', md: 'Never write a `realloc` result straight back into the old pointer: `p = realloc(p, new);` — if the allocation fails you get `NULL` and have lost the original pointer too, which is a leak. Use a temporary.' },
-      { k: 'callout', tone: 'tip', md: 'The rule that prevents every C memory bug: **exactly one `free` per `malloc`**, and know where the free will be at the moment you allocate.' },
-    ],
-    quiz: [
-      { k: 'single', q: 'What does `malloc` return on failure?', opts: ['0', 'NULL', 'It throws'], answer: 1, why: 'C has no exceptions. A `NULL` return is the only signal, so always check it.' },
-      { k: 'single', q: 'What is the difference between `malloc` and `calloc`?', opts: ['`calloc` zeroes the memory', '`malloc` is always faster', 'No difference'], answer: 0, why: '`malloc` leaves garbage. `calloc` zeroes the block and takes two arguments: count and size.' },
-      { k: 'single', q: 'Why is `p = realloc(p, new);` dangerous?', opts: ['It is slow', 'On failure NULL lands in p and the original pointer is lost', 'It does not compile'], answer: 1, why: 'The old block still exists but you no longer have a reference. Save the result in a temporary.' },
-      { k: 'single', q: 'Why set a pointer to NULL after `free`?', opts: ['It is faster', 'It prevents a double free and using a dangling pointer', 'It frees a bit more memory'], answer: 1, why: '`free(NULL)` is safe and does nothing. Dereferencing NULL crashes immediately, which beats silent corruption.' },
-      { k: 'single', q: 'Why is `sizeof *arr` better than `sizeof(int)`?', opts: ['It is shorter', 'If the pointer type changes, the code follows automatically', 'It compiles faster'], answer: 1, why: 'The type is written in one place only, so a type change cannot leave the other one behind.' },
-    ],
-    note: {
-      summary: ['The stack is tied to the function; the heap outlives it.', '`malloc` allocates without zeroing; `calloc` zeroes; `realloc` resizes; `free` releases.', 'Always check a `malloc` result against NULL.', 'Store a `realloc` result in a temporary to avoid a leak on failure.', 'Set the pointer to NULL after `free`.', 'Exactly one `free` per `malloc`.'],
-      terms: [{ term: 'heap', def: 'Memory that can be allocated at run time.' }, { term: 'dangling pointer', def: 'A reference to memory that has been freed.' }, { term: 'calloc', def: 'An allocator that zeroes the block.' }],
-    },
-  },
-  {
-    day: 12,
     title: 'Memory leaks',
     minutes: 22,
     lesson: [
@@ -51,7 +27,7 @@ export const cEnC: Day[] = [
     },
   },
   {
-    day: 13,
+    day: 12,
     title: 'Pointers to pointers',
     minutes: 22,
     lesson: [
@@ -75,7 +51,7 @@ export const cEnC: Day[] = [
     },
   },
   {
-    day: 14,
+    day: 13,
     title: 'Function pointers',
     minutes: 22,
     lesson: [
@@ -99,7 +75,7 @@ export const cEnC: Day[] = [
     },
   },
   {
-    day: 15,
+    day: 14,
     title: 'Headers and translation units',
     minutes: 22,
     lesson: [
@@ -123,7 +99,7 @@ export const cEnC: Day[] = [
     },
   },
   {
-    day: 16,
+    day: 15,
     title: 'The preprocessor',
     minutes: 22,
     lesson: [
@@ -147,7 +123,7 @@ export const cEnC: Day[] = [
     },
   },
   {
-    day: 17,
+    day: 16,
     title: 'Make and the build process',
     minutes: 24,
     lesson: [
