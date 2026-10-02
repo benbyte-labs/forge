@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { blenderHuB } from './blender-b';
 import { blenderHuC } from './blender-c';
 import { blenderHuD } from './blender-d';
+import { blenderHuE } from './blender-e';
 
 export const blenderHu: Track = {
   id: 'blender',
@@ -109,5 +110,6 @@ export const blenderHu: Track = {
     ...blenderHuB,
     ...blenderHuC,
     ...blenderHuD,
+    ...blenderHuE,
   ],
 };

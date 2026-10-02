@@ -1,0 +1,150 @@
+import type { Day } from '../../types';
+
+/** BLENDER trek, 25–30. nap. */
+export const blenderHuE: Day[] = [
+  {
+    day: 25,
+    title: 'Kulcskockás animáció',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A **kulcskocka** (keyframe) rögzíti egy tulajdonság értékét egy adott időpillanatban. A köztes képkockákat a Blender számolja ki — ez az **interpoláció**.' },
+      { k: 'code', lang: 'js', src: '// A munkamenet\n// 1. Álj a kívánt képkockára (idővonal)\n// 2. Állítsd be a tulajdonságot (pozíció, forgatás, méret)\n// 3. Nyomd meg az I billentyűt, és válaszd ki, mit rögzítesz\n//\n// Gyorsbillentyűk:\n// I          -> kulcskocka beszúrása\n// Alt + I    -> kulcskocka törlése\n// bal/jobb nyíl -> egy képkocka előre/hátra\n// Shift + bal   -> az elejére ugrás', explain: 'A legfontosabb szokás: **mindig az idővonalon állj előbb a helyes képkockára**, és csak utána állítsd a tulajdonságot. Fordítva a mozgatás az előző kulcskockát rontja el.' },
+      { k: 'callout', tone: 'key', md: 'Az **automatikus kulcsozás** (Auto Keying, a felvételgomb az idővonalon) minden mozgatást azonnal kulcskockává tesz. Kényelmes, de veszélyes: véletlen mozdulatok is bekerülnek. Kezdőként kapcsold ki, és szúrd be kézzel az I billentyűvel.' },
+      { k: 'text', md: 'A **Graph Editor** mutatja a kulcskockák közti görbéket. Három alapvető interpolációs mód:\n\n- **Constant** — ugrik, nincs átmenet. Kapcsolókhoz, villogáshoz.\n- **Linear** — egyenletes sebesség. Gépi mozgáshoz, forgó kerékhez.\n- **Bezier** — lassú indulás és lassú megállás. Ez az alapértelmezés, és ez néz ki természetesen.' },
+      { k: 'callout', tone: 'warn', md: 'Egy **robotkar mozgása nem Bezier**. A valódi szervó állandó sebességgel megy, aztán megáll. Ha hiteles gépi mozgást akarsz, váltsd a görbéket **Linear**-re, különben a kar úgy mozog, mint egy rajzfilmfigura karja.' },
+      { k: 'callout', tone: 'tip', md: 'A **lassítás és gyorsulás** (ease) a legfontosabb animációs eszköz. Minden valódi tömegnek van tehetetlensége: nem indul és nem áll meg azonnal. Még gépi mozgásnál is érdemes egy-két képkocka átmenetet hagyni az induláskor.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mit rögzít egy kulcskocka?', opts: ['A teljes jelenetet', 'Egy tulajdonság értékét egy adott képkockán', 'A kamera helyét'], answer: 1, why: 'A köztes képkockákat a Blender számolja ki interpolációval.' },
+      { k: 'single', q: 'Mi a helyes sorrend kulcskocka beszúrásánál?', opts: ['Előbb mozgass, aztán ugorj a képkockára', 'Előbb állj a képkockára, aztán mozgass és nyomj I-t', 'Mindegy'], answer: 1, why: 'Fordítva a mozgatás az előző kulcskockát rontja el.' },
+      { k: 'single', q: 'Melyik interpoláció való gépi mozgáshoz?', opts: ['Bezier', 'Linear', 'Constant'], answer: 1, why: 'A valódi szervó állandó sebességgel megy. A Bezier rajzfilmszerű lenne.' },
+      { k: 'single', q: 'Mire való a Constant interpoláció?', opts: ['Sima átmenetre', 'Ugrásra: kapcsolókhoz, villogáshoz', 'Gyorsulásra'], answer: 1, why: 'Nincs átmenet a két érték között, az ugrás azonnali.' },
+      { k: 'single', q: 'Miért veszélyes az automatikus kulcsozás kezdőként?', opts: ['Lassú', 'Véletlen mozdulatok is kulcskockává válnak', 'Nem működik'], answer: 1, why: 'Kapcsold ki, és szúrd be kézzel az I billentyűvel.' },
+    ],
+    note: {
+      summary: ['A kulcskocka egy tulajdonság értékét rögzíti egy képkockán.', 'Előbb állj a képkockára, utána mozgass, aztán I.', 'Auto Keying kényelmes, de kezdőként kapcsold ki.', 'Interpoláció: Constant ugrik, Linear egyenletes, Bezier lassít-gyorsít.', 'Gépi mozgáshoz Linear, nem Bezier.', 'Egy-két képkocka átmenet még gépi mozgásnál is hitelesebb.'],
+      terms: [{ term: 'kulcskocka', def: 'Rögzített érték egy adott képkockán.' }, { term: 'interpoláció', def: 'A köztes értékek kiszámítása két kulcskocka közt.' }, { term: 'Auto Keying', def: 'Minden mozgatást automatikusan kulcskockává tevő mód.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'Grafikonszerkesztő',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A **Graph Editor** mutatja meg, mi történik valójában a kulcskockák között. Az animáció minősége itt dől el, nem az idővonalon.' },
+      { k: 'callout', tone: 'key', md: 'Minden görbe egy tulajdonság **időbeli lefutása**: a vízszintes tengely az idő, a függőleges az érték. A görbe **meredeksége a sebesség**. Ahol meredek, ott gyors a mozgás; ahol lapos, ott lassú vagy áll.' },
+      { k: 'text', md: 'A leggyakoribb javítások:\n\n- **Fogantyúk igazítása** — a kulcskocka két oldalán lévő fogantyú szabja a be- és kilassítást\n- **Vízszintes fogantyú** a csúcsponton — így nem lő túl a mozgás\n- **Felesleges kulcskocka törlése** — minél kevesebb kulcskocka, annál simább a görbe' },
+      { k: 'callout', tone: 'warn', md: 'A **túllövés** (overshoot) a leggyakoribb hiba: a Bezier-görbe a két kulcskocka közt kilép az értéktartományból, és a tárgy először túlmegy a célon, majd visszatér. Néha ez kívánatos (rugalmas hatás), de egy robotkarnál hibának látszik. Ellenszer: a csúcsponton vízszintes fogantyú.' },
+      { k: 'text', md: 'A **modifier**-ek (N panel → Modifiers) algoritmikus mozgást adnak kulcskockák nélkül:\n\n- **Cycles** — ismétli a meglévő görbét a végtelenségig. Forgó kerékhez, körbejáró kamerához.\n- **Noise** — véletlen rezgést ad. Kézi kamera, vibráció.\n- **Generator** — képlettel adott mozgás.' },
+      { k: 'callout', tone: 'tip', md: 'Egy végtelenül forgó kerékhez ne rakj le száz kulcskockát. Tegyél **kettőt** — 0 fok és 360 fok —, állítsd a görbét **Linear**-re, és adj hozzá egy **Cycles** modifiert. Innentől örökké forog, egyenletesen.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mit mutat a görbe meredeksége a Graph Editorban?', opts: ['Az értéket', 'A sebességet', 'Az időt'], answer: 1, why: 'Ahol meredek, ott gyors a mozgás; ahol lapos, ott lassú vagy áll.' },
+      { k: 'single', q: 'Mi a túllövés (overshoot)?', opts: ['Túl sok kulcskocka', 'A görbe kilép az értéktartományból, és a tárgy túlmegy a célon', 'Túl gyors animáció'], answer: 1, why: 'Néha kívánatos rugalmas hatásként, de robotkarnál hibának látszik.' },
+      { k: 'single', q: 'Hogyan akadályozod meg a túllövést egy csúcsponton?', opts: ['Több kulcskockával', 'Vízszintes fogantyúval a csúcsponton', 'Gyorsabb animációval'], answer: 1, why: 'A vízszintes fogantyú nullára állítja a sebességet abban a pontban.' },
+      { k: 'single', q: 'Mit csinál a Cycles modifier?', opts: ['Renderel', 'Ismétli a meglévő görbét a végtelenségig', 'Zajt ad'], answer: 1, why: 'Forgó kerékhez vagy körbejáró kamerához ez váltja ki a sok kulcskockát.' },
+      { k: 'single', q: 'Hány kulcskocka kell egy végtelenül forgó kerékhez?', opts: ['Száz', 'Kettő, Linear görbével és Cycles modifierrel', 'Egy'], answer: 1, why: '0 fok és 360 fok, és onnantól örökké forog egyenletesen.' },
+    ],
+    note: {
+      summary: ['A Graph Editor mutatja, mi történik a kulcskockák között.', 'A görbe meredeksége a sebesség.', 'Javítás: fogantyúigazítás, vízszintes fogantyú a csúcson, felesleges kulcs törlése.', 'Túllövés: a görbe kilép a tartományból; vízszintes fogantyú az ellenszer.', 'Modifierek: Cycles ismétel, Noise rezeg, Generator képletet ad.', 'Végtelen forgás: két kulcskocka, Linear, Cycles modifier.'],
+      terms: [{ term: 'Graph Editor', def: 'Az animációs görbéket mutató és szerkesztő ablak.' }, { term: 'túllövés', def: 'Amikor az interpoláció kilép a kulcskockák értéktartományából.' }, { term: 'Cycles modifier', def: 'Görbemódosító, ami ismétli a mozgást.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Fizikai szimuláció',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A fizikai szimuláció azt animálja, amit kézzel nem érdemes: eső tárgyakat, ütközést, szövetet, kötelet. Megadod a szabályokat, és a Blender kiszámolja a mozgást.' },
+      { k: 'callout', tone: 'key', md: 'A **merev test** (Rigid Body) a robotikához legfontosabb. Két szerepe van:\n\n- **Active** — a fizika mozgatja: esik, ütközik, gurul\n- **Passive** — nem mozog, de ütközik: padló, fal, akadály' },
+      { k: 'text', md: 'A beállítások, amik tényleg számítanak:\n\n- **Tömeg** — nem a méret, hanem ez dönti el az ütközés kimenetelét\n- **Súrlódás** — 0 jégpálya, 0,5 átlagos, 1 gumi\n- **Rugalmasság (bounciness)** — 0 agyag, 0,9 gumilabda\n- **Collision Shape** — a Convex Hull gyors, a Mesh pontos de lassú' },
+      { k: 'callout', tone: 'warn', md: 'A **Collision Shape** a leggyakoribb hibaforrás. Az alapértelmezett Convex Hull **kitölti a homorulatokat**: egy tál belsejébe nem esik bele semmi, mert a szimuláció szerint a tál tömör. Homorú alakhoz **Mesh** típust kell választani.' },
+      { k: 'text', md: 'A **szövet** (Cloth) és a **lágy test** (Soft Body) kábelhez és tömlőhöz jó. A kötélszerű viselkedéshez egy hosszú, keskeny szövetcsík és magas `Bending` érték a bevált trükk.' },
+      { k: 'callout', tone: 'tip', md: 'Ha a szimuláció átmegy a falon, két dolgot állíts: növeld a **Steps Per Second** értéket (alapból 60, gyors mozgáshoz 200-500), és kapcsold be a **Collision Margin** kis értékét. A gyors tárgy egyetlen lépés alatt átugorhat egy vékony falon.' },
+      { k: 'text', md: 'Ha a szimuláció eredménye jó, **süsd ki** (Bake): így rögzül, nem számolódik újra, és kulcskockákká is alakítható, ha utólag kézzel akarsz rajta igazítani.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a különbség az Active és a Passive merev test közt?', opts: ['Az Active mozog a fizikától, a Passive csak ütközik', 'Az Active gyorsabb', 'Nincs különbség'], answer: 0, why: 'A padló és a falak Passive-ok: nem mozognak, de megállítják a többit.' },
+      { k: 'single', q: 'Mi a baj az alapértelmezett Convex Hull ütközési alakkal?', opts: ['Lassú', 'Kitölti a homorulatokat: egy tál belsejébe nem esik bele semmi', 'Pontatlan a méret'], answer: 1, why: 'Homorú alakhoz Mesh típust kell választani, ami pontos de lassabb.' },
+      { k: 'single', q: 'Mi dönti el az ütközés kimenetelét?', opts: ['A méret', 'A tömeg', 'A szín'], answer: 1, why: 'A méret nem számít a fizikában; a megadott tömeg igen.' },
+      { k: 'single', q: 'Mit tegyél, ha a tárgy átmegy a falon?', opts: ['Növeld a Steps Per Second értéket', 'Csökkentsd a tömeget', 'Lassítsd a renderelést'], answer: 0, why: 'A gyors tárgy egyetlen szimulációs lépés alatt átugorhat egy vékony falon.' },
+      { k: 'single', q: 'Mit ad a Bake (kisütés)?', opts: ['Gyorsabb renderelést', 'Rögzíti az eredményt, és kulcskockákká is alakítható', 'Jobb anyagot'], answer: 1, why: 'Így nem számolódik újra, és utólag kézzel igazítható.' },
+    ],
+    note: {
+      summary: ['A fizikai szimuláció azt animálja, amit kézzel nem érdemes.', 'Rigid Body: Active mozog, Passive csak ütközik.', 'Beállítások: tömeg, súrlódás, rugalmasság, ütközési alak.', 'A Convex Hull kitölti a homorulatokat — homorú alakhoz Mesh kell.', 'Átmenő tárgynál növeld a Steps Per Second értéket.', 'A kész szimulációt süsd ki (Bake).'],
+      terms: [{ term: 'merev test', def: 'Nem deformálódó, ütköző fizikai objektum.' }, { term: 'ütközési alak', def: 'Az egyszerűsített forma, amivel a fizika számol.' }, { term: 'kisütés (bake)', def: 'A szimuláció eredményének rögzítése.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Exportálás nyomtatásra',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A Blender nem CAD program, de nyomtatható modellt is lehet benne készíteni — ha betartasz néhány szabályt, amit a CAD magától garantál.' },
+      { k: 'callout', tone: 'key', md: 'A nyomtatható háló követelményei:\n\n1. **Zárt** (watertight) — nincs lyuk, a felület teljesen körbezárja a testet\n2. **Kifelé néző normálisok** — a szeletelőnek tudnia kell, mi a belső\n3. **Nincs átfedő geometria** — nincs duplán fekvő lap\n4. **Megfelelő méretarány** — 1 Blender egység legyen 1 méter vagy 1 mm, következetesen' },
+      { k: 'text', md: 'Az ellenőrzés menete:\n\n- **3D-Print Toolbox** bővítmény (Edit → Preferences → Add-ons) — egy gombbal ellenőrzi mindet\n- **M → Merge by Distance** szerkesztő módban — az egymásra eső pontokat összevonja\n- **Shift + N** — a normálisok kifelé fordítása\n- **Overlays → Face Orientation** — kék a jó, piros a kifordult' },
+      { k: 'callout', tone: 'warn', md: 'A **méretarány** a leggyakoribb hiba. A Blender alap kockája 2 méteres. Ha ezt exportálod és beolvasod a szeletelőbe, egy kétméteres kockát kapsz. Állítsd a Scene Properties → Units alatt a mértékegységet milliméterre, és mindig valódi méretekkel dolgozz.' },
+      { k: 'text', md: 'Export: **File → Export → STL** vagy **3MF**. Az STL a régi szabvány, mindenhol működik; a 3MF újabb, és tárolja a mértékegységet és a színeket is. Exportnál kapcsold be a **Selection Only** jelölőt, hogy ne a teljes jelenet menjen ki.' },
+      { k: 'callout', tone: 'tip', md: 'A **falvastagság** az, amit a Blender nem ellenőriz helyetted. Egy síkból extrudált felület lehet nulla vastag — a képernyőn jól néz ki, a nyomtató pedig nem tud vele mit kezdeni. Minden falnak legyen legalább 1,2 mm vastagsága (három vonal 0,4-es fúvókával).' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mit jelent, hogy a háló zárt (watertight)?', opts: ['Vízálló anyagból van', 'Nincs lyuk: a felület teljesen körbezárja a testet', 'Tömör a belseje'], answer: 1, why: 'A szeletelőnek egyértelműen el kell tudni dönteni, mi van belül és mi kívül.' },
+      { k: 'single', q: 'Mivel ellenőrzöd a nyomtathatóságot egy gombbal?', opts: ['Render előnézettel', 'A 3D-Print Toolbox bővítménnyel', 'A Graph Editorral'], answer: 1, why: 'Egyszerre ellenőrzi a lyukakat, a normálisokat és az átfedő geometriát.' },
+      { k: 'single', q: 'Mekkora a Blender alap kockája?', opts: ['2 centiméter', '2 méter', '2 milliméter'], answer: 1, why: 'Ezért a leggyakoribb hiba a méretarány. Állítsd a mértékegységet milliméterre.' },
+      { k: 'single', q: 'Mit csinál a Shift + N?', opts: ['Új objektumot hoz létre', 'Kifelé fordítja a normálisokat', 'Simít'], answer: 1, why: 'A kifordult normálisnál a szeletelő nem tudja, mi a test belseje.' },
+      { k: 'single', q: 'Mi az, amit a Blender nem ellenőriz helyetted?', opts: ['A normálisokat', 'A falvastagságot', 'A lyukakat'], answer: 1, why: 'Egy síkból extrudált felület lehet nulla vastag. Minden falnak legyen legalább 1,2 mm.' },
+    ],
+    note: {
+      summary: ['Nyomtatható háló: zárt, kifelé néző normálisok, nincs átfedés, jó méretarány.', '3D-Print Toolbox bővítmény egy gombbal ellenőrzi.', 'Merge by Distance az egymásra eső pontokra, Shift+N a normálisokra.', 'A Blender alap kockája 2 méteres — állítsd a mértékegységet milliméterre.', 'Export STL vagy 3MF formátumba, Selection Only jelölővel.', 'A falvastagságot neked kell ellenőrizni: legalább 1,2 mm.'],
+      terms: [{ term: 'watertight', def: 'Lyukmentes, zárt felületű háló.' }, { term: 'normális', def: 'A lap kifelé mutató iránya.' }, { term: '3MF', def: 'Modern nyomtatási fájlformátum mértékegységgel és színnel.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'A robotod megmodellezése',
+    minutes: 28,
+    lesson: [
+      { k: 'text', md: 'Itt az ideje összerakni mindent: modellezés, anyag, világítás és render — egy saját roboton.' },
+      { k: 'callout', tone: 'key', md: 'A munkamenet, amit érdemes követni:\n\n1. **Blokkolás** — nagy formák egyszerű primitívekből, pontos méretekkel. Ne részletezz.\n2. **Finomítás** — a blokkokból valódi alkatrészek: letörés, lekerekítés, furatok.\n3. **Részletek** — csavarok, kábelek, feliratok. Ez a leglátványosabb és a legkevésbé fontos.\n4. **Anyagok** — a 13-14. nap receptjei.\n5. **Világítás** — HDRI plusz key lámpa.\n6. **Kamera és render**.' },
+      { k: 'text', md: 'A blokkolás a legfontosabb és a leggyakrabban kihagyott lépés. Ha a nagy formák arányai rosszak, semmilyen részletezés nem menti meg a modellt. Fordítva viszont egy jól arányos blokkolás már önmagában meggyőző.' },
+      { k: 'callout', tone: 'warn', md: 'A **részletek csapdája**: könnyű két órát eltölteni egy csavarfej modellezésével, miközben a robot alapvető arányai rosszak. A szabály: **ne kezdj részletezni, amíg a blokkolást nem hagytad jóvá** egy renderrel, távolról nézve.' },
+      { k: 'text', md: 'A gyakorlati trükkök, amik rengeteg időt spórolnak:\n\n- **Array és Mirror modifier** — ismétlődő alkatrészekhez, szimmetriához\n- **Collection Instance** — egy motor egyszer megmodellezve, négyszer elhelyezve\n- **Nem kell belső szerkezet** — amit nem látsz, azt ne modellezd meg\n- **Letörés mindenhol** — a tökéletesen éles él valótlan; egy apró bevel minden élre azonnal valósághűbbé tesz' },
+      { k: 'callout', tone: 'tip', md: 'A **Bevel modifier** kis szélességgel és Angle korláttal az egész modellre rátehető: minden élre tesz egy alig látható letörést. Ez az egyetlen beállítás többet tesz a realizmusért, mint órányi kézi munka — mert az éles élek nem vernek vissza fényt, a letörtek viszont igen.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a modellezés első lépése?', opts: ['A részletek', 'Blokkolás: nagy formák primitívekből, pontos méretekkel', 'Az anyagok'], answer: 1, why: 'Ha a nagy formák arányai rosszak, semmilyen részletezés nem menti meg.' },
+      { k: 'single', q: 'Mi a részletek csapdája?', opts: ['Túl sok poligon', 'Órákat tölteni egy csavarfejjel, miközben az alaparányok rosszak', 'Lassú render'], answer: 1, why: 'Ne kezdj részletezni, amíg a blokkolást nem hagytad jóvá egy távoli renderrel.' },
+      { k: 'single', q: 'Mit modellezz meg a belső szerkezetből?', opts: ['Mindent', 'Amit nem látsz, azt ne', 'Csak a vázat'], answer: 1, why: 'A nem látható geometria csak lassítja a munkát és a rendert.' },
+      { k: 'single', q: 'Miért tesz a Bevel modifier azonnal valósághűbbé?', opts: ['Simábbá teszi', 'Mert az éles élek nem vernek vissza fényt, a letörtek igen', 'Kevesebb poligon'], answer: 1, why: 'Egy alig látható letörés minden élen többet tesz, mint órányi kézi munka.' },
+      { k: 'single', q: 'Mivel helyezel el négy azonos motort?', opts: ['Négyszer megmodellezve', 'Collection Instance vagy Array modifier', 'Másolás-beillesztéssel'], answer: 1, why: 'Egy módosítás így mind a négyre érvényes lesz.' },
+    ],
+    note: {
+      summary: ['Menet: blokkolás, finomítás, részletek, anyagok, világítás, render.', 'A blokkolás a legfontosabb és leggyakrabban kihagyott lépés.', 'Ne részletezz, amíg a blokkolást nem hagytad jóvá távolról.', 'Array, Mirror és Collection Instance az ismétlődésekhez.', 'Amit nem látsz, azt ne modellezd meg.', 'Bevel modifier az egész modellre: minden élre apró letörés.'],
+      terms: [{ term: 'blokkolás', def: 'A nagy formák felépítése egyszerű primitívekből.' }, { term: 'Collection Instance', def: 'Egy modell többszöri elhelyezése egyetlen definícióból.' }, { term: 'Bevel modifier', def: 'Minden élre letörést tevő módosító.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'Kész render a portfólióba',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'A modell kész; most jön az, amit mások látni fognak. Egy jó portfólió-render nem a legbonyolultabb modellt mutatja, hanem a **legjobban bemutatott** modellt.' },
+      { k: 'callout', tone: 'key', md: 'A portfólió-render ellenőrzőlistája:\n\n- **Egy fő téma**, tiszta háttér előtt\n- **Hárompontos világítás** vagy HDRI plusz key (17., 18. nap)\n- **85-135 mm gyújtótávolság**, harmadolás szerinti kivágás (19. nap)\n- **Mélységélesség** F2,8 és F5,6 közt\n- **Cycles**, Denoise bekapcsolva (20., 21. nap)\n- **Glare és színkorrekció** a kompozitálásban (22. nap)' },
+      { k: 'text', md: 'Három kép rendszerint elég egy projekthez:\n\n1. **Hős kép** — a teljes robot, hízelgő szögből, jó fényben\n2. **Részletkép** — közelkép egy érdekes mechanizmusról\n3. **Robbantott ábra vagy szerelési nézet** — ami megmutatja, hogyan épül fel' },
+      { k: 'callout', tone: 'warn', md: 'A **beégetett felbontás és formátum** számít. Renderelj legalább 1920×1080-ban, ments **OpenEXR**-be az utómunkához, és csak a végén exportálj PNG-be. A JPEG tömörítési hibái a sima gradienseken azonnal látszanak — a render háttere pedig csupa sima gradiens.' },
+      { k: 'text', md: 'Mielőtt kiadod a kezedből, nézd meg a képet:\n\n- **Kicsiben** — olvasható-e a sziluett bélyegképben is?\n- **Szürkeárnyalatban** — jó-e a tónuseloszlás szín nélkül?\n- **Másnap** — a friss szem azonnal meglátja, amit este nem.' },
+      { k: 'callout', tone: 'tip', md: 'Harminc nap után megvan a teljes lánc: modellezés, anyag, UV, textúra, világítás, kamera, render, kompozitálás, rig és animáció. Innentől nem új eszközök kellenek, hanem **befejezett munkák**. Egy kész render többet ér tíz félbehagyott jelenetnél — és minden következő gyorsabb lesz.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi tesz jóvá egy portfólió-rendert?', opts: ['A legbonyolultabb modell', 'A legjobban bemutatott modell', 'A legnagyobb felbontás'], answer: 1, why: 'A bemutatás — fény, kompozíció, utómunka — többet számít a modell bonyolultságánál.' },
+      { k: 'single', q: 'Milyen gyújtótávolságot válassz?', opts: ['20 mm', '85-135 mm', 'Mindegy'], answer: 1, why: 'Ez ad hízelgő arányokat; a széles objektív közelről olcsó hatású.' },
+      { k: 'single', q: 'Melyik három kép elég egy projekthez?', opts: ['Három azonos szögből', 'Hős kép, részletkép, robbantott ábra', 'Csak a hős kép'], answer: 1, why: 'Együtt megmutatják a formát, a részletet és a felépítést.' },
+      { k: 'single', q: 'Milyen formátumba ments utómunkához?', opts: ['JPEG', 'OpenEXR', 'GIF'], answer: 1, why: 'A JPEG tömörítési hibái a sima gradienseken azonnal látszanak.' },
+      { k: 'single', q: 'Mi a három ellenőrzés kiadás előtt?', opts: ['Kicsiben, szürkeárnyalatban, másnap', 'Nagyításban, színesben, azonnal', 'Csak a felbontás'], answer: 0, why: 'A friss szem és a szín nélküli nézet azonnal megmutatja a hibákat.' },
+    ],
+    note: {
+      summary: ['A jó portfólió-render a legjobban bemutatott modellt mutatja.', 'Ellenőrzőlista: egy téma, jó fény, 85-135 mm, mélységélesség, Cycles, Denoise, Glare.', 'Három kép: hős kép, részletkép, robbantott ábra.', 'Renderelj legalább 1920×1080-ban, ments OpenEXR-be.', 'Ellenőrzés: kicsiben, szürkeárnyalatban, másnap.', 'Innentől befejezett munkák kellenek, nem új eszközök.'],
+      terms: [{ term: 'hős kép', def: 'A projektet bemutató fő render.' }, { term: 'robbantott ábra', def: 'Szétszedett nézet, ami a felépítést mutatja.' }, { term: 'tónuseloszlás', def: 'A világos és sötét területek aránya a képen.' }],
+    },
+  },
+];

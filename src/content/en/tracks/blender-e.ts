@@ -1,0 +1,150 @@
+import type { Day } from '../../types';
+
+/** BLENDER track, days 25-30. */
+export const blenderEnE: Day[] = [
+  {
+    day: 25,
+    title: 'Keyframe animation',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A **keyframe** records the value of a property at a given moment. Blender computes the frames in between — that is **interpolation**.' },
+      { k: 'code', lang: 'js', src: '// The workflow\n// 1. Move to the frame you want (timeline)\n// 2. Set the property (position, rotation, scale)\n// 3. Press I and choose what to record\n//\n// Shortcuts:\n// I             -> insert keyframe\n// Alt + I       -> delete keyframe\n// left/right arrow -> one frame back/forward\n// Shift + left     -> jump to the start', explain: 'The most important habit: **always move to the right frame on the timeline first**, then set the property. The other way round, your move corrupts the previous keyframe.' },
+      { k: 'callout', tone: 'key', md: '**Auto Keying** (the record button on the timeline) turns every move into a keyframe immediately. Convenient but dangerous: accidental moves get recorded too. As a beginner, keep it off and insert keys by hand with I.' },
+      { k: 'text', md: 'The **Graph Editor** shows the curves between keyframes. Three basic interpolation modes:\n\n- **Constant** — jumps, no transition. For switches and blinking.\n- **Linear** — constant speed. For machine motion and a turning wheel.\n- **Bezier** — slow start and slow stop. The default, and what looks natural.' },
+      { k: 'callout', tone: 'warn', md: 'A **robot arm does not move in Bezier**. A real servo runs at constant speed and then stops. For believable machine motion switch the curves to **Linear**, or the arm moves like a cartoon character.' },
+      { k: 'callout', tone: 'tip', md: '**Easing** is the most important animation tool. Every real mass has inertia: it does not start or stop instantly. Even for machine motion it is worth leaving one or two frames of transition at the start.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does a keyframe record?', opts: ['The whole scene', 'The value of a property at a given frame', 'The camera position'], answer: 1, why: 'Blender computes the intermediate frames by interpolation.' },
+      { k: 'single', q: 'What is the correct order when inserting a keyframe?', opts: ['Move first, then jump to the frame', 'Go to the frame first, then move and press I', 'It does not matter'], answer: 1, why: 'The other way round, your move corrupts the previous keyframe.' },
+      { k: 'single', q: 'Which interpolation suits machine motion?', opts: ['Bezier', 'Linear', 'Constant'], answer: 1, why: 'A real servo runs at constant speed. Bezier would look cartoonish.' },
+      { k: 'single', q: 'What is Constant interpolation for?', opts: ['Smooth transitions', 'Jumps: switches and blinking', 'Acceleration'], answer: 1, why: 'There is no transition between the two values; the jump is instant.' },
+      { k: 'single', q: 'Why is Auto Keying risky for a beginner?', opts: ['It is slow', 'Accidental moves become keyframes too', 'It does not work'], answer: 1, why: 'Keep it off and insert keys by hand with I.' },
+    ],
+    note: {
+      summary: ['A keyframe records a property value at one frame.', 'Go to the frame first, then move, then press I.', 'Auto Keying is convenient but keep it off as a beginner.', 'Interpolation: Constant jumps, Linear is even, Bezier eases.', 'Use Linear for machine motion, not Bezier.', 'One or two frames of easing reads better even for machines.'],
+      terms: [{ term: 'keyframe', def: 'A recorded value at a specific frame.' }, { term: 'interpolation', def: 'Computing the values between two keyframes.' }, { term: 'Auto Keying', def: 'A mode turning every move into a keyframe automatically.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'The Graph Editor',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'The **Graph Editor** shows what actually happens between keyframes. Animation quality is decided here, not on the timeline.' },
+      { k: 'callout', tone: 'key', md: 'Every curve is a property **over time**: the horizontal axis is time, the vertical the value. The **slope is the speed**. Where it is steep the motion is fast; where it is flat, slow or stopped.' },
+      { k: 'text', md: 'The commonest fixes:\n\n- **Adjust handles** — the handle on each side of a keyframe sets the ease in and out\n- **Flatten the handle at a peak** — so the motion does not overshoot\n- **Delete redundant keyframes** — the fewer keys, the smoother the curve' },
+      { k: 'callout', tone: 'warn', md: '**Overshoot** is the commonest fault: the Bezier curve leaves the value range between two keyframes, so the object passes the target and comes back. Sometimes that is wanted (an elastic feel), but on a robot arm it reads as an error. The fix: flatten the handle at the peak.' },
+      { k: 'text', md: '**Modifiers** (N panel → Modifiers) give algorithmic motion without keyframes:\n\n- **Cycles** — repeats the existing curve indefinitely. For a turning wheel or an orbiting camera.\n- **Noise** — adds random jitter. Handheld camera, vibration.\n- **Generator** — motion from a formula.' },
+      { k: 'callout', tone: 'tip', md: 'For an endlessly turning wheel do not lay down a hundred keyframes. Set **two** — 0 and 360 degrees — switch the curve to **Linear** and add a **Cycles** modifier. It then turns forever, evenly.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does the slope of a curve show in the Graph Editor?', opts: ['The value', 'The speed', 'The time'], answer: 1, why: 'Steep means fast motion; flat means slow or stopped.' },
+      { k: 'single', q: 'What is overshoot?', opts: ['Too many keyframes', 'The curve leaves the value range and the object passes the target', 'Too fast an animation'], answer: 1, why: 'Sometimes wanted as an elastic feel, but on a robot arm it reads as an error.' },
+      { k: 'single', q: 'How do you stop overshoot at a peak?', opts: ['More keyframes', 'Flatten the handle at the peak', 'A faster animation'], answer: 1, why: 'A flat handle sets the speed to zero at that point.' },
+      { k: 'single', q: 'What does the Cycles modifier do?', opts: ['Renders', 'Repeats the existing curve indefinitely', 'Adds noise'], answer: 1, why: 'For a turning wheel or an orbiting camera it replaces many keyframes.' },
+      { k: 'single', q: 'How many keyframes does an endlessly turning wheel need?', opts: ['A hundred', 'Two, with a Linear curve and a Cycles modifier', 'One'], answer: 1, why: '0 and 360 degrees, and from there it turns forever, evenly.' },
+    ],
+    note: {
+      summary: ['The Graph Editor shows what happens between keyframes.', 'The slope of a curve is the speed.', 'Fixes: adjust handles, flatten peaks, delete redundant keys.', 'Overshoot: the curve leaves the range; flatten the handle.', 'Modifiers: Cycles repeats, Noise jitters, Generator computes.', 'Endless rotation: two keys, Linear, Cycles modifier.'],
+      terms: [{ term: 'Graph Editor', def: 'The window showing and editing animation curves.' }, { term: 'overshoot', def: 'Interpolation leaving the value range of the keyframes.' }, { term: 'Cycles modifier', def: 'A curve modifier that repeats the motion.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Physics simulation',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'Physics simulation animates what is not worth doing by hand: falling objects, collisions, cloth, rope. You set the rules and Blender computes the motion.' },
+      { k: 'callout', tone: 'key', md: '**Rigid Body** is the one that matters for robotics. It has two roles:\n\n- **Active** — physics moves it: it falls, collides, rolls\n- **Passive** — it does not move but collides: floor, wall, obstacle' },
+      { k: 'text', md: 'The settings that really matter:\n\n- **Mass** — not the size; this decides a collision outcome\n- **Friction** — 0 is ice, 0.5 average, 1 rubber\n- **Bounciness** — 0 is clay, 0.9 a rubber ball\n- **Collision Shape** — Convex Hull is fast, Mesh is accurate but slow' },
+      { k: 'callout', tone: 'warn', md: '**Collision Shape** is the commonest source of trouble. The default Convex Hull **fills in concavities**: nothing falls into a bowl, because the simulation treats the bowl as solid. Concave shapes need the **Mesh** type.' },
+      { k: 'text', md: '**Cloth** and **Soft Body** suit cables and hoses. For rope-like behaviour the proven trick is a long narrow cloth strip with a high `Bending` value.' },
+      { k: 'callout', tone: 'tip', md: 'If the simulation passes through a wall, change two things: raise **Steps Per Second** (60 by default, 200-500 for fast motion) and enable a small **Collision Margin**. A fast object can jump over a thin wall within a single step.' },
+      { k: 'text', md: 'When the simulation looks right, **bake** it: the result is then fixed, no longer recomputed, and can be converted to keyframes if you want to adjust it by hand afterwards.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is the difference between Active and Passive rigid bodies?', opts: ['Active is moved by physics, Passive only collides', 'Active is faster', 'No difference'], answer: 0, why: 'Floors and walls are Passive: they do not move but they stop everything else.' },
+      { k: 'single', q: 'What is wrong with the default Convex Hull collision shape?', opts: ['It is slow', 'It fills in concavities: nothing falls into a bowl', 'The size is inaccurate'], answer: 1, why: 'Concave shapes need the Mesh type, which is accurate but slower.' },
+      { k: 'single', q: 'What decides a collision outcome?', opts: ['The size', 'The mass', 'The colour'], answer: 1, why: 'Size does not matter to the physics; the mass you set does.' },
+      { k: 'single', q: 'What should you do when an object passes through a wall?', opts: ['Raise Steps Per Second', 'Lower the mass', 'Slow the render'], answer: 0, why: 'A fast object can jump over a thin wall within one simulation step.' },
+      { k: 'single', q: 'What does baking give you?', opts: ['Faster rendering', 'It fixes the result and can be converted to keyframes', 'A better material'], answer: 1, why: 'It is no longer recomputed and can be adjusted by hand afterwards.' },
+    ],
+    note: {
+      summary: ['Physics animates what is not worth doing by hand.', 'Rigid Body: Active moves, Passive only collides.', 'Settings: mass, friction, bounciness, collision shape.', 'Convex Hull fills concavities — concave shapes need Mesh.', 'For pass-through, raise Steps Per Second.', 'Bake the finished simulation.'],
+      terms: [{ term: 'rigid body', def: 'A non-deforming colliding physics object.' }, { term: 'collision shape', def: 'The simplified form the physics computes with.' }, { term: 'baking', def: 'Fixing the result of a simulation.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Exporting for printing',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'Blender is not a CAD program, but you can make printable models in it — provided you follow a few rules that CAD guarantees for you.' },
+      { k: 'callout', tone: 'key', md: 'Requirements for a printable mesh:\n\n1. **Watertight** — no holes; the surface fully encloses the solid\n2. **Outward-facing normals** — the slicer must know what is inside\n3. **No overlapping geometry** — no duplicate coincident faces\n4. **Correct scale** — 1 Blender unit should be 1 metre or 1 mm, consistently' },
+      { k: 'text', md: 'How to check:\n\n- The **3D-Print Toolbox** add-on (Edit → Preferences → Add-ons) — checks all of it with one button\n- **M → Merge by Distance** in edit mode — merges coincident vertices\n- **Shift + N** — flips normals outward\n- **Overlays → Face Orientation** — blue is correct, red is flipped' },
+      { k: 'callout', tone: 'warn', md: '**Scale** is the commonest mistake. The default Blender cube is two metres across. Export that into a slicer and you get a two-metre cube. Set the unit to millimetres under Scene Properties → Units and always work in real dimensions.' },
+      { k: 'text', md: 'Export: **File → Export → STL** or **3MF**. STL is the old standard and works everywhere; 3MF is newer and stores units and colours too. Tick **Selection Only** on export so the whole scene does not go out.' },
+      { k: 'callout', tone: 'tip', md: '**Wall thickness** is what Blender does not check for you. A surface extruded from a plane can be zero thick — it looks fine on screen and the printer can do nothing with it. Give every wall at least 1.2 mm (three lines with a 0.4 nozzle).' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What does watertight mean?', opts: ['Made of waterproof material', 'No holes: the surface fully encloses the solid', 'Solid inside'], answer: 1, why: 'The slicer must be able to decide unambiguously what is inside and what is out.' },
+      { k: 'single', q: 'What checks printability with one button?', opts: ['The render preview', 'The 3D-Print Toolbox add-on', 'The Graph Editor'], answer: 1, why: 'It checks holes, normals and overlapping geometry at once.' },
+      { k: 'single', q: 'How big is the default Blender cube?', opts: ['2 centimetres', '2 metres', '2 millimetres'], answer: 1, why: 'That is why scale is the commonest mistake. Set the unit to millimetres.' },
+      { k: 'single', q: 'What does Shift + N do?', opts: ['Creates a new object', 'Flips normals outward', 'Smooths'], answer: 1, why: 'With flipped normals the slicer cannot tell which side is inside the solid.' },
+      { k: 'single', q: 'What does Blender not check for you?', opts: ['Normals', 'Wall thickness', 'Holes'], answer: 1, why: 'A surface extruded from a plane can be zero thick. Give every wall at least 1.2 mm.' },
+    ],
+    note: {
+      summary: ['A printable mesh is watertight, outward-facing, non-overlapping and correctly scaled.', 'The 3D-Print Toolbox add-on checks it with one button.', 'Merge by Distance for coincident vertices, Shift+N for normals.', 'The default cube is two metres — set the unit to millimetres.', 'Export to STL or 3MF with Selection Only.', 'Check wall thickness yourself: at least 1.2 mm.'],
+      terms: [{ term: 'watertight', def: 'A hole-free mesh with a closed surface.' }, { term: 'normal', def: 'The outward direction of a face.' }, { term: '3MF', def: 'A modern print file format carrying units and colour.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'Modelling your robot',
+    minutes: 28,
+    lesson: [
+      { k: 'text', md: 'Time to put it all together: modelling, materials, lighting and rendering — on a robot of your own.' },
+      { k: 'callout', tone: 'key', md: 'The workflow worth following:\n\n1. **Blocking** — large forms from simple primitives at accurate sizes. No detail.\n2. **Refinement** — blocks become real parts: chamfers, fillets, holes.\n3. **Details** — screws, cables, markings. The most eye-catching and the least important.\n4. **Materials** — the recipes from days 13 and 14.\n5. **Lighting** — HDRI plus a key light.\n6. **Camera and render**.' },
+      { k: 'text', md: 'Blocking is the most important and the most frequently skipped step. If the proportions of the large forms are wrong, no amount of detail rescues the model. Conversely, well-proportioned blocking is already convincing on its own.' },
+      { k: 'callout', tone: 'warn', md: 'The **detail trap**: it is easy to spend two hours modelling a screw head while the basic proportions of the robot are wrong. The rule: **do not start detailing until you have approved the blocking** with a render, viewed from a distance.' },
+      { k: 'text', md: 'Practical tricks that save a great deal of time:\n\n- **Array and Mirror modifiers** — for repeating parts and symmetry\n- **Collection Instance** — one motor modelled once, placed four times\n- **No internal structure** — do not model what you cannot see\n- **Chamfer everywhere** — a perfectly sharp edge is unreal; a tiny bevel on every edge reads as real immediately' },
+      { k: 'callout', tone: 'tip', md: 'A **Bevel modifier** with a small width and an angle limit can go on the whole model: it puts a barely visible chamfer on every edge. That single setting does more for realism than hours of manual work — because sharp edges catch no light, while chamfered ones do.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is the first step in modelling?', opts: ['The details', 'Blocking: large forms from primitives at accurate sizes', 'The materials'], answer: 1, why: 'If the proportions of the large forms are wrong, no detail rescues it.' },
+      { k: 'single', q: 'What is the detail trap?', opts: ['Too many polygons', 'Spending hours on a screw head while the basic proportions are wrong', 'Slow rendering'], answer: 1, why: 'Do not start detailing until the blocking is approved in a distant render.' },
+      { k: 'single', q: 'How much internal structure should you model?', opts: ['All of it', 'None of what you cannot see', 'Only the frame'], answer: 1, why: 'Invisible geometry only slows down the work and the render.' },
+      { k: 'single', q: 'Why does a Bevel modifier read as real immediately?', opts: ['It smooths', 'Because sharp edges catch no light while chamfered ones do', 'Fewer polygons'], answer: 1, why: 'A barely visible chamfer on every edge does more than hours of manual work.' },
+      { k: 'single', q: 'How should you place four identical motors?', opts: ['Model each one', 'Collection Instance or an Array modifier', 'Copy and paste'], answer: 1, why: 'One change then applies to all four.' },
+    ],
+    note: {
+      summary: ['Workflow: blocking, refinement, details, materials, lighting, render.', 'Blocking is the most important and most skipped step.', 'Do not detail until the blocking is approved from a distance.', 'Array, Mirror and Collection Instance for repetition.', 'Do not model what you cannot see.', 'A Bevel modifier on the whole model: a tiny chamfer on every edge.'],
+      terms: [{ term: 'blocking', def: 'Building the large forms from simple primitives.' }, { term: 'Collection Instance', def: 'Placing one model many times from a single definition.' }, { term: 'Bevel modifier', def: 'A modifier adding a chamfer to every edge.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'A finished portfolio render',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'The model is done; now comes what other people will see. A good portfolio render does not show the most complicated model but the **best presented** one.' },
+      { k: 'callout', tone: 'key', md: 'The portfolio render checklist:\n\n- **One subject**, against a clean background\n- **Three-point lighting** or HDRI plus a key (days 17 and 18)\n- **85-135 mm focal length**, framed on the thirds (day 19)\n- **Depth of field** between F2.8 and F5.6\n- **Cycles** with Denoise enabled (days 20 and 21)\n- **Glare and colour grading** in compositing (day 22)' },
+      { k: 'text', md: 'Three images are usually enough for a project:\n\n1. **A hero shot** — the whole robot from a flattering angle in good light\n2. **A detail shot** — a close-up of an interesting mechanism\n3. **An exploded or assembly view** — showing how it goes together' },
+      { k: 'callout', tone: 'warn', md: '**Resolution and format** matter. Render at least 1920×1080, save to **OpenEXR** for post, and only export to PNG at the end. JPEG compression artefacts show up immediately on smooth gradients — and a render background is all smooth gradient.' },
+      { k: 'text', md: 'Before you release it, look at the image:\n\n- **Small** — is the silhouette readable as a thumbnail?\n- **In greyscale** — does the tonal balance work without colour?\n- **The next day** — a fresh eye sees instantly what you missed at night.' },
+      { k: 'callout', tone: 'tip', md: 'After thirty days you have the whole chain: modelling, materials, UVs, textures, lighting, camera, rendering, compositing, rigging and animation. From here you do not need new tools but **finished work**. One completed render is worth more than ten abandoned scenes — and every next one will be faster.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What makes a good portfolio render?', opts: ['The most complicated model', 'The best presented model', 'The highest resolution'], answer: 1, why: 'Presentation — light, composition, post — counts for more than model complexity.' },
+      { k: 'single', q: 'What focal length should you choose?', opts: ['20 mm', '85-135 mm', 'It does not matter'], answer: 1, why: 'It gives flattering proportions; a wide lens up close looks cheap.' },
+      { k: 'single', q: 'Which three images suffice for a project?', opts: ['Three from the same angle', 'A hero shot, a detail shot and an exploded view', 'Just the hero shot'], answer: 1, why: 'Together they show the form, the detail and the construction.' },
+      { k: 'single', q: 'What format should you save for post?', opts: ['JPEG', 'OpenEXR', 'GIF'], answer: 1, why: 'JPEG compression artefacts show up immediately on smooth gradients.' },
+      { k: 'single', q: 'What are the three checks before release?', opts: ['Small, greyscale, the next day', 'Zoomed, in colour, immediately', 'Only the resolution'], answer: 0, why: 'A fresh eye and a colourless view expose the faults instantly.' },
+    ],
+    note: {
+      summary: ['A good portfolio render shows the best presented model.', 'Checklist: one subject, good light, 85-135 mm, depth of field, Cycles, Denoise, Glare.', 'Three images: hero shot, detail shot, exploded view.', 'Render at least 1920×1080 and save to OpenEXR.', 'Check it small, in greyscale, and the next day.', 'From here you need finished work, not new tools.'],
+      terms: [{ term: 'hero shot', def: 'The main render presenting a project.' }, { term: 'exploded view', def: 'A separated view showing how something goes together.' }, { term: 'tonal balance', def: 'The distribution of light and dark areas in an image.' }],
+    },
+  },
+];

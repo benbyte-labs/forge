@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { blenderEnB } from './blender-b';
 import { blenderEnC } from './blender-c';
 import { blenderEnD } from './blender-d';
+import { blenderEnE } from './blender-e';
 
 export const blenderEn: Track = {
   id: 'blender',
@@ -33,11 +34,11 @@ export const blenderEn: Track = {
     'Armatures and skeletons',
     'Rigging and weight painting',
     'Keyframe animation',
-    'The graph editor',
+    'The Graph Editor',
     'Physics simulation',
     'Exporting for printing',
     'Modelling your robot',
-    'A finished render for your portfolio',
+    'A finished portfolio render',
   ],
   days: [
     {
@@ -109,5 +110,6 @@ export const blenderEn: Track = {
     ...blenderEnB,
     ...blenderEnC,
     ...blenderEnD,
+    ...blenderEnE,
   ],
 };
