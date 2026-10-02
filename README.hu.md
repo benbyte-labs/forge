@@ -115,6 +115,17 @@ fordítás — ezt a `CONTENT_FALLBACK` intézi a `src/content/index.ts`-ben.
 3. A tananyag fordítása külön lépés: hozd létre a `src/content/<nyelv>/tracks/`
    mappát, és vedd fel a `TRACKS` táblába.
 
+## Hogyan készült
+
+Magam is most tanulok programozni, és azt az appot akartam, ami hiányzott:
+egy helyen kódolás, robotika, fizika és CAD, offline, és minden lecke végén
+egy valódi jegyzet.
+
+A **[Claude](https://claude.com/claude-code)** segítségével építettem — a
+kódot és mind a 480 leckét is, hosszú közös üléseken. Ha te is tanulsz, és
+ez furcsa módnak hangzik: többet tanultam belőle, mint bármelyik tutorialból,
+mert minden lépésnél el kellett döntenem, mi legyen ez egyáltalán.
+
 ## Amit szándékosan nem tud
 
 Nem valódi CAD-kernel: a CAD Labor tanít és gyakoroltat, nem vált ki egy
