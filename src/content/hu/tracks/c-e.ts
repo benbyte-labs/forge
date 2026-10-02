@@ -1,0 +1,173 @@
+import type { Day } from '../../types';
+
+/** C trek, 24–30. nap. */
+export const cHuE: Day[] = [
+  {
+    day: 24,
+    title: 'Szabványos könyvtár',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A C szabványos könyvtára kicsi — és ez szándékos. Néhány fejléc ismerete viszont rengeteg kézzel írt kódot megspórol.' },
+      { k: 'text', md: 'A hat fejléc, amit érdemes fejből tudni:\n\n- **`<stdio.h>`** — be- és kimenet: `printf`, `fopen`, `fgets`\n- **`<stdlib.h>`** — `malloc`, `free`, `qsort`, `atoi`, `rand`, `exit`\n- **`<string.h>`** — `strlen`, `strcpy`, `strcmp`, `memcpy`, `memset`\n- **`<math.h>`** — `sqrt`, `sin`, `pow`, `fabs`\n- **`<stdint.h>`** — rögzített méretű típusok: `uint8_t`, `int32_t`\n- **`<stdbool.h>`** — `bool`, `true`, `false`' },
+      { k: 'callout', tone: 'key', md: 'A **`<stdint.h>`** beágyazott programozásnál kötelező. Az `int` mérete platformfüggő: 16 bit egy kis mikrovezérlőn, 32 bit egy PC-n. A `uint8_t` és az `int32_t` viszont **mindenhol pontosan annyi**, amennyit mond.' },
+      { k: 'code', lang: 'c', src: '#include <string.h>\n\nchar cel[16];\n\n/* VESZÉLYES: nincs mérethatár */\nstrcpy(cel, forras);\n\n/* Jobb: korlátozott, de nem mindig zár le */\nstrncpy(cel, forras, sizeof cel - 1);\ncel[sizeof cel - 1] = \'\\0\';\n\n/* A legjobb: snprintf mindig lezár */\nsnprintf(cel, sizeof cel, "%s", forras);', explain: 'Az `snprintf` a legbiztonságosabb: betartja a mérethatárt **és** mindig lezárja a sztringet nullával. Az `strncpy` csonkolásnál nem tesz lezáró nullát — ez a klasszikus csapda.' },
+      { k: 'callout', tone: 'warn', md: 'A `strcpy`, `strcat` és `sprintf` **nem vesz mérethatárt**. Ezek okozzák a C biztonsági hibáinak nagy részét: a hosszabb bemenet túlírja a puffert, és a verem tartalma felülíródik. Használd mindig az `n` vagy `snprintf` változatot.' },
+      { k: 'text', md: 'A `memcpy` és a `memmove` közt valódi különbség van: a `memcpy` **nem** kezeli az átfedő területeket, a `memmove` igen. Ha a forrás és a cél átfedhet, mindig `memmove` kell — a `memcpy` ilyenkor meghatározatlan viselkedést ad.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Miért kötelező a `<stdint.h>` beágyazott programozásnál?', opts: ['Gyorsabb', 'Mert az `int` mérete platformfüggő, a `uint8_t` viszont mindenhol pontos', 'Kevesebb memória'], answer: 1, why: 'Az `int` 16 bit egy mikrovezérlőn és 32 bit egy PC-n.' },
+      { k: 'single', q: 'Melyik a legbiztonságosabb sztringmásolás?', opts: ['`strcpy`', '`snprintf`', '`strncpy`'], answer: 1, why: 'Betartja a mérethatárt és mindig lezárja a sztringet nullával.' },
+      { k: 'single', q: 'Mi a baj az `strncpy` függvénnyel?', opts: ['Lassú', 'Csonkolásnál nem tesz lezáró nullát', 'Nem létezik'], answer: 1, why: 'Ezért kell kézzel kiírni a `cel[meret-1] = 0;` sort utána.' },
+      { k: 'single', q: 'Mi a különbség a `memcpy` és a `memmove` közt?', opts: ['A `memmove` kezeli az átfedő területeket', 'A `memcpy` gyorsabb mindig', 'Nincs különbség'], answer: 0, why: 'Átfedésnél a `memcpy` meghatározatlan viselkedést ad.' },
+      { k: 'single', q: 'Mi okozza a C biztonsági hibáinak nagy részét?', opts: ['A mutatók', 'A mérethatár nélküli sztringfüggvények', 'A `malloc`'], answer: 1, why: 'A hosszabb bemenet túlírja a puffert, és a verem tartalma felülíródik.' },
+    ],
+    note: {
+      summary: ['A C szabványos könyvtára szándékosan kicsi.', 'Hat fejléc: stdio, stdlib, string, math, stdint, stdbool.', '`<stdint.h>` kötelező beágyazott kódban: `uint8_t`, `int32_t`.', 'Sztringmásoláshoz `snprintf`, mert mérethatárt tart és lezár.', 'Az `strncpy` csonkolásnál nem tesz lezáró nullát.', 'Átfedő területre `memmove`, nem `memcpy`.'],
+      terms: [{ term: 'stdint.h', def: 'Rögzített bitszélességű egész típusokat adó fejléc.' }, { term: 'puffertúlcsordulás', def: 'Írás a lefoglalt puffer határán túlra.' }, { term: 'memmove', def: 'Átfedő memóriaterületek közti biztonságos másolás.' }],
+    },
+  },
+  {
+    day: 25,
+    title: 'Mikrokontroller és C',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A C a beágyazott programozás nyelve, mert közvetlenül a hardverhez fér, és nincs futásidejű környezete, ami memóriát vagy időt enne.' },
+      { k: 'callout', tone: 'key', md: 'A legfontosabb különbség a PC-s programozáshoz képest: a program **soha nem áll le**. Nincs operációs rendszer, nincs `exit`. A `main` végén egy végtelen ciklus van, és abban fut minden.' },
+      { k: 'code', lang: 'c', src: 'int main(void) {\n    hardver_init();\n\n    for (;;) {                  /* soha nem ér véget */\n        szenzorok_olvasasa();\n        allapotgep_lepes();\n        kimenetek_frissitese();\n    }\n    /* ide soha nem jut el */\n}', explain: 'Ez a **szuperciklus** (superloop) minta: a legegyszerűbb beágyazott felépítés. Minden feladat sorban lefut, és kezdődik elölről. Amíg minden lépés rövid, ez tökéletesen működik.' },
+      { k: 'text', md: 'A szűkös erőforrások átformálják a szokásokat:\n\n- **Nincs `malloc`** — a dinamikus foglalás töredezettséghez vezet, és nincs, aki kezelje. Minden statikus vagy veremben van.\n- **Nincs `printf`** — vagy ha van, csak soros porton, és sok helyet foglal\n- **Nincs lebegőpont** — sok kis mikrovezérlőn nincs FPU; a `float` szoftveresen fut, nagyon lassan\n- **Fix méretű pufferek** — `uint8_t puffer[64]`, nem bővíthető lista' },
+      { k: 'callout', tone: 'warn', md: 'A **lebegőpont** a leggyakoribb teljesítménycsapda. Egy `float` szorzás FPU nélkül több száz órajel; ugyanaz egészben néhány. Használj **fixpontos** számítást: tárold a métert milliméterben egészként, és oszd el csak a kiíráskor.' },
+      { k: 'callout', tone: 'tip', md: 'Nézd meg a bináris méretét minden fordítás után (`arm-none-eabi-size`). Ha hirtelen megnő, rendszerint egy `printf` vagy egy `float` került bele. A beágyazott programozásban a méret ugyanúgy erőforrás, mint a sebesség.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a legfontosabb különbség a PC-s programozáshoz képest?', opts: ['Más a szintaxis', 'A program soha nem áll le: végtelen ciklusban fut', 'Nincs függvény'], answer: 1, why: 'Nincs operációs rendszer és nincs `exit`. A `main` végén egy `for (;;)` van.' },
+      { k: 'single', q: 'Mi a szuperciklus (superloop) minta?', opts: ['Egy optimalizálás', 'Végtelen ciklus, amiben minden feladat sorban lefut', 'Egy megszakítás'], answer: 1, why: 'A legegyszerűbb beágyazott felépítés; működik, amíg minden lépés rövid.' },
+      { k: 'single', q: 'Miért nincs `malloc` a legtöbb beágyazott kódban?', opts: ['Nem létezik', 'Töredezettséghez vezet, és nincs, aki kezelje', 'Túl lassú'], answer: 1, why: 'Minden statikus vagy veremben van, előre ismert mérettel.' },
+      { k: 'single', q: 'Miért kerülendő a `float` kis mikrovezérlőn?', opts: ['Pontatlan', 'FPU nélkül szoftveresen fut, több száz órajelből', 'Nem támogatott'], answer: 1, why: 'Használj fixpontos számítást: tárold milliméterben egészként.' },
+      { k: 'single', q: 'Mit érdemes figyelni minden fordítás után?', opts: ['A fordítási időt', 'A bináris méretét', 'A sorok számát'], answer: 1, why: 'Hirtelen növekedésnél rendszerint egy `printf` vagy `float` került bele.' },
+    ],
+    note: {
+      summary: ['A C a beágyazott nyelv: közvetlen hardverelérés, nincs futásidejű környezet.', 'A program soha nem áll le: `for (;;)` a `main` végén.', 'Szuperciklus: minden feladat sorban, újra és újra.', 'Nincs `malloc`, nincs `printf`, kerüld a lebegőpontot.', 'Fixpontos számítás: tárolj milliméterben egészként.', 'Figyeld a bináris méretét minden fordítás után.'],
+      terms: [{ term: 'szuperciklus', def: 'Végtelen fő ciklus, amiben minden feladat sorban fut.' }, { term: 'fixpontos számítás', def: 'Törtértékek egészként tárolva, rögzített szorzóval.' }, { term: 'FPU', def: 'Lebegőpontos számító egység; sok kis mikrovezérlőn nincs.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'Regiszterek írása',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A mikrokontroller perifériái **memóriába leképezett regisztereken** keresztül vezérelhetők: egy adott cím írása egy lábat kapcsol, egy másik olvasása egy mérést ad.' },
+      { k: 'code', lang: 'c', src: '#include <stdint.h>\n\n/* Egy GPIO port leírása szerkezettel */\ntypedef struct {\n    volatile uint32_t MODER;    /* mód: be- vagy kimenet */\n    volatile uint32_t OTYPER;\n    volatile uint32_t IDR;      /* bemeneti adat (csak olvasható) */\n    volatile uint32_t ODR;      /* kimeneti adat */\n} GPIO_t;\n\n#define GPIOA ((GPIO_t *)0x40020000u)\n\n/* 5. láb kimenetre, majd magas szintre */\nGPIOA->MODER |=  (1u << (5 * 2));\nGPIOA->ODR   |=  (1u << 5);', explain: 'A `volatile` itt **kötelező**: a hardver bármikor megváltoztathatja a regiszter értékét, és a fordítónak tilos kioptimalizálnia az olvasásokat (20. nap).' },
+      { k: 'callout', tone: 'key', md: 'A bitműveleti minták (18. nap) itt térülnek meg:\n\n- `REG |=  (1u << n)` — bit bekapcsolása\n- `REG &= ~(1u << n)` — bit kikapcsolása\n- `REG ^=  (1u << n)` — bit átbillentése\n- `if (REG & (1u << n))` — bit lekérdezése' },
+      { k: 'callout', tone: 'warn', md: 'A **read-modify-write** művelet megszakítható. Ha a `REG |= bit` közben megszakítás fut le, és az is ugyanazt a regisztert írja, az egyik írás elveszik. Ezért van sok mikrovezérlőn külön **set** és **clear** regiszter (`BSRR`), amiket egyetlen írással lehet állítani — ez oszthatatlan.' },
+      { k: 'text', md: 'A regiszterekhez mindig az **adatlap** kell. Négy dolgot kell megnézni: a regiszter **címét**, a bit **pozícióját**, a bit **jelentését**, és hogy **írható-e** egyáltalán. Sok regiszter csak olvasható, és az írás csendben hatástalan.' },
+      { k: 'callout', tone: 'tip', md: 'Ne írj közvetlen címeket a kódba. A gyártó **HAL** vagy **CMSIS** fejlécei már tartalmazzák a szerkezeteket és a bitmaszkokat névvel: `GPIOA->BSRR = GPIO_BSRR_BS5;`. Ez olvashatóbb, és a fordító elkapja az elírást.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Hogyan vezérelhetők a perifériák?', opts: ['Rendszerhívással', 'Memóriába leképezett regisztereken keresztül', 'Fájlműveletekkel'], answer: 1, why: 'Egy adott cím írása egy lábat kapcsol, olvasása egy mérést ad.' },
+      { k: 'single', q: 'Miért kötelező a `volatile` a regiszterszerkezetben?', opts: ['Gyorsít', 'Mert a hardver bármikor megváltoztathatja, és nem szabad kioptimalizálni az olvasást', 'Mert kötelező a szabvány szerint'], answer: 1, why: 'Enélkül a fordító elhagyná az ismételt olvasásokat.' },
+      { k: 'single', q: 'Hogyan kapcsolsz be egy bitet egy regiszterben?', opts: ['`REG = 1`', '`REG |= (1u << n)`', '`REG &= ~(1u << n)`'], answer: 1, why: 'A VAGY beteszi az 1-et, a többi bitet érintetlenül hagyja.' },
+      { k: 'single', q: 'Mi a baj a read-modify-write művelettel?', opts: ['Lassú', 'Megszakítható, és az egyik írás elveszhet', 'Nem fordul le'], answer: 1, why: 'Ezért van külön set és clear regiszter (BSRR), ami egyetlen oszthatatlan írás.' },
+      { k: 'single', q: 'Mit érdemes használni közvetlen címek helyett?', opts: ['Makrókat', 'A gyártó HAL vagy CMSIS fejléceit', 'Globális változókat'], answer: 1, why: 'Olvashatóbb, és a fordító elkapja az elírást.' },
+    ],
+    note: {
+      summary: ['A perifériák memóriába leképezett regisztereken keresztül vezérelhetők.', 'A regiszterszerkezet mezői kötelezően `volatile`-ok.', 'Bitminták: `|=` be, `&= ~` ki, `^=` billent, `&` lekérdez.', 'A read-modify-write megszakítható; a BSRR oszthatatlan.', 'Mindig nézd meg az adatlapot: cím, bitpozíció, jelentés, írhatóság.', 'Használd a gyártó HAL vagy CMSIS fejléceit.'],
+      terms: [{ term: 'memóriába leképezett regiszter', def: 'Periféria vezérlője, ami memóriacímként érhető el.' }, { term: 'read-modify-write', def: 'Olvasás, módosítás, visszaírás — megszakítható műveletsor.' }, { term: 'CMSIS', def: 'Szabványos fejlécgyűjtemény ARM mikrovezérlőkhöz.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Megszakítások',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'A **megszakítás** (interrupt) az, ahogy a hardver szól: „most történt valami". A processzor felfüggeszti a futó kódot, lefuttatja a kezelőt, és visszatér oda, ahol volt.' },
+      { k: 'callout', tone: 'key', md: 'Miért jobb a lekérdezésnél (polling)? Mert nem kell folyamatosan kérdezgetni. A gomblenyomás, a soros bájt vagy az időzítő lejárta **magától** megszakítja a főciklust, pontosan akkor, amikor történik.' },
+      { k: 'code', lang: 'c', src: '#include <stdint.h>\n\nvolatile uint32_t ms_szamlalo = 0;\nvolatile uint8_t  gomb_lenyomva = 0;\n\n/* Megszakításkezelő: rövid, és csak jelez */\nvoid SysTick_Handler(void) {\n    ms_szamlalo++;\n}\n\nvoid EXTI0_IRQHandler(void) {\n    EXTI->PR = (1u << 0);        /* a jelzőbit törlése! */\n    gomb_lenyomva = 1;\n}\n\n/* A főciklus végzi a munkát */\nfor (;;) {\n    if (gomb_lenyomva) {\n        gomb_lenyomva = 0;\n        hosszu_feldolgozas();\n    }\n}', explain: 'A kezelő **csak jelez**, a munkát a főciklus végzi. A megosztott változók `volatile`-ok, mert a kezelő és a főciklus két külön végrehajtási ág.' },
+      { k: 'callout', tone: 'warn', md: 'A **jelzőbit törlése** a leggyakoribb elfelejtett lépés. Ha nem törlöd, a kezelő azonnal újra meghívódik, és a program végtelen hurokba kerül a megszakításban — a főciklus soha többé nem fut.' },
+      { k: 'text', md: 'A megszakításkezelő szabályai:\n\n- **Legyen rövid** — mikroszekundumok, nem milliszekundumok\n- **Ne hívj `printf`-et** vagy `malloc`-ot — lassú és nem újrahívható\n- **Ne várakozz** benne semmire\n- **A megosztott változó legyen `volatile`**, és lehetőleg egyetlen bájt vagy egy atomi típus' },
+      { k: 'callout', tone: 'tip', md: 'Egy többbájtos változó írása **nem oszthatatlan** egy 8 bites mikrovezérlőn. Ha a kezelő egy `uint32_t`-t ír, és a főciklus közben olvassa, félig régi, félig új értéket kaphat. Ilyenkor rövid időre tiltsd le a megszakítást az olvasás idejére.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi a megszakítás előnye a lekérdezéssel szemben?', opts: ['Egyszerűbb', 'Nem kell folyamatosan kérdezgetni: magától jelez, amikor történik', 'Kevesebb memória'], answer: 1, why: 'A processzor a főciklust futtatja, és csak az esemény pillanatában szakítja meg.' },
+      { k: 'single', q: 'Mi a leggyakrabban elfelejtett lépés a kezelőben?', opts: ['A visszatérés', 'A jelzőbit törlése', 'A változó mentése'], answer: 1, why: 'Enélkül a kezelő azonnal újra meghívódik, és a főciklus soha többé nem fut.' },
+      { k: 'single', q: 'Milyen hosszú legyen egy megszakításkezelő?', opts: ['Amilyen kell', 'Mikroszekundumok, nem milliszekundumok', 'Legfeljebb tíz sor'], answer: 1, why: 'A kezelő csak jelez; a munkát a főciklus végzi.' },
+      { k: 'single', q: 'Miért `volatile` a megosztott változó?', opts: ['Gyorsít', 'Mert a kezelő és a főciklus két külön végrehajtási ág', 'Mert globális'], answer: 1, why: 'Enélkül a fordító kioptimalizálhatná a főciklusbeli olvasást.' },
+      { k: 'single', q: 'Mi a baj egy `uint32_t` változóval 8 bites mikrovezérlőn?', opts: ['Túl nagy', 'Az írása nem oszthatatlan: félig régi, félig új érték olvasható', 'Nem támogatott'], answer: 1, why: 'Olvasás idejére rövid időre tiltsd le a megszakítást.' },
+    ],
+    note: {
+      summary: ['A megszakítás felfüggeszti a futó kódot, lefuttatja a kezelőt, visszatér.', 'Előnye a lekérdezéssel szemben: magától jelez az esemény pillanatában.', 'A kezelő csak jelez; a munkát a főciklus végzi.', 'A jelzőbit törlése kötelező, különben végtelen hurok.', 'A kezelő legyen rövid, ne hívjon `printf`-et, ne várakozzon.', 'A megosztott változó `volatile`; többbájtos írás nem oszthatatlan.'],
+      terms: [{ term: 'megszakítás', def: 'Hardveres jelzés, ami felfüggeszti a futó kódot.' }, { term: 'jelzőbit', def: 'A megszakítás okát jelző, kézzel törlendő bit.' }, { term: 'oszthatatlanság', def: 'A művelet nem szakítható meg félúton.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Beágyazott programozás stílusa',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'A beágyazott kódnak más a súlypontja, mint az asztalinak: itt a **kiszámíthatóság** fontosabb a rugalmasságnál, és a hiba nem kivételt dob, hanem egy gép nem áll meg.' },
+      { k: 'callout', tone: 'key', md: 'Az alapszabályok:\n\n- **Nincs dinamikus foglalás** futás közben — minden méret fordításkor ismert\n- **Nincs rekurzió** — a verem mérete korlátos és nem ellenőrzött\n- **Minden ciklusnak legyen felső korlátja** — `while (!kesz)` helyett `for (i = 0; i < MAX && !kesz; i++)`\n- **Minden visszatérési értéket ellenőrizz** — csendben elbukó függvény a legrosszabb' },
+      { k: 'code', lang: 'c', src: '/* Rossz: végtelen várakozás, ha a hardver nem válaszol */\nwhile (!(SPI->SR & SPI_SR_RXNE)) { }\n\n/* Jó: időkorlát, és hibakód, ha lejár */\nint spi_olvas(uint8_t *ki, uint32_t idokorlat) {\n    uint32_t kezdet = ms_szamlalo;\n    while (!(SPI->SR & SPI_SR_RXNE)) {\n        if (ms_szamlalo - kezdet > idokorlat)\n            return -1;              /* időtúllépés */\n    }\n    *ki = (uint8_t)SPI->DR;\n    return 0;\n}', explain: 'Egy beragadt várakozó ciklus az egész gépet megállítja. **Minden hardverre várásnak legyen időkorlátja** — ez az egyetlen szabály, ami a legtöbb beágyazott lefagyást megelőzi.' },
+      { k: 'callout', tone: 'warn', md: 'A **verem túlcsordulása** csendes és végzetes. Nincs, aki észrevegye: a verem egyszerűen belenő a változókba, és a program kiszámíthatatlanul viselkedik. Ellenszer: töltsd fel a vermet induláskor egy mintával, és nézd meg időnként, meddig fogyott el.' },
+      { k: 'text', md: 'Két szokás, ami sokat ér:\n\n- **Állapotgép ciklus helyett** — a hosszú művelet legyen több rövid lépés, hogy a főciklus ne akadjon meg\n- **Watchdog** — ha a főciklus nem jelentkezik időben, a vezérlő újraindul' },
+      { k: 'callout', tone: 'tip', md: 'A **MISRA C** szabálygyűjtemény az autóiparból jön, és sok szabálya jó szokás máshol is: ne használj `goto`-t (a cleanup címke kivételével), minden `if`-nek legyen `else` ága, minden `switch`-nek `default`-ja. Nem kell mind betartani, de érdemes ismerni.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Miért nincs rekurzió a beágyazott kódban?', opts: ['Lassú', 'Mert a verem mérete korlátos és nem ellenőrzött', 'Nem fordul le'], answer: 1, why: 'A verem túlcsordulása csendes és végzetes: nincs, aki észrevegye.' },
+      { k: 'single', q: 'Mit tegyél minden hardverre várásnál?', opts: ['Növeld a sebességet', 'Adj neki időkorlátot', 'Használj megszakítást'], answer: 1, why: 'Egy beragadt várakozó ciklus az egész gépet megállítja.' },
+      { k: 'single', q: 'Hogyan észlelhető a verem túlcsordulása?', opts: ['Kivételt dob', 'Töltsd fel a vermet mintával, és nézd, meddig fogyott el', 'A fordító szól'], answer: 1, why: 'Magától nincs, aki észrevegye: a verem belenő a változókba.' },
+      { k: 'single', q: 'Miért jobb az állapotgép a hosszú ciklusnál?', opts: ['Rövidebb kód', 'Mert több rövid lépésre bontva a főciklus nem akad meg', 'Kevesebb memória'], answer: 1, why: 'Így a többi feladat és a watchdog is szóhoz jut.' },
+      { k: 'single', q: 'Mi a MISRA C?', opts: ['Egy fordító', 'Szabálygyűjtemény az autóiparból a biztonságos C kódhoz', 'Egy könyvtár'], answer: 1, why: 'Nem kell mind betartani, de sok szabálya jó szokás máshol is.' },
+    ],
+    note: {
+      summary: ['A beágyazott kódban a kiszámíthatóság fontosabb a rugalmasságnál.', 'Nincs dinamikus foglalás, nincs rekurzió, minden ciklusnak felső korlát.', 'Minden hardverre várásnak legyen időkorlátja.', 'A verem túlcsordulása csendes: töltsd fel mintával és ellenőrizd.', 'Állapotgép hosszú ciklus helyett, hogy a főciklus ne akadjon meg.', 'Watchdog a lefagyás ellen; MISRA C mint szabálygyűjtemény.'],
+      terms: [{ term: 'időkorlát', def: 'Felső határ, ameddig egy művelet várhat.' }, { term: 'veremtúlcsordulás', def: 'A verem belenő a többi változóba.' }, { term: 'MISRA C', def: 'Biztonságkritikus C kódra vonatkozó szabálygyűjtemény.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'Egy kis beágyazott program',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: 'Rakjuk össze: egy vonalkövető robot vezérlése, szuperciklussal, megszakításos időzítéssel és időkorlátos hardverhozzáféréssel.' },
+      { k: 'code', lang: 'c', src: '#include <stdint.h>\n#include <stdbool.h>\n\n#define SZENZOR_DB 5\n#define CIKLUS_MS  20          /* 50 Hz szabályozás */\n\nstatic volatile uint32_t ms = 0;\nvoid SysTick_Handler(void) { ms++; }\n\ntypedef struct {\n    int16_t  hiba;\n    int16_t  elozo_hiba;\n    int32_t  integral;\n} Pid_t;\n\nstatic int16_t pid_lep(Pid_t *p, int16_t hiba) {\n    p->integral += hiba;\n    if (p->integral >  5000) p->integral =  5000;   /* feltekeredés ellen */\n    if (p->integral < -5000) p->integral = -5000;\n\n    int32_t u = 3 * hiba\n              + (p->integral / 50)\n              + 8 * (hiba - p->elozo_hiba);\n    p->elozo_hiba = hiba;\n\n    if (u >  1000) u =  1000;                       /* korlátozás */\n    if (u < -1000) u = -1000;\n    return (int16_t)u;\n}', explain: 'Minden **fixpontos**: a hiba és a beavatkozás egész, az osztók kettő hatványai vagy kis egészek. Nincs `float`, ezért a ciklus futásideje kiszámítható és rövid.' },
+      { k: 'code', lang: 'c', src: 'int main(void) {\n    hardver_init();\n    Pid_t pid = {0, 0, 0};\n    uint32_t kovetkezo = 0;\n\n    for (;;) {\n        if ((int32_t)(ms - kovetkezo) < 0) continue;   /* még nem időszerű */\n        kovetkezo = ms + CIKLUS_MS;\n\n        uint16_t sz[SZENZOR_DB];\n        if (szenzor_olvas(sz, 5) != 0) {               /* időkorlát 5 ms */\n            motor_allj();\n            continue;                                  /* hiba: megállunk */\n        }\n\n        int16_t u = pid_lep(&pid, vonal_pozicio(sz));\n        motor_hajt(500 - u, 500 + u);\n        watchdog_etet();\n    }\n}', explain: 'A `(int32_t)(ms - kovetkezo) < 0` alak **túlcsordulásbiztos** időösszehasonlítás: akkor is helyes marad, amikor az `ms` számláló körbefordul. Az egyszerű `ms < kovetkezo` ilyenkor hibás döntést hozna.' },
+      { k: 'callout', tone: 'key', md: 'Három dolog, ami ebben a programban a korábbi napok anyaga: **időkorlát** minden hardverhozzáférésnél (28. nap), **feltekeredés elleni korlátozás** a PID-ben (robotika 17. nap), és **`volatile`** a megszakítással megosztott számlálón (20. nap).' },
+      { k: 'callout', tone: 'warn', md: 'A szenzorolvasás hibájánál a robot **megáll**, nem megy tovább a legutóbbi értékkel. Ez tudatos döntés: egy vakon haladó robot veszélyesebb, mint egy álló. A hibakezelés legyen mindig a **biztonságos irányba**.' },
+      { k: 'callout', tone: 'tip', md: 'Mérd meg a ciklus futásidejét: kapcsolj fel egy lábat a ciklus elején és le a végén, és nézd meg oszcilloszkóppal. Ez a legegyszerűbb profilozás beágyazott rendszerben, és azonnal megmutatja, ha valami nem fér bele a 20 ms-ba.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Miért fixpontos a PID számítása?', opts: ['Pontosabb', 'Mert `float` nélkül a ciklus futásideje kiszámítható és rövid', 'Rövidebb kód'], answer: 1, why: 'FPU nélkül egy `float` szorzás több száz órajel.' },
+      { k: 'single', q: 'Miért `(int32_t)(ms - kovetkezo) < 0` az időösszehasonlítás?', opts: ['Rövidebb', 'Mert túlcsordulásbiztos: a számláló körbefordulásánál is helyes', 'Gyorsabb'], answer: 1, why: 'Az egyszerű `ms < kovetkezo` a körbefordulásnál hibás döntést hozna.' },
+      { k: 'single', q: 'Mi történik szenzorolvasási hiba esetén?', opts: ['Továbbmegy a legutóbbi értékkel', 'A robot megáll', 'Újraindul'], answer: 1, why: 'Egy vakon haladó robot veszélyesebb, mint egy álló. A hiba biztonságos irányba bukjon.' },
+      { k: 'single', q: 'Miért van korlátozva az integrál?', opts: ['Memóriaspórolás', 'A feltekeredés (windup) ellen', 'Gyorsaságért'], answer: 1, why: 'Telítésben az integrál korlátlanul nőne, és nagy túllövést okozna.' },
+      { k: 'single', q: 'Hogyan mérhető legegyszerűbben a ciklus futásideje?', opts: ['Naplózással', 'Egy láb fel- és lekapcsolásával, oszcilloszkóppal nézve', 'Számlálóval'], answer: 1, why: 'Ez a legegyszerűbb profilozás beágyazott rendszerben.' },
+    ],
+    note: {
+      summary: ['Szuperciklus plusz megszakításos időzítés a váz.', 'A PID fixpontos: nincs `float`, kiszámítható a futásidő.', 'Túlcsordulásbiztos időösszehasonlítás: `(int32_t)(ms - cel) < 0`.', 'Szenzorhibánál a robot megáll — a hiba biztonságos irányba bukjon.', 'Az integrál korlátozva van a feltekeredés ellen.', 'Ciklusidő mérése: láb fel-le kapcsolása, oszcilloszkóp.'],
+      terms: [{ term: 'túlcsordulásbiztos összehasonlítás', def: 'Időösszevetés, ami a számláló körbefordulásánál is helyes.' }, { term: 'biztonságos irányba bukás', def: 'Hibánál a rendszer a veszélytelen állapotba megy.' }, { term: 'lábkapcsolásos profilozás', def: 'Futásidő mérése kimeneti láb és oszcilloszkóp segítségével.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'A teljes projekt',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'Harminc nap alatt végigmentél a C teljes alapkészletén: mutatók, memória, fordítási egységek, hibakeresés, beágyazott programozás. Nézzük, hogyan áll össze egy befejezett projektté.' },
+      { k: 'callout', tone: 'key', md: 'Egy kész C projekt összetevői:\n\n- **Forrásszerkezet** — `src/`, `include/`, `test/`\n- **Makefile vagy CMakeLists.txt** figyelmeztetésekkel (`-Wall -Wextra`)\n- **Tesztek** — akár egy egyszerű saját `assert`-es futtató is elég\n- **README** — mit csinál, mivel fordul, hogyan kell futtatni\n- **Statikus elemzés** — `cppcheck` vagy `clang-tidy` a fordítás mellett' },
+      { k: 'text', md: 'A C-ben a minőség három jele:\n\n1. **Minden `malloc`-hoz tartozik egy `free`**, és már a foglalásnál tudod, hol lesz\n2. **Minden visszatérési értéket ellenőrzöl** — a csendben elbukó függvény a legrosszabb\n3. **A fordítás figyelmeztetés nélkül megy** `-Wall -Wextra` mellett' },
+      { k: 'callout', tone: 'warn', md: 'A **figyelmen kívül hagyott figyelmeztetés** a C legdrágább szokása. A fordító figyelmeztetéseinek nagy része valódi hibát jelez: elvesztett előjel, inicializálatlan változó, nem használt visszatérési érték. Fordíts `-Werror` kapcsolóval, és a figyelmeztetés hibává válik, amit nem lehet elhalasztani.' },
+      { k: 'text', md: 'Merre tovább:\n\n- **FreeRTOS vagy Zephyr** — valós idejű rendszer, ha a szuperciklus kevés\n- **Linux rendszerprogramozás** — fájlleírók, folyamatok, socketek\n- **Hálózat** — soros, CAN, MQTT\n- **Fordítóprogramok és assembly** — mi lesz valójában a kódodból\n- **Formális eszközök** — sanitizerek rendszeres használata minden teszten' },
+      { k: 'callout', tone: 'tip', md: 'A C-t nem lehet elméletből megtanulni. Minden, amit ebben a trekben olvastál, akkor rögzül, amikor **leégetsz egy estét** egy szegmentálási hibával, és a végén kiderül, hogy egy indexszel túlmentél. Építs valamit, ami fut egy valódi hardveren — ott nem lehet megúszni semmit.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Mi tartozik egy kész C projekthez?', opts: ['Csak a forrás', 'Forrásszerkezet, build fájl, tesztek, README, statikus elemzés', 'Csak a Makefile'], answer: 1, why: 'A statikus elemzés és a tesztek nélkül a hibák csak futásidőben derülnek ki.' },
+      { k: 'single', q: 'Mi a C-ben a minőség első jele?', opts: ['Rövid kód', 'Minden `malloc`-hoz tartozik egy `free`, előre ismert helyen', 'Sok komment'], answer: 1, why: 'Már a foglalás pillanatában tudnod kell, hol lesz a felszabadítás.' },
+      { k: 'single', q: 'Miért drága a figyelmeztetések figyelmen kívül hagyása?', opts: ['Lassítják a fordítást', 'Mert nagy részük valódi hibát jelez', 'Mert csúnyák'], answer: 1, why: 'Elvesztett előjel, inicializálatlan változó, nem használt visszatérési érték.' },
+      { k: 'single', q: 'Mit csinál a `-Werror` kapcsoló?', opts: ['Elrejti a figyelmeztetéseket', 'Hibává teszi a figyelmeztetést, amit nem lehet elhalasztani', 'Gyorsít'], answer: 1, why: 'Így a figyelmeztetés nem halmozódik fel észrevétlenül.' },
+      { k: 'single', q: 'Hogyan lehet igazán megtanulni a C-t?', opts: ['Elméletből', 'Valódi hardveren futó programot építve', 'Könyvekből'], answer: 1, why: 'Ott nem lehet megúszni semmit: a mutatóhiba azonnal látszik.' },
+    ],
+    note: {
+      summary: ['Kész projekt: forrásszerkezet, build fájl, tesztek, README, statikus elemzés.', 'Minőség: minden `malloc`-hoz `free`, minden visszatérés ellenőrizve, nulla figyelmeztetés.', 'A figyelmeztetések nagy része valódi hibát jelez.', 'Fordíts `-Werror` kapcsolóval.', 'Tovább: FreeRTOS, Linux rendszerprogramozás, hálózat, assembly.', 'A C-t valódi hardveren futó programmal lehet megtanulni.'],
+      terms: [{ term: 'statikus elemzés', def: 'A kód futtatás nélküli vizsgálata hibák után.' }, { term: '-Werror', def: 'Kapcsoló, ami a figyelmeztetéseket hibává teszi.' }, { term: 'FreeRTOS', def: 'Kis valós idejű operációs rendszer mikrovezérlőkre.' }],
+    },
+  },
+];

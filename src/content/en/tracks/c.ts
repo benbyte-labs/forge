@@ -2,6 +2,7 @@ import type { Track } from '../../types';
 import { cEnB } from './c-b';
 import { cEnC } from './c-c';
 import { cEnD } from './c-d';
+import { cEnE } from './c-e';
 
 export const cEn: Track = {
   id: 'c',
@@ -35,7 +36,7 @@ export const cEn: Track = {
     'Microcontrollers and C',
     'Writing registers',
     'Interrupts',
-    'The style of embedded programming',
+    'Embedded coding style',
     'A small embedded program',
     'The complete project',
   ],
@@ -109,5 +110,6 @@ export const cEn: Track = {
     ...cEnB,
     ...cEnC,
     ...cEnD,
+    ...cEnE,
   ],
 };

@@ -1,0 +1,173 @@
+import type { Day } from '../../types';
+
+/** C track, days 24-30. */
+export const cEnE: Day[] = [
+  {
+    day: 24,
+    title: 'The standard library',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'The C standard library is small — deliberately so. Knowing a handful of headers still saves a great deal of hand-written code.' },
+      { k: 'text', md: 'The six headers worth knowing by heart:\n\n- **`<stdio.h>`** — input and output: `printf`, `fopen`, `fgets`\n- **`<stdlib.h>`** — `malloc`, `free`, `qsort`, `atoi`, `rand`, `exit`\n- **`<string.h>`** — `strlen`, `strcpy`, `strcmp`, `memcpy`, `memset`\n- **`<math.h>`** — `sqrt`, `sin`, `pow`, `fabs`\n- **`<stdint.h>`** — fixed-width types: `uint8_t`, `int32_t`\n- **`<stdbool.h>`** — `bool`, `true`, `false`' },
+      { k: 'callout', tone: 'key', md: '**`<stdint.h>`** is mandatory in embedded work. The size of `int` is platform dependent: 16 bits on a small microcontroller, 32 on a PC. `uint8_t` and `int32_t` are **exactly what they say** everywhere.' },
+      { k: 'code', lang: 'c', src: '#include <string.h>\n\nchar dst[16];\n\n/* DANGEROUS: no size limit */\nstrcpy(dst, src);\n\n/* Better: bounded, but does not always terminate */\nstrncpy(dst, src, sizeof dst - 1);\ndst[sizeof dst - 1] = \'\\0\';\n\n/* Best: snprintf always terminates */\nsnprintf(dst, sizeof dst, "%s", src);', explain: '`snprintf` is the safest: it respects the size limit **and** always null-terminates. `strncpy` does not add a terminator when it truncates — the classic trap.' },
+      { k: 'callout', tone: 'warn', md: '`strcpy`, `strcat` and `sprintf` **take no size limit**. They cause most of the security bugs in C: a longer input overruns the buffer and overwrites the stack. Always use the `n` or `snprintf` variants.' },
+      { k: 'text', md: 'There is a real difference between `memcpy` and `memmove`: `memcpy` does **not** handle overlapping regions, `memmove` does. When source and destination may overlap you always need `memmove` — `memcpy` there is undefined behaviour.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Why is `<stdint.h>` mandatory in embedded code?', opts: ['It is faster', 'Because `int` size is platform dependent while `uint8_t` is exact everywhere', 'Less memory'], answer: 1, why: '`int` is 16 bits on a microcontroller and 32 on a PC.' },
+      { k: 'single', q: 'Which is the safest string copy?', opts: ['`strcpy`', '`snprintf`', '`strncpy`'], answer: 1, why: 'It respects the size limit and always null-terminates.' },
+      { k: 'single', q: 'What is wrong with `strncpy`?', opts: ['It is slow', 'It does not add a terminator when it truncates', 'It does not exist'], answer: 1, why: 'That is why you must write `dst[size-1] = 0;` after it.' },
+      { k: 'single', q: 'What is the difference between `memcpy` and `memmove`?', opts: ['`memmove` handles overlapping regions', '`memcpy` is always faster', 'No difference'], answer: 0, why: 'On overlap `memcpy` is undefined behaviour.' },
+      { k: 'single', q: 'What causes most security bugs in C?', opts: ['Pointers', 'String functions with no size limit', '`malloc`'], answer: 1, why: 'A longer input overruns the buffer and overwrites the stack.' },
+    ],
+    note: {
+      summary: ['The C standard library is deliberately small.', 'Six headers: stdio, stdlib, string, math, stdint, stdbool.', '`<stdint.h>` is mandatory in embedded code: `uint8_t`, `int32_t`.', 'Use `snprintf` for string copying: bounded and always terminated.', '`strncpy` does not terminate when it truncates.', 'Use `memmove` for overlapping regions, not `memcpy`.'],
+      terms: [{ term: 'stdint.h', def: 'The header providing fixed-width integer types.' }, { term: 'buffer overrun', def: 'Writing past the end of an allocated buffer.' }, { term: 'memmove', def: 'Safe copying between overlapping memory regions.' }],
+    },
+  },
+  {
+    day: 25,
+    title: 'Microcontrollers and C',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'C is the language of embedded work, because it reaches the hardware directly and has no runtime eating memory or time.' },
+      { k: 'callout', tone: 'key', md: 'The most important difference from PC programming: the program **never stops**. There is no operating system and no `exit`. At the end of `main` there is an infinite loop, and everything runs inside it.' },
+      { k: 'code', lang: 'c', src: 'int main(void) {\n    hardware_init();\n\n    for (;;) {                  /* never ends */\n        read_sensors();\n        state_machine_step();\n        update_outputs();\n    }\n    /* never reached */\n}', explain: 'This is the **superloop** pattern: the simplest embedded structure. Every task runs in turn and starts again. As long as each step is short, it works perfectly.' },
+      { k: 'text', md: 'Scarce resources reshape the habits:\n\n- **No `malloc`** — dynamic allocation fragments and nobody is there to manage it. Everything is static or on the stack.\n- **No `printf`** — or if there is, only over a serial port, and it takes a lot of space\n- **No floating point** — many small microcontrollers have no FPU; `float` runs in software, very slowly\n- **Fixed-size buffers** — `uint8_t buffer[64]`, not a growable list' },
+      { k: 'callout', tone: 'warn', md: '**Floating point** is the commonest performance trap. One `float` multiply without an FPU is hundreds of cycles; the same in integers is a few. Use **fixed-point** arithmetic: store metres as integer millimetres and divide only when printing.' },
+      { k: 'callout', tone: 'tip', md: 'Check the binary size after every build (`arm-none-eabi-size`). A sudden jump usually means a `printf` or a `float` crept in. In embedded work size is a resource just like speed.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is the most important difference from PC programming?', opts: ['Different syntax', 'The program never stops: it runs in an infinite loop', 'There are no functions'], answer: 1, why: 'There is no operating system and no `exit`. `main` ends in a `for (;;)`.' },
+      { k: 'single', q: 'What is the superloop pattern?', opts: ['An optimisation', 'An infinite loop running every task in turn', 'An interrupt'], answer: 1, why: 'The simplest embedded structure; it works as long as each step is short.' },
+      { k: 'single', q: 'Why is there no `malloc` in most embedded code?', opts: ['It does not exist', 'It fragments and nobody is there to manage it', 'It is too slow'], answer: 1, why: 'Everything is static or on the stack, with sizes known in advance.' },
+      { k: 'single', q: 'Why avoid `float` on a small microcontroller?', opts: ['It is inaccurate', 'Without an FPU it runs in software, hundreds of cycles', 'It is unsupported'], answer: 1, why: 'Use fixed-point arithmetic: store integer millimetres.' },
+      { k: 'single', q: 'What should you check after every build?', opts: ['The compile time', 'The binary size', 'The line count'], answer: 1, why: 'A sudden jump usually means a `printf` or a `float` crept in.' },
+    ],
+    note: {
+      summary: ['C is the embedded language: direct hardware access, no runtime.', 'The program never stops: `for (;;)` at the end of `main`.', 'Superloop: every task in turn, over and over.', 'No `malloc`, no `printf`, avoid floating point.', 'Fixed-point arithmetic: store integer millimetres.', 'Watch the binary size after every build.'],
+      terms: [{ term: 'superloop', def: 'An infinite main loop running every task in turn.' }, { term: 'fixed-point arithmetic', def: 'Fractional values stored as integers with a fixed scale.' }, { term: 'FPU', def: 'A floating point unit; absent on many small microcontrollers.' }],
+    },
+  },
+  {
+    day: 26,
+    title: 'Writing registers',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'Microcontroller peripherals are driven through **memory-mapped registers**: writing one address switches a pin, reading another gives a measurement.' },
+      { k: 'code', lang: 'c', src: '#include <stdint.h>\n\n/* Describing a GPIO port with a struct */\ntypedef struct {\n    volatile uint32_t MODER;    /* mode: input or output */\n    volatile uint32_t OTYPER;\n    volatile uint32_t IDR;      /* input data (read only) */\n    volatile uint32_t ODR;      /* output data */\n} GPIO_t;\n\n#define GPIOA ((GPIO_t *)0x40020000u)\n\n/* Pin 5 to output, then high */\nGPIOA->MODER |=  (1u << (5 * 2));\nGPIOA->ODR   |=  (1u << 5);', explain: '`volatile` is **mandatory** here: the hardware can change the register at any time, and the compiler must not optimise the reads away (day 20).' },
+      { k: 'callout', tone: 'key', md: 'The bit patterns from day 18 pay off here:\n\n- `REG |=  (1u << n)` — set a bit\n- `REG &= ~(1u << n)` — clear a bit\n- `REG ^=  (1u << n)` — toggle a bit\n- `if (REG & (1u << n))` — test a bit' },
+      { k: 'callout', tone: 'warn', md: 'A **read-modify-write** operation can be interrupted. If an interrupt runs during `REG |= bit` and writes the same register, one of the writes is lost. That is why many microcontrollers have separate **set** and **clear** registers (`BSRR`) settable with a single write — which is atomic.' },
+      { k: 'text', md: 'Registers always need the **datasheet**. Check four things: the register **address**, the bit **position**, the bit **meaning**, and whether it is **writable** at all. Many registers are read-only and a write is silently ignored.' },
+      { k: 'callout', tone: 'tip', md: 'Do not hard-code addresses. The vendor **HAL** or **CMSIS** headers already contain the structs and named bit masks: `GPIOA->BSRR = GPIO_BSRR_BS5;`. That reads better and the compiler catches typos.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'How are peripherals driven?', opts: ['By system calls', 'Through memory-mapped registers', 'By file operations'], answer: 1, why: 'Writing one address switches a pin, reading another gives a measurement.' },
+      { k: 'single', q: 'Why is `volatile` mandatory in a register struct?', opts: ['It speeds things up', 'Because hardware can change it at any time and reads must not be optimised away', 'Because the standard requires it'], answer: 1, why: 'Without it the compiler would drop the repeated reads.' },
+      { k: 'single', q: 'How do you set a bit in a register?', opts: ['`REG = 1`', '`REG |= (1u << n)`', '`REG &= ~(1u << n)`'], answer: 1, why: 'OR puts the 1 in and leaves the other bits untouched.' },
+      { k: 'single', q: 'What is wrong with read-modify-write?', opts: ['It is slow', 'It can be interrupted and one write lost', 'It does not compile'], answer: 1, why: 'That is why there are separate set and clear registers (BSRR), which are atomic.' },
+      { k: 'single', q: 'What should you use instead of hard-coded addresses?', opts: ['Macros', 'The vendor HAL or CMSIS headers', 'Global variables'], answer: 1, why: 'It reads better and the compiler catches typos.' },
+    ],
+    note: {
+      summary: ['Peripherals are driven through memory-mapped registers.', 'Register struct fields must be `volatile`.', 'Bit patterns: `|=` set, `&= ~` clear, `^=` toggle, `&` test.', 'Read-modify-write is interruptible; BSRR is atomic.', 'Always check the datasheet: address, bit position, meaning, writability.', 'Use the vendor HAL or CMSIS headers.'],
+      terms: [{ term: 'memory-mapped register', def: 'A peripheral control word reachable as a memory address.' }, { term: 'read-modify-write', def: 'Read, change, write back — an interruptible sequence.' }, { term: 'CMSIS', def: 'A standard header set for ARM microcontrollers.' }],
+    },
+  },
+  {
+    day: 27,
+    title: 'Interrupts',
+    minutes: 24,
+    lesson: [
+      { k: 'text', md: 'An **interrupt** is how hardware says "something just happened". The processor suspends the running code, executes the handler and returns where it was.' },
+      { k: 'callout', tone: 'key', md: 'Why is it better than polling? Because you do not have to keep asking. A button press, a serial byte or a timer expiry interrupts the main loop **by itself**, exactly when it happens.' },
+      { k: 'code', lang: 'c', src: '#include <stdint.h>\n\nvolatile uint32_t ms_counter = 0;\nvolatile uint8_t  button_pressed = 0;\n\n/* Handler: short, and only signals */\nvoid SysTick_Handler(void) {\n    ms_counter++;\n}\n\nvoid EXTI0_IRQHandler(void) {\n    EXTI->PR = (1u << 0);        /* clear the flag! */\n    button_pressed = 1;\n}\n\n/* The main loop does the work */\nfor (;;) {\n    if (button_pressed) {\n        button_pressed = 0;\n        long_processing();\n    }\n}', explain: 'The handler **only signals**; the main loop does the work. The shared variables are `volatile`, because the handler and the main loop are two separate lines of execution.' },
+      { k: 'callout', tone: 'warn', md: '**Clearing the flag** is the most commonly forgotten step. Without it the handler is called again immediately and the program loops forever inside the interrupt — the main loop never runs again.' },
+      { k: 'text', md: 'Rules for an interrupt handler:\n\n- **Keep it short** — microseconds, not milliseconds\n- **Do not call `printf`** or `malloc` — slow and not reentrant\n- **Do not wait** for anything inside it\n- **Shared variables must be `volatile`**, and preferably a single byte or an atomic type' },
+      { k: 'callout', tone: 'tip', md: 'Writing a multi-byte variable is **not atomic** on an 8-bit microcontroller. If the handler writes a `uint32_t` while the main loop reads it, you can get half old and half new. Briefly disable interrupts around the read in that case.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What is the advantage of interrupts over polling?', opts: ['Simpler', 'No constant asking: it signals by itself when the event happens', 'Less memory'], answer: 1, why: 'The processor runs the main loop and is interrupted only at the moment of the event.' },
+      { k: 'single', q: 'What is the most commonly forgotten step in a handler?', opts: ['The return', 'Clearing the flag', 'Saving the variable'], answer: 1, why: 'Without it the handler is called again immediately and the main loop never runs.' },
+      { k: 'single', q: 'How long should an interrupt handler be?', opts: ['As long as needed', 'Microseconds, not milliseconds', 'At most ten lines'], answer: 1, why: 'The handler only signals; the main loop does the work.' },
+      { k: 'single', q: 'Why must shared variables be `volatile`?', opts: ['For speed', 'Because the handler and the main loop are separate lines of execution', 'Because they are global'], answer: 1, why: 'Without it the compiler could optimise away the read in the main loop.' },
+      { k: 'single', q: 'What is the problem with a `uint32_t` on an 8-bit microcontroller?', opts: ['It is too big', 'Writing it is not atomic: you can read half old and half new', 'It is unsupported'], answer: 1, why: 'Briefly disable interrupts around the read.' },
+    ],
+    note: {
+      summary: ['An interrupt suspends the running code, runs the handler and returns.', 'Better than polling: it signals at the moment of the event.', 'The handler only signals; the main loop does the work.', 'Clearing the flag is mandatory or you loop forever.', 'Keep the handler short, no `printf`, no waiting.', 'Shared variables are `volatile`; multi-byte writes are not atomic.'],
+      terms: [{ term: 'interrupt', def: 'A hardware signal that suspends the running code.' }, { term: 'interrupt flag', def: 'The bit marking the cause, which must be cleared manually.' }, { term: 'atomicity', def: 'An operation that cannot be interrupted midway.' }],
+    },
+  },
+  {
+    day: 28,
+    title: 'Embedded coding style',
+    minutes: 22,
+    lesson: [
+      { k: 'text', md: 'Embedded code has a different centre of gravity from desktop code: **predictability** beats flexibility, and a bug does not throw an exception — a machine fails to stop.' },
+      { k: 'callout', tone: 'key', md: 'The base rules:\n\n- **No dynamic allocation** at run time — every size is known at compile time\n- **No recursion** — the stack is limited and unchecked\n- **Every loop needs an upper bound** — `for (i = 0; i < MAX && !done; i++)` instead of `while (!done)`\n- **Check every return value** — a function failing silently is the worst case' },
+      { k: 'code', lang: 'c', src: '/* Bad: waits forever if the hardware does not respond */\nwhile (!(SPI->SR & SPI_SR_RXNE)) { }\n\n/* Good: a timeout and an error code when it expires */\nint spi_read(uint8_t *out, uint32_t timeout) {\n    uint32_t start = ms_counter;\n    while (!(SPI->SR & SPI_SR_RXNE)) {\n        if (ms_counter - start > timeout)\n            return -1;              /* timed out */\n    }\n    *out = (uint8_t)SPI->DR;\n    return 0;\n}', explain: 'A stuck wait loop halts the whole machine. **Every wait on hardware needs a timeout** — the single rule that prevents most embedded lockups.' },
+      { k: 'callout', tone: 'warn', md: '**Stack overflow** is silent and fatal. Nothing notices it: the stack simply grows into your variables and the program behaves unpredictably. The remedy: fill the stack with a pattern at startup and check periodically how far it has been consumed.' },
+      { k: 'text', md: 'Two habits worth having:\n\n- **A state machine instead of a loop** — break a long operation into several short steps so the main loop does not stall\n- **A watchdog** — if the main loop does not check in on time, the controller resets' },
+      { k: 'callout', tone: 'tip', md: 'The **MISRA C** rule set comes from the automotive industry, and many of its rules are good habits elsewhere: no `goto` (except the cleanup label), every `if` has an `else`, every `switch` has a `default`. You need not follow all of it, but it is worth knowing.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Why is there no recursion in embedded code?', opts: ['It is slow', 'Because the stack is limited and unchecked', 'It does not compile'], answer: 1, why: 'Stack overflow is silent and fatal: nothing notices it.' },
+      { k: 'single', q: 'What must every wait on hardware have?', opts: ['More speed', 'A timeout', 'An interrupt'], answer: 1, why: 'A stuck wait loop halts the whole machine.' },
+      { k: 'single', q: 'How can stack overflow be detected?', opts: ['It throws', 'Fill the stack with a pattern and check how far it was consumed', 'The compiler warns'], answer: 1, why: 'Nothing notices it by itself: the stack grows into your variables.' },
+      { k: 'single', q: 'Why is a state machine better than a long loop?', opts: ['Shorter code', 'Because short steps keep the main loop from stalling', 'Less memory'], answer: 1, why: 'Other tasks and the watchdog then get a turn too.' },
+      { k: 'single', q: 'What is MISRA C?', opts: ['A compiler', 'An automotive rule set for safe C code', 'A library'], answer: 1, why: 'You need not follow all of it, but many rules are good habits elsewhere.' },
+    ],
+    note: {
+      summary: ['In embedded code predictability beats flexibility.', 'No dynamic allocation, no recursion, an upper bound on every loop.', 'Every wait on hardware needs a timeout.', 'Stack overflow is silent: fill with a pattern and check.', 'Use a state machine instead of a long loop.', 'A watchdog against lockups; MISRA C as a rule set.'],
+      terms: [{ term: 'timeout', def: 'An upper limit on how long an operation may wait.' }, { term: 'stack overflow', def: 'The stack growing into other variables.' }, { term: 'MISRA C', def: 'A rule set for safety-critical C code.' }],
+    },
+  },
+  {
+    day: 29,
+    title: 'A small embedded program',
+    minutes: 26,
+    lesson: [
+      { k: 'text', md: 'Put it together: the control of a line-following robot, with a superloop, interrupt timing and timeout-bounded hardware access.' },
+      { k: 'code', lang: 'c', src: '#include <stdint.h>\n#include <stdbool.h>\n\n#define SENSORS   5\n#define CYCLE_MS  20          /* 50 Hz control */\n\nstatic volatile uint32_t ms = 0;\nvoid SysTick_Handler(void) { ms++; }\n\ntypedef struct {\n    int16_t  error;\n    int16_t  prev_error;\n    int32_t  integral;\n} Pid_t;\n\nstatic int16_t pid_step(Pid_t *p, int16_t error) {\n    p->integral += error;\n    if (p->integral >  5000) p->integral =  5000;   /* anti-windup */\n    if (p->integral < -5000) p->integral = -5000;\n\n    int32_t u = 3 * error\n              + (p->integral / 50)\n              + 8 * (error - p->prev_error);\n    p->prev_error = error;\n\n    if (u >  1000) u =  1000;                       /* clamp */\n    if (u < -1000) u = -1000;\n    return (int16_t)u;\n}', explain: 'Everything is **fixed point**: the error and the actuation are integers, and the divisors are powers of two or small integers. No `float`, so the cycle time is predictable and short.' },
+      { k: 'code', lang: 'c', src: 'int main(void) {\n    hardware_init();\n    Pid_t pid = {0, 0, 0};\n    uint32_t next = 0;\n\n    for (;;) {\n        if ((int32_t)(ms - next) < 0) continue;        /* not due yet */\n        next = ms + CYCLE_MS;\n\n        uint16_t s[SENSORS];\n        if (sensor_read(s, 5) != 0) {                  /* 5 ms timeout */\n            motor_stop();\n            continue;                                  /* on error: stop */\n        }\n\n        int16_t u = pid_step(&pid, line_position(s));\n        motor_drive(500 - u, 500 + u);\n        watchdog_feed();\n    }\n}', explain: 'The form `(int32_t)(ms - next) < 0` is an **overflow-safe** time comparison: it stays correct when the `ms` counter wraps around. A plain `ms < next` would decide wrongly at that moment.' },
+      { k: 'callout', tone: 'key', md: 'Three things in this program come from earlier days: a **timeout** on every hardware access (day 28), **anti-windup clamping** in the PID (robotics day 17), and **`volatile`** on the counter shared with the interrupt (day 20).' },
+      { k: 'callout', tone: 'warn', md: 'On a sensor read failure the robot **stops** rather than continuing on the last value. That is a deliberate decision: a robot driving blind is more dangerous than one standing still. Error handling must always fail **towards safety**.' },
+      { k: 'callout', tone: 'tip', md: 'Measure the cycle time: raise a pin at the start of the loop and lower it at the end, then look at it on a scope. That is the simplest profiling in an embedded system, and it shows immediately when something no longer fits in 20 ms.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'Why is the PID computed in fixed point?', opts: ['It is more accurate', 'Because without `float` the cycle time is predictable and short', 'Shorter code'], answer: 1, why: 'Without an FPU a `float` multiply is hundreds of cycles.' },
+      { k: 'single', q: 'Why is the time comparison `(int32_t)(ms - next) < 0`?', opts: ['It is shorter', 'Because it is overflow safe when the counter wraps', 'It is faster'], answer: 1, why: 'A plain `ms < next` would decide wrongly at the wrap-around.' },
+      { k: 'single', q: 'What happens on a sensor read failure?', opts: ['It continues on the last value', 'The robot stops', 'It restarts'], answer: 1, why: 'A robot driving blind is more dangerous than one standing still.' },
+      { k: 'single', q: 'Why is the integral clamped?', opts: ['To save memory', 'Against windup', 'For speed'], answer: 1, why: 'Under saturation the integral would grow without bound and cause a big overshoot.' },
+      { k: 'single', q: 'What is the simplest way to measure cycle time?', opts: ['Logging', 'Raising and lowering a pin, viewed on a scope', 'A counter'], answer: 1, why: 'It is the simplest profiling in an embedded system.' },
+    ],
+    note: {
+      summary: ['A superloop plus interrupt timing is the skeleton.', 'The PID is fixed point: no `float`, predictable timing.', 'Overflow-safe time comparison: `(int32_t)(ms - target) < 0`.', 'On sensor failure the robot stops — fail towards safety.', 'The integral is clamped against windup.', 'Measure cycle time by toggling a pin and using a scope.'],
+      terms: [{ term: 'overflow-safe comparison', def: 'A time comparison that stays correct across counter wrap.' }, { term: 'failing towards safety', def: 'On error the system enters the harmless state.' }, { term: 'pin-toggle profiling', def: 'Measuring timing with an output pin and a scope.' }],
+    },
+  },
+  {
+    day: 30,
+    title: 'The complete project',
+    minutes: 30,
+    lesson: [
+      { k: 'text', md: 'In thirty days you have covered the whole core of C: pointers, memory, translation units, debugging, embedded work. Here is how it assembles into a finished project.' },
+      { k: 'callout', tone: 'key', md: 'What a finished C project contains:\n\n- **Source layout** — `src/`, `include/`, `test/`\n- **A Makefile or CMakeLists.txt** with warnings on (`-Wall -Wextra`)\n- **Tests** — even a simple `assert`-based runner of your own is enough\n- **README** — what it does, what it builds with, how to run it\n- **Static analysis** — `cppcheck` or `clang-tidy` alongside the compiler' },
+      { k: 'text', md: 'Three signs of quality in C:\n\n1. **Every `malloc` has a matching `free`**, and you know where at the moment you allocate\n2. **Every return value is checked** — a function failing silently is the worst case\n3. **The build is warning free** under `-Wall -Wextra`' },
+      { k: 'callout', tone: 'warn', md: '**Ignoring warnings** is the most expensive habit in C. Most compiler warnings mark a real bug: a lost sign, an uninitialised variable, an unused return value. Build with `-Werror` and a warning becomes an error that cannot be deferred.' },
+      { k: 'text', md: 'Where to go next:\n\n- **FreeRTOS or Zephyr** — a real-time system when a superloop is not enough\n- **Linux systems programming** — file descriptors, processes, sockets\n- **Networking** — serial, CAN, MQTT\n- **Compilers and assembly** — what your code actually becomes\n- **Formal tooling** — running sanitizers over every test, routinely' },
+      { k: 'callout', tone: 'tip', md: 'C cannot be learned from theory. Everything in this track settles when you **burn an evening** on a segmentation fault and discover at the end that you went one index too far. Build something that runs on real hardware — there you cannot get away with anything.' },
+    ],
+    quiz: [
+      { k: 'single', q: 'What belongs to a finished C project?', opts: ['Only the source', 'Source layout, build file, tests, README, static analysis', 'Only the Makefile'], answer: 1, why: 'Without static analysis and tests the bugs only surface at run time.' },
+      { k: 'single', q: 'What is the first sign of quality in C?', opts: ['Short code', 'Every `malloc` has a matching `free` at a known place', 'Many comments'], answer: 1, why: 'You must know where the free will be at the moment you allocate.' },
+      { k: 'single', q: 'Why is ignoring warnings expensive?', opts: ['They slow the build', 'Because most of them mark a real bug', 'Because they are ugly'], answer: 1, why: 'A lost sign, an uninitialised variable, an unused return value.' },
+      { k: 'single', q: 'What does `-Werror` do?', opts: ['Hides warnings', 'Turns a warning into an error that cannot be deferred', 'Speeds up the build'], answer: 1, why: 'Warnings then cannot pile up unnoticed.' },
+      { k: 'single', q: 'How do you really learn C?', opts: ['From theory', 'By building a program that runs on real hardware', 'From books'], answer: 1, why: 'There you cannot get away with anything: a pointer bug shows immediately.' },
+    ],
+    note: {
+      summary: ['A finished project: source layout, build file, tests, README, static analysis.', 'Quality: every `malloc` freed, every return checked, zero warnings.', 'Most compiler warnings mark a real bug.', 'Build with `-Werror`.', 'Next: FreeRTOS, Linux systems programming, networking, assembly.', 'C is learned by building something that runs on real hardware.'],
+      terms: [{ term: 'static analysis', def: 'Examining code for faults without running it.' }, { term: '-Werror', def: 'A flag turning warnings into errors.' }, { term: 'FreeRTOS', def: 'A small real-time operating system for microcontrollers.' }],
+    },
+  },
+];
