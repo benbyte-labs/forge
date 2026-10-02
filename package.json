@@ -2,6 +2,8 @@
   "name": "forge",
   "private": true,
   "version": "0.1.0",
+  "description": "Offline desktop app for learning programming, robotics, physics, CAD and Blender — eight 30-day tracks in Hungarian and English.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
